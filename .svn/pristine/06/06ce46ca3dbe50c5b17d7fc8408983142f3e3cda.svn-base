@@ -1,0 +1,119 @@
+package com.sjy.controller;
+
+import com.sjy.entity.Admin;
+import com.sjy.entity.UserOrder;
+import com.sjy.service.UserOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+
+/**
+ * Created by Administrator on 2019/5/14.
+ */
+@Controller
+@RequestMapping("/userOrder")
+public class UserOrderController {
+
+
+    @Autowired
+    private UserOrderService userOrderService;
+
+
+    /**
+     * 进入订单列表页面
+     *
+     * @param model
+     * @param userOrder
+     * @return
+     */
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public String index(Model model, UserOrder userOrder) {
+        model.addAttribute("userOrder", userOrder);
+        return "userOrder/index";
+    }
+
+    /**
+     * 获取订单商品列表
+     *
+     * @param response
+     * @param userOrder
+     * @param page
+     * @param limit
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getUserOrderList", method = RequestMethod.POST)
+    public String getAdminList(HttpServletRequest request, HttpServletResponse response, UserOrder userOrder,String sTime,String eTime, Integer page, Integer limit) throws ParseException {
+    	String result=null;
+    	//获取当前登录admin对象
+    	Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+    	Integer adminId = admin.getAdminId();
+    	Integer parentId = admin.getParentId();
+    	if(admin.getAdminLevel() ==0){
+    	result =  userOrderService.selectUserOrder(userOrder,sTime,eTime,page, limit);
+    	}else {
+    		result =  userOrderService.getUserOrderList(userOrder,sTime,eTime,page, limit,adminId,parentId);
+    	}
+        return result;
+
+    }
+
+
+    /**
+     * 添加订单页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/addUserOrder", method = RequestMethod.GET)
+    public String addUserOrder() {
+        return "userOrder/addUserOrder";
+    }
+
+    /**
+     * 执行添加订单页面
+     *
+     * @param response
+     * @param userOrder
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/doAddUserOrder", method = RequestMethod.POST)
+    public String doAddUserOrder(HttpServletResponse response, UserOrder userOrder) {
+        String result = userOrderService.addUserOrder(userOrder);
+        return result;
+    }
+
+    /**
+     * 进入买入卖出编辑页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/updateUserOrder", method = RequestMethod.GET)
+    public String updateUserOrder() {
+        return "userOrder/updateUserOrder";
+    }
+
+    /**
+     * 执行编辑买入卖出页面
+     *
+     * @param response
+     * @param userOrder
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/doUpdateUserOrder", method = RequestMethod.POST)
+    public String doUpdateUserOrder(HttpServletResponse response, UserOrder userOrder) {
+        String result = userOrderService.updateUserOrder(userOrder);
+
+        return result;
+    }
+
+
+}

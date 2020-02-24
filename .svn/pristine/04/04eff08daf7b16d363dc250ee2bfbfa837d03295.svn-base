@@ -1,0 +1,56 @@
+package com.sjy.service.impl;
+
+import com.sjy.dao.StockDetailsDao;
+import com.sjy.entity.StockDetails;
+import com.sjy.service.StockCodeService;
+import com.sjy.service.StockDetailsService;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class StockDetailsServiceImpl implements StockDetailsService {
+
+    @Resource
+    private StockDetailsDao stockDetailsDao;
+    
+    @Resource
+    private StockCodeService stockCodeService;
+
+    @Override
+    public void addStockDetailsList(List<StockDetails> stockDetailsList) {
+
+    }
+
+    @Override
+    public void addStockDetails(StockDetails stockDetails) {
+        stockDetailsDao.addStockDetails(stockDetails);
+    }
+
+    @Override
+    public StockDetails getStockDetails(String symbol) {
+        return stockDetailsDao.getStockDetails(symbol);
+    }
+
+    @Override
+    public StockDetails getSDBySymbolOrName(Map map) {
+        return stockDetailsDao.getSDBySymbolOrName(map);
+    }
+
+	@Override
+	public List<StockDetails> getDetailsList(String symbol) {
+		return stockDetailsDao.getDetailsList(symbol);
+	}
+
+	@Override
+	public List<StockDetails> getTimeShareList(String symbol) {
+		return stockDetailsDao.getTimeShareList(symbol);
+	}
+
+	@Override
+	public StockDetails getNewDetailsList(String symbol, String market) {
+		return stockDetailsDao.getNewDetailsList(symbol, market);
+	} 
+}

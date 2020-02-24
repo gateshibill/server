@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>测试websocket</title>
+</head>
+<body>
+<div>测试websocket</div>
+<script src="/static/pc/templets/moban/images/jquery.js"></script>
+<script type="text/javascript">
+var testSocket;
+var twoSocket;
+if (typeof (WebSocket) == "undefined") {
+	console.log("您的浏览器不支持WebSocket");
+} else {
+	console.log("您的浏览器支持WebSocket");
+	//实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
+	//socket = new WebSocket("ws://localhost:9094/starManager/websocket/张三")
+	testSocket = new WebSocket("ws://192.168.1.188:8080/websocket");
+	//打开事件
+	testSocket.onopen = function() {
+		console.log("Socket 已打开");
+		//var message = '{"type":"1","userId":"8"}';
+		var message = '{"type":"3","symbol":"000001"}';
+		//var message = '{"type":"2"}';
+		testSocket.send(message);
+	};
+	window.onbeforeunload = function(){
+		testSocket.close();
+	}
+	
+	//获得消息事件
+	testSocket.onmessage = function(msg) {
+		if(msg){
+			if(msg.data){
+				//jsonlist = JSON.parse(msg.data);
+				console.log(msg.data);
+			}
+		}else{
+			
+		}
+	}	
+	window.onbeforeunload = function() {
+		testSocket.close();
+	};
+	
+	window.onunload = function() {
+		testSocket.close();
+	}
+	
+} 
+</script>
+</body>
+</html>

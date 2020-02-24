@@ -1,0 +1,20 @@
+package com.sjy.dao;
+
+import com.sjy.entity.BandCard;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+/**
+ * 绑定银行卡
+ * @author zhouwanggang
+ *
+ */
+@Mapper
+public interface BandCardDao {
+	/**
+	 * 新增绑定银行卡
+	 * @param bandCard
+	 * @return
+	 */
+	Integer addBandCard(BandCard bandCard);
+}

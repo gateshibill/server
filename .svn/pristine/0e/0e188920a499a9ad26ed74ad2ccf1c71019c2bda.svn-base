@@ -1,0 +1,111 @@
+package com.sjy.entity;
+
+public class RiskManagement {
+    private String userName;     //会员名
+    private Double cashDeposit;     //保证金
+    private Double totalAssets1;     //总资产
+    private Double stockValue1;     //股票市值
+    private Double expendableFund;     //可用资金
+    private Double positionRatio;     //持仓比例(%)
+    private Double totalVariableProfitLoss;     //总浮动盈亏
+    private Double profitLossRatio;     //盈亏比例(%)
+    private Double redLine1;     //亏损警戒线
+    private Double lossLine1;     //亏损平仓线
+
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Double getCashDeposit() {
+        return cashDeposit;
+    }
+
+    public void setCashDeposit(Double cashDeposit) {
+        this.cashDeposit = cashDeposit;
+    }
+
+    public Double getTotalAssets1() {
+        return totalAssets1;
+    }
+
+    public void setTotalAssets1(Double totalAssets1) {
+        this.totalAssets1 = totalAssets1;
+    }
+
+    public Double getStockValue1() {
+        return stockValue1;
+    }
+
+    public void setStockValue1(Double stockValue1) {
+        this.stockValue1 = stockValue1;
+    }
+
+    public Double getExpendableFund() {
+        return expendableFund;
+    }
+
+    public void setExpendableFund(Double expendableFund) {
+        this.expendableFund = expendableFund;
+    }
+
+    public Double getPositionRatio() {
+        return positionRatio;
+    }
+
+    public void setPositionRatio(Double positionRatio) {
+        this.positionRatio = positionRatio;
+    }
+
+    public Double getTotalVariableProfitLoss() {
+        return totalVariableProfitLoss;
+    }
+
+    public void setTotalVariableProfitLoss(Double totalVariableProfitLoss) {
+        this.totalVariableProfitLoss = totalVariableProfitLoss;
+    }
+
+    public Double getProfitLossRatio() {
+        return profitLossRatio;
+    }
+
+    public void setProfitLossRatio(Double profitLossRatio) {
+        this.profitLossRatio = profitLossRatio;
+    }
+
+    public Double getRedLine1() {
+        return redLine1;
+    }
+
+    public void setRedLine1(Double redLine1) {
+        this.redLine1 = redLine1;
+    }
+
+    public Double getLossLine1() {
+        return lossLine1;
+    }
+
+    public void setLossLine1(Double lossLine1) {
+        this.lossLine1 = lossLine1;
+    }
+
+    @Override
+    public String toString() {
+        return "RiskManagement{" +
+                "userName='" + userName + '\'' +
+                ", cashDeposit=" + cashDeposit +
+                ", totalAssets1=" + totalAssets1 +
+                ", stockValue1=" + stockValue1 +
+                ", expendableFund=" + expendableFund +
+                ", positionRatio=" + positionRatio +
+                ", totalVariableProfitLoss=" + totalVariableProfitLoss +
+                ", profitLossRatio=" + profitLossRatio +
+                ", redLine1=" + redLine1 +
+                ", lossLine1=" + lossLine1 +
+                '}';
+    }
+}

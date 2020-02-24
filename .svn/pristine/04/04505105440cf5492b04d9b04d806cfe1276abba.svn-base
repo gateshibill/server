@@ -1,0 +1,66 @@
+package com.sjy.entity;
+
+import java.util.Date;
+
+public class InformationTable {
+	private Integer informationId;
+	private String informationTitle;
+	private String informationAuthor;
+	private Integer informationType;
+	private String informationContent;
+	private Integer informationIsIndex;
+	private Date createTime;
+	public Integer getInformationId() {
+		return informationId;
+	}
+	public String getInformationTitle() {
+		return informationTitle;
+	}
+	public String getInformationAuthor() {
+		return informationAuthor;
+	}
+	public Integer getInformationType() {
+		return informationType;
+	}
+	public String getInformationContent() {
+		return informationContent;
+	}
+	public Integer getInformationIsIndex() {
+		return informationIsIndex;
+	}
+	public Date getCreateTime() {
+		return createTime;
+	}
+	public void setInformationId(Integer informationId) {
+		this.informationId = informationId;
+	}
+	public void setInformationTitle(String informationTitle) {
+		this.informationTitle = informationTitle;
+	}
+	public void setInformationAuthor(String informationAuthor) {
+		this.informationAuthor = informationAuthor;
+	}
+	public void setInformationType(Integer informationType) {
+		this.informationType = informationType;
+	}
+	public void setInformationContent(String informationContent) {
+		this.informationContent = informationContent;
+	}
+	public void setInformationIsIndex(Integer informationIsIndex) {
+		this.informationIsIndex = informationIsIndex;
+	}
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	@Override
+	public String toString() {
+		return "InformationTable [informationId=" + informationId + ", informationTitle=" + informationTitle
+				+ ", informationAuthor=" + informationAuthor + ", informationType=" + informationType
+				+ ", informationContent=" + informationContent + ", informationIsIndex=" + informationIsIndex
+				+ ", createTime=" + createTime + ", getInformationId()=" + getInformationId()
+				+ ", getInformationTitle()=" + getInformationTitle() + ", getInformationAuthor()="
+				+ getInformationAuthor() + ", getInformationType()=" + getInformationType()
+				+ ", getInformationContent()=" + getInformationContent() + ", getInformationIsIndex()="
+				+ getInformationIsIndex() + ", getCreateTime()=" + getCreateTime() + "]";
+	}
+}

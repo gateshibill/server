@@ -1,0 +1,52 @@
+package com.sjy.service;
+
+import com.sjy.entity.CapitalDetails;
+import com.sjy.entity.CapitalDetailsVO;
+
+
+public interface CapitalDetailsService {
+
+    /**
+     * 查询充值申请中数据
+     **/
+    public String selectApplyCentre(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit);
+    /**
+     * 查询充值申请通过数据
+     **/
+    public String selectApplyThrough(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit);
+    /**
+     * 查询充值申请未通过数据
+     **/
+    public String selectApplyFail(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit);
+    /**
+     * 查询提现申请中数据
+     **/
+    public String selectWithdrawalCentre(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit);
+    /**
+     * 查询提现申请通过数据
+     **/
+    public String selectWithdrawalThrough(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit);
+    /**
+     * 查询提现申请未通过数据
+     **/
+    public String selectWithdrawalFail(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit);
+
+    /**
+     * 改变申请状态为同意
+     **/
+    public Integer updateIsDealPass(CapitalDetails capitalDetails);
+    /**
+     * 改变申请状态为拒绝
+     **/
+    public Integer updateIsDealFail(CapitalDetails capitalDetails);
+
+    /**
+     * 查询ID
+     **/
+    public CapitalDetails selectByPrimaryKey(Integer id);
+    /**
+     * 修改
+     **/
+    public Integer updateIsDealFailAll(CapitalDetails capitalDetails);
+
+}

@@ -1,0 +1,101 @@
+package com.sjy.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class FlowRecord {
+    private Integer flowId;
+    //流水金额
+    private BigDecimal flowNumber;
+    /*1保证金 2建仓 3递延 4充值 5提现,6.手续费，7.服务费*/
+    private Integer flowWay;
+    /*1收入  2支出*/
+    private Integer flowType;
+    //用户id
+    private Integer userId;
+    //流水后余额
+    private BigDecimal afterMoney;
+    //创建时间
+    private Date createTime;
+
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Integer getFlowId() {
+        return flowId;
+    }
+
+    public void setFlowId(Integer flowId) {
+        this.flowId = flowId;
+    }
+
+    public BigDecimal getFlowNumber() {
+        return flowNumber;
+    }
+
+    public void setFlowNumber(BigDecimal flowNumber) {
+        this.flowNumber = flowNumber;
+    }
+
+    public Integer getFlowWay() {
+        return flowWay;
+    }
+
+    public void setFlowWay(Integer flowWay) {
+        this.flowWay = flowWay;
+    }
+
+    public Integer getFlowType() {
+        return flowType;
+    }
+
+    public void setFlowType(Integer flowType) {
+        this.flowType = flowType;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public BigDecimal getAfterMoney() {
+        return afterMoney;
+    }
+
+    public void setAfterMoney(BigDecimal afterMoney) {
+        this.afterMoney = afterMoney;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public String toString() {
+        return "FlowRecord{" +
+                "flowId=" + flowId +
+                ", flowNumber=" + flowNumber +
+                ", flowWay=" + flowWay +
+                ", flowType=" + flowType +
+                ", userId=" + userId +
+                ", afterMoney=" + afterMoney +
+                ", createTime=" + createTime +
+                ", userName='" + userName + '\'' +
+                '}';
+    }
+}
+

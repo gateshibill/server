@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<meta charset="utf-8">
+	<title>用户列表</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="/static/admin/layui-2.5.4/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/static/admin/css/public.css" media="all" />
+	<link rel="stylesheet" href="/static/admin/css/jquery.datetimepicker.css" media="all" />
+	<style type="text/css">
+	.layui-input-inline .datetimepicker{
+		z-index:100000 !important
+	}
+	</style>
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+	<blockquote class="layui-elem-quote quoteBox">
+		<form class="layui-form">
+			<div class="layui-inline">
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input userName" placeholder="请输入用户姓名" />
+				</div>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input userPhone" placeholder="请输入用户联系方式" />
+				</div>
+				<!-- <div class="layui-input-inline">
+					<input type="text" class="layui-input start_end_time" id="start_end_time" placeholder=" 请选择起始-结束时间 ">
+				</div> -->
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input datetimepicker" autocomplete="off" id="startTime" placeholder=" 请选择起始时间 ">
+				</div>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input datetimepicker" autocomplete="off" id="endTime" placeholder=" 请选择结束时间 ">
+				</div>
+				<a class="layui-btn search_btn" data-type="reload">搜索</a>
+			</div>
+			<shiro:hasPermission name="user:add">
+				<div class="layui-inline">
+					<a class="layui-btn layui-btn-normal addNews_btn">添加用户</a>
+				</div>
+			</shiro:hasPermission>
+		</form>
+	</blockquote>
+	<table id="userList" lay-filter="userList"></table>
+	<!--操作-->
+	<script type="text/html" id="userListBar">
+		<shiro:hasPermission name="user:edit">
+			<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		</shiro:hasPermission>
+		<!--
+		<shiro:hasPermission name="user:del">
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+		</shiro:hasPermission>
+		-->
+	</script>
+</form>
+<script type="text/javascript" src="/static/admin/layui-2.5.4/layui.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery-1.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.datetimepicker.full.js"></script>
+<script type="text/javascript" src="/static/admin/datajs/user/userList.js"></script>
+<script type="text/javascript">
+$(function() {
+    $(".datetimepicker").each(function() {
+      var option = {
+        lang : "zh",
+        step : "10",
+        timepicker : false,
+        closeOnDateSelect : true,
+        format : "Y-m-d"
+      };
+      $(this).datetimepicker(option);
+    });
+  });
+</script>
+</body>
+</html>

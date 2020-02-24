@@ -1,0 +1,94 @@
+package com.sjy.controller;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sjy.entity.InformationTable;
+import com.sjy.service.InformationTableService;
+import com.sjy.util.BaseUtil;
+
+@Controller
+@RequestMapping("/informationtable")
+public class InformationTableController extends BaseUtil{
+	@Autowired
+	private InformationTableService informationTableService;
+	/**
+	 * 资讯列表
+	 * @return
+	 */
+	@RequestMapping(value="/index",method=RequestMethod.GET)
+	public String index() {
+		return "informationtable/index";
+	}
+	/**
+	 * 新增资讯
+	 * @return
+	 */
+	@RequestMapping(value="/addinfomation",method=RequestMethod.GET)
+	public String addInfomation() {
+		return "informationtable/addinfomation";
+	}
+	/**
+	 * 修改资讯
+	 * @return
+	 */
+	@RequestMapping(value="/updateinformation",method=RequestMethod.GET)
+	public String updateInformation() {
+		return "informationtable/updateinformation";
+	}
+	/**
+	 * 查询资讯列表
+	 * @param response
+	 * @param informationTable
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/getinformationlist",method=RequestMethod.POST)
+	public String getInformationList(HttpServletResponse response,InformationTable informationTable,Integer page,Integer limit) {
+		String result=informationTableService.selectInformationList(informationTable, page, limit);
+		return result;
+	}
+	/**
+	 * 添加资讯
+	 * @param response
+	 * @param informationTable
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/addinfomation",method=RequestMethod.POST)
+	public String addInfomation(HttpServletResponse response,InformationTable informationTable) {
+		String result=informationTableService.addInfomation(informationTable);
+		return result;
+	}
+	/**
+	 * 修改资讯
+	 * @param response
+	 * @param informationTable
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/updateinformation",method=RequestMethod.POST)
+	public String updateInformation(HttpServletResponse response,InformationTable informationTable) {
+		String result=informationTableService.updateInformation(informationTable);
+		return result;
+	}
+	/**
+	 * 删除资讯
+	 * @param response
+	 * @param informationId
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="delinfomation",method=RequestMethod.POST)
+	public String delInfomation(HttpServletResponse response,Integer informationId) {
+		String result=informationTableService.delInfomation(informationId);
+		return result;
+	}
+}

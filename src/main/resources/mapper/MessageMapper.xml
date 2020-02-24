@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.MessageDao">
+	<resultMap type="com.ylb.entity.Message" id="BaseResultMap">
+		<result column="messageID" property="messageId" />
+		<result column="sender" property="username" />
+		<result column="name" property="name" />
+		<result column="nickname" property="nickname" />
+		<result column="fromJID" property="fromId" />
+		<result column="toJID" property="groupId" />	
+		<result column="subject" property="groupName" />
+		<result column="body" property="content" />
+		<result column="system" property="clientOs" />
+		<result column="sentDate" property="dateTime" />
+		<result column="remove" property="remove" />		
+	</resultMap>
+	
+	<select id="getGroupMessageListBySender" resultMap="BaseResultMap">
+		select
+		m.messageID,
+		u.name,
+		u.nickname,
+		m.fromJID,
+		m.toJID,
+		m.body,
+		m.sentDate,
+		from ofMessageArchive as m left join ofUser as u on u.username =m.sender where
+		u.sender=#{sender} and personal=2
+		limit #{page},#{limit}
+	</select>
+	<select id="searchMessageList" resultMap="BaseResultMap">
+		select ma.messageID,
+		ma.body,
+		ma.fromJID,
+		ma.remove,
+		ma.sentDate,
+		(select substring_index(ma.toJID,'@',1)) as toJID,
+		ou.name as name,
+		ou.nickname as nickname
+		from ofMessageArchive as ma 
+		left join ofUser as ou on ma.sender = ou.username
+		where ma.personal=2 
+		<if test="messageId != null">
+			and ma.messageID = #{messageId}
+		</if>		
+		<if test="username != null">
+			and ma.sender = #{username}
+		</if>
+		<!-- 
+		<if test="nickname != null">
+			and ou.nickname = #{nickname}
+		</if>		
+		<if test="name != null">
+			and ou.name = #{name}
+		</if>
+		 -->
+		<if test="groupId != null">
+			and ma.toJid = #{groupId}
+		</if>		
+		<if test="content != null">
+			and ma.body like concat('%',#{content},'%')
+		</if>		
+		<if test="sdate != null">
+			and ma.sentDate &gt;=#{sdate}
+		</if>
+		<if test="edate != null">
+			and ma.sentDate &lt;=#{edate}
+		</if>		
+	</select>	
+</mapper>

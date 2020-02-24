@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sjy.dao.StockCodeDao">
+  <resultMap id="BaseResultMap" type="com.sjy.entity.StockCode">
+    <id column="stock_code_id" jdbcType="INTEGER" property="stockCodeId" />
+    <result column="thscode" jdbcType="VARCHAR" property="thscode" />
+    <result column="security_name" jdbcType="VARCHAR" property="securityName" />
+    <result column="market" jdbcType="VARCHAR" property="market" />
+    <result column="date" property="date" />
+    <result column="is_hot" property="isHot" />
+    <result column="is_index" property="isIndex" />
+    <result column="boned_warehouse" property="bonedWarehouse" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    stock_code_id,
+    thscode,
+    security_name,
+    market,
+    date,
+    is_hot,
+    is_index,
+    boned_warehouse
+  </sql>
+  <select id="selectStockCodeCount" resultType="INT">
+  	select count(1) from stock_code where 1=1
+  	<if test="stock != null">
+  		<if test="stock.thscode != null and stock.thscode != ''">
+  			and thscode like concat('%',#{stock.thscode},'%')
+  		</if>
+  		<if test="stock.securityName != null and stock.securityName != ''">
+  			and security_name like concat('',#{stock.securityName},'%')
+  		</if>
+  	</if>
+  </select>
+  <select id="selectStockCodeList" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"></include> from stock_code where 1=1
+	<if test="stock != null">
+		<if test="stock.thscode != null and stock.thscode != ''">
+  			and thscode like concat('%',#{stock.thscode},'%')
+  		</if>
+  		<if test="stock.securityName != null and stock.securityName != ''">
+  			and security_name like concat('',#{stock.securityName},'%')
+  		</if>
+	</if>
+  	order by thscode
+  	<if test="page != null and limit != null">
+  		limit #{page},#{limit}
+  	</if>
+  </select>
+
+
+    <insert id="addStockCode" parameterType="com.sjy.entity.StockCode">
+	 INSERT INTO stock_code(thscode,security_name,market,date,is_hot,is_index,boned_warehouse)
+	 VALUES(#{stockCode.thscode},#{stockCode.securityName},#{stockCode.market},#{stockCode.date},#{stockCode.isHot},#{stockCode.isIndex},#{stockCode.bonedWarehouse})
+   </insert>
+
+
+    <insert id="addStockCodeList" parameterType="com.sjy.entity.StockCode">
+	 INSERT INTO stock_code(thscode,security_name,market,date,is_hot,is_index,boned_warehouse)
+	 VALUES
+	 <foreach collection="stockCodeList" item="stockCode" separator=",">
+	     (#{stockCode.thscode},#{stockCode.securityName},#{stockCode.market},now(),#{stockCode.isHot},#{stockCode.isIndex},#{stockCode.bonedWarehouse})
+      </foreach>
+   </insert>
+
+  
+</mapper>

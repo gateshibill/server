@@ -1,0 +1,136 @@
+package com.sjy.service.impl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sjy.dao.MessageDao;
+import com.sjy.entity.Message;
+import com.sjy.service.MessageService;
+import com.sjy.util.JsonUtil;
+@Service
+public class MessageServiceImpl implements MessageService{
+	@Autowired
+	private MessageDao messageDao;
+	@Override
+	public String addMessage(Message message) {
+		int code = 0;
+		String msg = "添加消息失败";
+		if(message.getUserId() == null) {
+			msg = "非法用户";
+		}else {
+			message.setCreateTime(new Date());
+			Integer insertId = messageDao.addMessage(message);
+			if(insertId != null) {
+				code = 0;
+				msg = "添加消息成功";
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String delMessage(Integer messageId) {
+		int code =1;
+		String msg = "删除消息失败";
+		if(messageId == null) {
+			msg = "非法参数";
+		}else {
+			Integer delId = messageDao.delMessage(messageId);
+			if(delId != null) {
+				code = 0;
+				msg = "删除消息成功";
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String updateMessage(Integer messageId) {
+		int code = 1;
+		String msg = "更新消息失败";
+		if(messageId == null) {
+			msg = "参数非法";
+		}else {
+			Integer updateId = messageDao.updateMessage(messageId);
+			if(updateId != null) {
+				code = 0;
+				msg = "更新消息成功";
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String getMessageList(Message message, Integer page, Integer limit) {
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		int totalCount = messageDao.getMessageCount(message);
+		List<Message> lists = messageDao.getMessageList(message, (page-1) * limit, limit);
+		return JsonUtil.buildJsonByTotalCount(lists, totalCount);
+	}
+
+	@Override
+	public String getMessageById(Integer messageId) {
+		List<Message> lists = new ArrayList<Message>();
+		Message message = messageDao.getMessageById(messageId);
+		Integer updateId = messageDao.updateMessage(messageId);
+		if(message != null) {
+			lists.add(message);
+		}
+		return JsonUtil.buildJsonByTotalCount(lists, 1);
+	}
+
+	@Override
+	public String delMessageList(String messageId) {
+		int code = 1;
+		String msg = "删除消息失败";
+		if(messageId == null) {
+			msg = "参数非法";
+		}else {
+			if(messageId.equals("") || messageId == null) {
+				msg = "请选择要删除的数据";
+			}else {
+				String[] strArr = messageId.split(",");
+				List<String> ids = Arrays.asList(strArr);
+				try {
+					messageDao.delMessageList(ids);;
+					code = 0;
+					msg = "删除消息成功";
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public int messageCount(Integer userId) {
+		int code = 1;
+		String msg = "获取失败";
+		if(userId==null) {
+			msg="非法操作";
+		}
+		int count=0;
+			try {
+				count=messageDao.messageCount(userId);
+				if(count!=0) {
+					code=0;
+					msg="获取成功";
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		return count;
+	}
+
+}

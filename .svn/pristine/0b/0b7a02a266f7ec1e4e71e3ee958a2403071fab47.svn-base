@@ -1,0 +1,888 @@
+ package com.sjy.api;
+
+import com.sjy.entity.*;
+
+import com.sjy.service.*;
+import com.sjy.util.DataUtil;
+import com.sjy.util.JsonUtil;
+import com.sjy.util.Redis.RedisUtil1;
+import com.sjy.util.Redis.RedisUtil2;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import net.sf.json.JSONObject;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.*;
+
+/**
+ * 股票api
+ *
+ * @author wxh
+ *
+ */
+@Api(tags="股票类相关接口")
+@RestController
+@CrossOrigin
+@RequestMapping("/api/stock")
+public class StockApiController {
+	@Autowired
+	private SimulationTransactionService simulationTransactionService;
+	@Autowired
+	private StockCodeService stockCodeService;
+	@Autowired
+	private UserOrderService userOrderService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private StockDetailsService stockDetailsService;
+	@Autowired
+	private UserOrderMainService userOrderMainService;
+	@Autowired
+	private OneDayDataService oneDayDataService;
+	@Autowired
+	private TwoDayDataService twoDayDateService;
+	/***
+	 * 获取模拟列表
+	 *
+	 * @param st
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@ApiOperation(value="获取我的模拟列表接口")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="st",value="对象",required=true,dataType="SimulationTransaction"),
+		@ApiImplicitParam(name="page",value="当前页数",required=false,dataType="Integer"),
+		@ApiImplicitParam(name="limit",value="每页条数",required=false,dataType="Integer")
+	})
+	@RequestMapping("/getStList")
+	public String getStList(SimulationTransaction st, Integer page, Integer limit) {
+		return simulationTransactionService.selectSimulationTransactionList(st, page, limit);
+	}
+
+	/**
+	 * 创建模拟交易
+	 *
+	 * @param st
+	 * @return
+	 */
+	@RequestMapping(value = "/addSt", method = RequestMethod.POST)
+	public String addSt(SimulationTransaction st) {
+		return simulationTransactionService.addSimulation(st);
+	}
+
+	/**
+	 * 更新模拟交易
+	 *
+	 * @param st
+	 * @return
+	 */
+	@RequestMapping(value = "/updateSt", method = RequestMethod.POST)
+	public String updateSt(SimulationTransaction st) {
+		return simulationTransactionService.updateSimulation(st);
+	}
+
+	/**
+	 * 删除模拟交易
+	 *
+	 * @param simulationTransactionId
+	 * @return
+	 */
+	@RequestMapping(value = "/delSt", method = RequestMethod.POST)
+	public String delSt(Integer simulationTransactionId) {
+		return simulationTransactionService.delSimulation(simulationTransactionId);
+	}
+	/**
+	 * 获取股票代码列表
+	 * @param stock
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@RequestMapping(value="getStockList")
+	public String getStockList(StockCode stock,Integer page,Integer limit) {
+		return stockCodeService.selectStockCodeList(stock, page, limit);
+	}
+	/**
+	 * 获取真实的交易数据列表
+	 * @param order
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@ApiOperation(value="获取我的持仓列表接口")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="order",value="对象",required=true,dataType="UserOrder"),
+		@ApiImplicitParam(name="page",value="当前页数",required=false,dataType="Integer"),
+		@ApiImplicitParam(name="limit",value="每页条数",required=false,dataType="Integer")
+	})
+	@RequestMapping("/getUserOrderList")
+	public String getUserOrderList(UserOrder order,Integer page,Integer limit)throws ParseException {
+		return userOrderService.selectNewUserOrderList(order,null,null, page, limit);
+	}
+	
+	/**
+	 * 获取真实的交易数据列表
+	 * @param order
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@ApiOperation(value="获取我的持仓列表接口")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="order",value="对象",required=true,dataType="UserOrder"),
+		@ApiImplicitParam(name="page",value="当前页数",required=false,dataType="Integer"),
+		@ApiImplicitParam(name="limit",value="每页条数",required=false,dataType="Integer")
+	})
+	@RequestMapping("/getNewUserOrderList")
+	public String getNewUserOrderList(UserOrder order,Integer page,Integer limit)throws ParseException {
+		return userOrderService.selectUserOrder(order,null,null, page, limit);
+	}
+	/**
+	 * 获取委托数据
+	 * @param order
+	 * @param type   1：当天委托  2 ：历史委托
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@ApiOperation(value="获取我的委托列表")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="order",value="对象",required=true,dataType="UserOrder"),
+		@ApiImplicitParam(name="source",value="1.委托，2:交易",required=true,dataType="Integer"),
+		@ApiImplicitParam(name="type",value="1：当天委托  2 ：历史委托",required=true,dataType="Integer"),
+		@ApiImplicitParam(name="page",value="当前页数",required=false,dataType="Integer"),
+		@ApiImplicitParam(name="limit",value="每页条数",required=false,dataType="Integer")
+	})
+	@RequestMapping("/getEntrustList")
+	public String getEntrustList(UserOrder order,Integer source,Integer type,Integer page,Integer limit) {
+		String str = "";
+		if(source == 1) {
+			str = userOrderService.getEntrustList(order, type, page, limit);
+		}else {
+			str = userOrderService.getTradeList(order, type, page, limit);
+		}
+		return str;
+	}
+	/**
+	 * 获取模拟交易数据
+	 * @param type  1：当天交易数据   2 ： 历史交易数据
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@ApiOperation(value="获取我的模拟委托列表")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="st",value="对象",required=true,dataType="SimulationTransaction"),
+		@ApiImplicitParam(name="source",value="1.委托，2:交易",required=true,dataType="Integer"),
+		@ApiImplicitParam(name="type",value="1：当天委托  2 ：历史委托",required=true,dataType="Integer"),
+		@ApiImplicitParam(name="page",value="当前页数",required=false,dataType="Integer"),
+		@ApiImplicitParam(name="limit",value="每页条数",required=false,dataType="Integer")
+	})
+	@RequestMapping("/getSimulationEntrustList")
+	public String getSimulationEntrustList(SimulationTransaction st,Integer source,Integer type,Integer page,Integer limit) {
+		String str = "";
+		if(source == 1) {
+			str = simulationTransactionService.getSimulationEntrustList(st, type, page, limit);
+		}else {
+			str = simulationTransactionService.getSimulationTradeList(st, type, page, limit);
+		}
+		return str;
+	}
+	/**
+	 * 创建真实交易
+	 * @return
+	 */
+	@RequestMapping(value="/createUserOrder",method=RequestMethod.POST)
+	public String createUserOrder(UserOrder order) {
+		return userOrderService.addUserOrder(order);
+	}
+	/**
+	 * 删除真实交易
+	 * @param orderId
+	 * @return
+	 */
+	@RequestMapping(value="/delUserOrder",method=RequestMethod.POST)
+	public String delUserOrder(Integer orderId) {
+		return userOrderService.delUserOrder(orderId);
+	}
+	/**
+	 * 更新真实交易
+	 * @param order
+	 * @return
+	 */
+	@RequestMapping(value="/updateUserOrder",method=RequestMethod.POST)
+	public String updateUserOrder(UserOrder order) {
+		return userOrderService.updateUserOrder(order);
+	}
+	/**
+	 * 查出我持仓的股票
+	 * @param userId
+	 * @param keyWord
+	 * @return
+	 */
+	@RequestMapping("/getSellStockSearch")
+	public String getSellStockSearch(Integer userId,String keyWord) {
+		return userOrderService.getSellStockSearch(userId, keyWord);
+	}
+
+	/*#########################################模拟交易接口###########################################################*/
+	/**
+	 * 模拟委托买入 ：当价格和现价一样的时候，直接模拟持仓；否则等到委托价后在买入持仓
+	 * @param st
+	 * @return
+	 */
+//	@RequestMapping(value="/simulationEntrutBuy",method=RequestMethod.POST)
+//	public String simulationEntrutBuy(SimulationTransaction st) {
+//		return "";
+//	}
+
+	/**
+	 * 模拟委托卖出
+	 * @param userId
+	 * @param stockCode
+	 * @param entrustPriceSimulate
+	 * @param numberSimulate
+	 * @return
+	 */
+	@Transactional
+	@RequestMapping(value="/simulationEntrutSell",method=RequestMethod.POST)
+	public String simulationEntrutSell(Integer userId,String stockCode,Double entrustPriceSimulate,Integer numberSimulate) {
+
+		int code;
+		String msg;
+
+		//判断参数
+		if(userId ==null || stockCode ==null || entrustPriceSimulate ==null || numberSimulate ==null ){
+			code =2;
+			msg= "请求参数有误";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+		//根据用户id、证券代码获取用户最新持有的证券数量
+		UserOrder userOrder = userOrderService.getUserShareHolding(userId,stockCode);
+
+		//卖出的数量不能大于持有股数的
+		if(numberSimulate > userOrder.getOrderNumber()){
+			code =3;
+			msg= "模拟卖出的证券数量大于持有的证券数量，请重新输入！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+		//证券当前市值 * 股数
+		Double totalPrice = entrustPriceSimulate * numberSimulate;
+		//添加用户余额和减少用户持仓市值
+		Integer count = userService.updateUserPrice(userId,totalPrice);
+		if(count ==1){
+			code =0;
+			msg= "模拟委托卖出成功！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}else{
+			code =1;
+			msg= "模拟委托卖出失败！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+	}
+
+
+	/**
+	 * 模拟撤单 ：把订单状态改成 5 ，相对应的资金返回给用户
+	 * @param simulationTransactionId
+	 * @return
+	 */
+	@RequestMapping(value="/simulationCancelOrder",method=RequestMethod.POST)
+	public String simulationCancelOrder(Integer simulationTransactionId) {
+		return simulationTransactionService.simulationCancelOrder(simulationTransactionId);
+	}
+
+
+	/*#########################################真实交易接口#####################################################*/
+	/**
+	 * 委托卖出 ：卖出的 可以部分卖出价格返回给用户，相对应的持仓市值就要改变
+	 * @param userId
+	 * @param stockCode
+	 * @param entrustPrice
+	 * @param number
+	 * @return
+	 */
+	@Transactional
+	@RequestMapping(value="/entrustSell",method=RequestMethod.POST)
+	public String entrustSell(Integer userId,String stockCode,Double entrustPrice,Integer number){
+
+		int code;
+		String msg;
+
+		//判断参数
+		if(userId ==null || stockCode ==null|| entrustPrice ==null || number ==null ){
+			code =2;
+			msg= "请求参数有误";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+		//根据用户id、证券代码获取用户最新持有的证券数量
+		UserOrder userOrder = userOrderService.getUserShareHolding(userId,stockCode);
+		//卖出的数量不能大于持有股数的
+		if(number>userOrder.getOrderNumber()){
+			code =3;
+			msg= "卖出的证券数量大于持有的证券数量，请重新输入！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+		//证券当前市值 * 股数
+		Double totalPrice = entrustPrice * number;
+		//添加用户余额和减少用户持仓市值
+		Integer count = userService.updateUserPrice(userId,totalPrice);
+		if(count ==1){
+			code =0;
+			msg= "委托卖出成功！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}else{
+			code =1;
+			msg= "委托卖出失败！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+	}
+
+
+	/**
+	 * 撤单  : 把订单状态改成 5 ，相对应的资金返回给用户
+	 * @param orderId
+	 * @return
+	 */
+	@RequestMapping(value="/cancelOrder",method=RequestMethod.POST)
+	public String cancelOrder(Integer orderId) {
+		return userOrderService.cancelOrder(orderId);
+	}
+
+
+	/**
+	 * 通过证券代码获取证券信息 : 有用
+	 * @param symbol
+	 * @return
+	 */
+	@ApiOperation(value="通过证券代码获取证券信息")
+	@ApiImplicitParam(name="symbol",value="股票代码",required=true,dataType="String")
+	@RequestMapping(value="/getStockInfor",method=RequestMethod.POST)
+	public String getStockInfor(String symbol){
+		DecimalFormat df  = new DecimalFormat("######0.00");   
+		if(symbol == null || symbol.equals("")) {
+			return JsonUtil.buildFalseJson(1, "参数非法","");
+		}else {
+			StockCode info = stockCodeService.getStockByCode(symbol);
+			List<Map<String,Object>> list = new ArrayList<>();
+			Map<String,Object> map = new HashMap<>();
+			if(info == null) {
+				return JsonUtil.buildFalseJson(1, "股票不存在","");
+			}else {
+				String key = symbol+":"+info.getMarket();
+				int args = Integer.valueOf(symbol);
+				String newStr = null; //获取最后一条：既最新
+				String firstStr = null;//获取第一条 ： 当天最早
+				if(args % 2 == 0) { //Redis2
+					if(RedisUtil2.exists(key)) {
+						if(RedisUtil2.llen(key)>0) {
+							firstStr = RedisUtil2.lindex(key,0); 
+							newStr = RedisUtil2.lindex(key, -1);
+						}
+					}
+				}else { //Redis1
+					if(RedisUtil1.exists(key)) {
+						if(RedisUtil1.llen(key)>0) {
+							firstStr = RedisUtil1.lindex(key,0);
+							newStr = RedisUtil1.lindex(key, -1);
+						}
+					}
+				}
+				StockDetails stockDetails = stockDetailsService.getNewDetailsList(symbol, info.getMarket());
+				if(newStr != null) {//组装Redis下面的值
+					 	JSONObject jsonObject = JSONObject.fromObject(newStr);
+					 	JSONObject fObject = JSONObject.fromObject(firstStr);
+						map.put("thscode",jsonObject.get("symbol"));  // 证券代码
+						map.put("open",df.format(fObject.get("op")));  // 今开
+						map.put("high",df.format(jsonObject.get("clvHip"))); // 最高
+						map.put("low",df.format(jsonObject.get("clvLop")));// 最低
+						map.put("close",df.format(jsonObject.get("cp")));// 收盘价
+						map.put("avgPrice",df.format(jsonObject.get("clvVwap")));    //均价
+						String tq = new DecimalFormat("0.00").format(jsonObject.getDouble("tq")); // 总成交量
+						map.put("volume",new DecimalFormat("0.00").format(jsonObject.getDouble(("tq")))); //成交量
+						String clvVwap = new DecimalFormat("0.00").format(jsonObject.getDouble("clvVwap")); //开盘至今交易量加权平均价
+						double amount = Double.valueOf(tq) * Double.valueOf(clvVwap);
+						double preClose = stockDetails.getCp();
+						double changeMoney = jsonObject.getDouble("cp") - preClose;
+						double changeRatio = (changeMoney/preClose)*100;
+						map.put("amount",df.format(amount));//总成交额
+						map.put("change",df.format(changeMoney));//现价-昨收价
+						map.put("changeRatio",df.format(changeRatio)); // 盈亏百分比   (现价-昨收)/昨收
+						map.put("tradingTime",jsonObject.get("tradingTime"));
+						map.put("latest",df.format(jsonObject.get("cp")));
+						map.put("totalCapital",null); //总市值
+						map.put("pb",null);      // 市净率
+						map.put("sellVolume",null); // 内盘
+						map.put("buyVolume",null);// 外盘
+						map.put("preClose",preClose);// 昨收
+						map.put("bid1",df.format(jsonObject.getDouble("buyPrice01")));
+						map.put("bid2",df.format(jsonObject.getDouble("buyPrice02")));
+						map.put("bid3",df.format(jsonObject.getDouble("buyPrice03")));
+						map.put("bid4",df.format(jsonObject.getDouble("buyPrice04")));
+						map.put("bid5",df.format(jsonObject.getDouble("buyPrice05")));
+						map.put("ask1",df.format(jsonObject.getDouble("sellPrice01")));
+						map.put("ask2",df.format(jsonObject.getDouble("sellPrice02")));
+						map.put("ask3",df.format(jsonObject.getDouble("sellPrice03")));
+						map.put("ask4",df.format(jsonObject.getDouble("sellPrice04")));
+						map.put("ask5",df.format(jsonObject.getDouble("sellPrice05")));
+						map.put("bidSize1",(int)Math.floor(jsonObject.getDouble("buyVolume01")/100));
+						map.put("bidSize2",(int)Math.floor(jsonObject.getDouble("buyVolume02")/100));
+						map.put("bidSize3",(int)Math.floor(jsonObject.getDouble("buyVolume03")/100));
+						map.put("bidSize4",(int)Math.floor(jsonObject.getDouble("buyVolume04")/100));
+						map.put("bidSize5",(int)Math.floor(jsonObject.getDouble("buyVolume05")/100));
+						map.put("askSize1",(int)Math.floor(jsonObject.getDouble("sellVolume01")/100));
+						map.put("askSize2",(int)Math.floor(jsonObject.getDouble("sellVolume02")/100));
+						map.put("askSize3",(int)Math.floor(jsonObject.getDouble("sellVolume03")/100));
+						map.put("askSize4",(int)Math.floor(jsonObject.getDouble("sellVolume04")/100));
+						map.put("askSize5",(int)Math.floor(jsonObject.getDouble("sellVolume05")/100));
+						map.put("turnoverRatio",null); //换手率
+						map.put("totalShares",null);  // 总股本
+						map.put("createTime",jsonObject.get("createTime").toString());
+						list.add(map);
+				}else { //从数据库获取数据 ： 该处获取数据是有问题的，后续看如何优化
+					map.put("historicalMarketId",null);
+					map.put("thscode",stockDetails.getSymbol());
+					map.put("open",String.valueOf(stockDetails.getOp()));
+					map.put("high",String.valueOf(stockDetails.getClvHip()));
+					map.put("low",String.valueOf(stockDetails.getClvLop()));// 最低
+					map.put("close",String.valueOf(stockDetails.getCp()));
+					map.put("avgPrice",String.valueOf(stockDetails.getClvVwap()));    //均价
+					map.put("volume",String.valueOf(stockDetails.getTq())); //成交量
+					double amount = stockDetails.getTq() * stockDetails.getClvVwap();
+					map.put("amount",df.format(amount));//成交额
+					map.put("change",df.format(stockDetails.getChangeMoney()));
+					map.put("changeRatio",String.valueOf(stockDetails.getChangeRatio())); // 盈亏百分比
+					map.put("tradingTime",String.valueOf(stockDetails.getTradingTime()));
+					map.put("latest",String.valueOf(stockDetails.getCp()));
+					map.put("totalCapital",null); //总市值
+					map.put("pb",null);      // 市净率
+					map.put("sellVolume",null); // 内盘
+					map.put("buyVolume",null);// 外盘
+					map.put("preClose",null);// 昨收
+					map.put("bid1",String.valueOf(stockDetails.getBuyPrice01()));
+					map.put("bid2",String.valueOf(stockDetails.getBuyPrice02()));
+					map.put("bid3",String.valueOf(stockDetails.getBuyPrice03()));
+					map.put("bid4",String.valueOf(stockDetails.getBuyPrice04()));
+					map.put("bid5",String.valueOf(stockDetails.getBuyPrice05()));
+					map.put("ask1",String.valueOf(stockDetails.getSellPrice01()));
+					map.put("ask2",String.valueOf(stockDetails.getSellPrice02()));
+					map.put("ask3",String.valueOf(stockDetails.getSellPrice03()));
+					map.put("ask4",String.valueOf(stockDetails.getSellPrice04()));
+					map.put("ask5",String.valueOf(stockDetails.getSellPrice05()));
+					map.put("bidSize1",(int)Math.floor(stockDetails.getBuyVolume01()/100));
+					map.put("bidSize2",(int)Math.floor(stockDetails.getBuyVolume02()/100));
+					map.put("bidSize3",(int)Math.floor(stockDetails.getBuyVolume03()/100));
+					map.put("bidSize4",(int)Math.floor(stockDetails.getBuyVolume04()/100));
+					map.put("bidSize5",(int)Math.floor(stockDetails.getBuyVolume05()/100));
+					map.put("askSize1",(int)Math.floor(stockDetails.getSellVolume01()/100));
+					map.put("askSize2",(int)Math.floor(stockDetails.getSellVolume02()/100));
+					map.put("askSize3",(int)Math.floor(stockDetails.getSellVolume03()/100));
+					map.put("askSize4",(int)Math.floor(stockDetails.getSellVolume04()/100));
+					map.put("askSize5",(int)Math.floor(stockDetails.getSellVolume05()/100));
+					map.put("turnoverRatio",null); //换手率
+					map.put("totalShares",null);  // 总股本
+					map.put("createTime",stockDetails.getCreateTime().toString());
+					list.add(map);
+				}
+			}
+			return JsonUtil.buildJsonByTotalCount(list,1);
+		}
+	}
+
+
+	/**
+	 * 分时 日k
+	 * @param symbol
+	 * @return
+	 */
+//	@RequestMapping(value="/getTimeShareList",method=RequestMethod.POST)
+//	public String getTimeShareList(String symbol,Model model) {
+//		if(RedisUtil.exists(symbol) ==true){
+//			String day= RedisUtil.lindex(symbol,0);	//日k
+//			String end = RedisUtil.lindex(symbol,-1);	//获取最后一条数据
+//			List<String> s = RedisUtil.lrange(symbol, 0, -1);
+//			List<Map<String,String>> lists = new ArrayList<Map<String,String>>();
+//			for(String string: s) {
+//				net.sf.json.JSONObject jsonArray = net.sf.json.JSONObject.fromObject(string);
+//				Map<String,String> map = new HashMap<>();
+//				map.put("time", jsonArray.getString("tradingTime"));
+//				map.put("avg_price", jsonArray.getString("vwap"));
+//				map.put("current", jsonArray.getString("op"));
+//				map.put("volume", jsonArray.getString("cq"));
+//				lists.add(map);
+//			}
+//			List<Map<String,String>> li = new ArrayList<Map<String,String>>();
+//			net.sf.json.JSONObject json = net.sf.json.JSONObject.fromObject(day);
+//			Map<String,String> m = new HashMap<>();
+//			m.put("time", json.getString("tradingTime"));
+//			m.put("open", json.getString("op"));
+//			m.put("close", json.getString("cp"));
+//			m.put("high", json.getString("hip"));
+//			m.put("volume", json.getString("cq"));
+//			m.put("low", json.getString("lop"));
+//			li.add(m);
+//			JSONObject jsonObject = JSON.parseObject(end);
+//			Map<String, Object> maps=new HashMap<>();
+//			maps.put("list", lists);
+//			maps.put("lastClose", jsonObject.getString("cp"));
+//			maps.put("day", li);
+//			List<Map<String,Object>> lsj = new ArrayList<Map<String,Object>>();
+//			lsj.add(maps);
+//
+//			return JsonUtil.buildJsonByTotalCount(lsj,0);
+//		}else {
+//			List<StockDetails> list=stockDetailsService.getTimeShareList(symbol);
+//			StockDetailsVO stockDetailsVO=new StockDetailsVO();
+//			List<StockDetailsVO> lists=new ArrayList<>();
+//			for(StockDetails s: list) {
+//				stockDetailsVO.setClose(s.getCp());
+//				stockDetailsVO.setTimeStamp(s.getTradingTime());
+//				stockDetailsVO.setOpen(s.getOp());
+//				stockDetailsVO.setLow(s.getLop());
+//				stockDetailsVO.setHigh(s.getHip());
+//				stockDetailsVO.setVolume(s.getCq());
+//				lists.add(stockDetailsVO);
+//			}
+//			return JsonUtil.buildJsonByTotalCount(lists,0);
+//		}
+//	}
+
+	
+	/**
+	 * 分时 日k
+	 * @param symbol
+	 * @return
+	 */
+	@RequestMapping(value="/getTimeShareList",method=RequestMethod.POST)
+	public String getTimeShareList(String symbol) {
+		DecimalFormat df  = new DecimalFormat("######0.00");   
+		String key = null;
+		if(symbol != null && !symbol.equals("")) {
+			StockCode code = stockCodeService.getStockByCode(symbol);
+			if(code != null) {
+				int args = Integer.valueOf(symbol);
+				key = symbol+":"+code.getMarket();//键值
+				List<String> valuelist = null;
+				String firstData = null; //第一条数据 
+				String endStartData = null;//最新一条数据
+				//日k数据
+				List<Map<Object,Object>> li = new ArrayList<Map<Object,Object>>();
+				List<OneDayData> onelists = new ArrayList<OneDayData>();
+				List<TwoDayData> twolists = new ArrayList<TwoDayData>();
+				if(args%2 == 0) { //连接Redis2
+					 if(RedisUtil2.exists(key)) {
+						 if(RedisUtil2.llen(key) > 0) {
+							 firstData = RedisUtil2.lindex(key, 0);
+						     endStartData = RedisUtil2.lindex(key,-1);	//获取最后一条数据
+							 valuelist = RedisUtil2.lrange(key, 0, -1);
+						 }else {
+							 return JsonUtil.buildFalseJson(1,"未开盘，暂无时分数据", "");
+						 }
+					 }else {
+						 return JsonUtil.buildFalseJson(1, "不存在该股票", "");
+					 }
+					//日k
+					 twolists = twoDayDateService.getDayDataList(symbol, code.getMarket());
+					 if(twolists.size() > 0) {
+						 for (TwoDayData t : twolists) {
+								Map<Object,Object> m = new HashMap<>();
+								m.put("time", t.getTradingTime());
+								m.put("createTime", t.getCreateTime());
+								m.put("open", df.format(t.getOp())); //开盘价
+								m.put("close", df.format(t.getCp())); //收盘价
+								m.put("high",  df.format(t.getClvHip()));//最高价
+								m.put("volume",df.format(t.getTq())); //成交量
+								m.put("low", df.format(t.getClvLop())); //最低价
+								m.put("preClose",df.format(t.getOp())); //昨收 暂时获取今开
+								m.put("total", df.format(t.getTq() * t.getClvVwap())); //总成交额
+								li.add(m);
+						}
+					 }
+				}else { //连接Redis1
+					if(RedisUtil1.exists(key)) {
+						if(RedisUtil1.llen(key) > 0) {
+							firstData = RedisUtil1.lindex(key, 0);
+						    endStartData = RedisUtil1.lindex(key,-1);	//获取最后一条数据
+							valuelist = RedisUtil1.lrange(key, 0, -1);
+						}else {
+							 return JsonUtil.buildFalseJson(1,"未开盘，暂无时分数据", "");
+						}
+					 }else {
+						 return JsonUtil.buildFalseJson(1, "不存在该股票", "");
+					 }
+					onelists = oneDayDataService.getDayDataList(symbol, code.getMarket());
+					if(onelists.size() > 0) {
+						for (OneDayData t : onelists) {
+							Map<Object,Object> m = new HashMap<>();
+							m.put("time", t.getTradingTime());
+							m.put("createTime", t.getCreateTime());
+							m.put("open", df.format(t.getOp())); //开盘价
+							m.put("close", df.format(t.getCp())); //收盘价
+							m.put("high",  df.format(t.getClvHip()));//最高价
+							m.put("volume",df.format(t.getTq())); //成交量
+							m.put("low", df.format(t.getClvLop())); //最低价
+							m.put("preClose",df.format(t.getOp())); //昨收 暂时获取今开
+							m.put("total", df.format(t.getTq() * t.getClvVwap())); //总成交额
+							li.add(m);
+						}
+					}
+				}
+				List<Map<String,String>> lists = new ArrayList<Map<String,String>>();
+				StockDetails details = stockDetailsService.getNewDetailsList(symbol, code.getMarket()); // 昨天最新一条数据
+				Double nowOpen = 0.00;  //开盘价
+				Double preClose = details.getCp(); //昨收
+				if(firstData != null) {
+					net.sf.json.JSONObject jdata = net.sf.json.JSONObject.fromObject(firstData);
+					nowOpen = jdata.getDouble("op");
+				}
+				if(valuelist != null) {  
+					for(String string: valuelist) {
+						net.sf.json.JSONObject jsonArray = net.sf.json.JSONObject.fromObject(string);
+						Map<String,String> map = new HashMap<>();
+						//map.put("time", jsonArray.getString("tradingTime"));//时分
+						map.put("avg_price", df.format(jsonArray.getDouble("clvVwap")));//均价
+						map.put("createTime", jsonArray.getString("createTime"));//时间戳
+						map.put("current", df.format(jsonArray.getDouble("op")));//现价
+						map.put("volume", jsonArray.getString("cq"));//分钟成交量
+						map.put("open", df.format(nowOpen)); //今开
+						map.put("preClose", df.format(preClose)); //昨收
+						String a = DataUtil.addtime(jsonArray.getString("tradingTime"), "-1");
+						map.put("time", a);
+						lists.add(map);
+					}
+				}
+				if(lists.size() > 0) {   //对时间进行过滤处理:后续优化
+					lists = DataUtil.dataFilter(lists);
+				}
+										
+				Map<Object, Object> maps=new HashMap<>();
+				maps.put("list", lists);
+				//最新数据
+				if(endStartData != null) {
+					JSONObject jsonObject = JSONObject.fromObject(endStartData);
+					maps.put("lastClose", jsonObject.getString("cp"));
+					
+					//日k最新
+					Map<Object,Object> t = new HashMap<>();
+//					t.put("time", jsonObject.getString("tradingTime"));
+//					t.put("createTime", jsonObject.getString("createTime"));
+//					t.put("open", jsonObject.getString("op"));
+//					t.put("close",jsonObject.getString("cp"));
+//					t.put("high",jsonObject.getString("hip"));
+//					t.put("volume",jsonObject.getString("cq"));
+//					t.put("low",jsonObject.getString("lop"));
+					
+					t.put("time",jsonObject.getString("tradingTime"));
+					t.put("createTime", jsonObject.getString("createTime"));
+					t.put("open", df.format(nowOpen)); //开盘价
+					t.put("close", df.format(jsonObject.getDouble("cp"))); //收盘价
+					t.put("high",  df.format(jsonObject.getDouble("clvHip")));//最高价
+					t.put("volume",df.format(jsonObject.getDouble("tq"))); //成交量
+					t.put("low", df.format(jsonObject.getDouble("clvLop"))); //最低价
+					t.put("preClose",df.format(jsonObject.getDouble("op"))); //昨收 暂时获取今开
+					t.put("total",df.format(jsonObject.getDouble("tq") * jsonObject.getDouble("clvVwap"))); //总成交额
+					li.add(t);
+				}
+				maps.put("day", li);
+				List<Map<Object,Object>> lsj = new ArrayList<Map<Object,Object>>();
+				lsj.add(maps);
+				return JsonUtil.buildJsonByTotalCount(lsj,1);
+			}else {
+				return JsonUtil.buildFalseJson(1, "股票不存在", "");
+			}
+		}else {
+			return JsonUtil.buildFalseJson(1, "请选择股票", "");
+		}
+	} 
+	
+	/**
+	 * 根据证券代码查询出证券现价【委托价格】、跌停、涨停
+	 *
+	 * 跌停价：跌停价 = 昨日收盘价*0.9  （小数点后两位保留，小数点后第三位四舍五入）
+	 * 涨停价：涨停价 = 昨日收盘价*1.1  （小数点后两位保留，小数点后第三位四舍五入）
+	 *
+	 * @param symbol
+	 * @return
+	 */
+	@RequestMapping(value="/getSymbolInfor",method=RequestMethod.POST)
+	public String getSymbolInfor(String symbol,Integer userId) {
+		if(symbol == null || symbol.equals("")) {
+			return JsonUtil.buildFalseJson(1, "请输入合法的股票代码","");
+		}else {
+			String newStr = null;
+			String oldStr = null;
+			Double currentPrice = 0.00; //当前价
+			Double zsPrice = 0.00; //昨收价：先默认把今天开始的开盘价作为昨收先，等有历史数据后在做修改
+			StockCode code = stockCodeService.getStockByCode(symbol);
+			if(code == null) {
+				return JsonUtil.buildFalseJson(1,"股票不存在", "");
+			}else {
+				String key = null;
+				int args = Integer.valueOf(symbol);
+				key = symbol+":"+code.getMarket();//键值
+				
+				if(args % 2 == 0) {  //redis2
+					if(RedisUtil2.exists(key)) {
+						newStr = RedisUtil2.lindex(key, -1);
+						oldStr = RedisUtil2.lindex(key, 0);
+					}else {
+						//现价
+						StockDetails stockDetails = stockDetailsService.getStockDetails(symbol);
+						if(stockDetails != null) {
+							currentPrice = stockDetails.getCp();
+						}
+					}
+				}else { //redis1
+					if(RedisUtil1.exists(key)) {
+						newStr = RedisUtil1.lindex(key, -1);
+						oldStr = RedisUtil1.lindex(key, 0);
+					}else {
+						//现价
+						StockDetails stockDetails = stockDetailsService.getStockDetails(symbol);
+						if(stockDetails != null) {
+							currentPrice = stockDetails.getCp();
+						}
+					}
+				}
+			}
+			if(newStr != null) {
+				JSONObject jsonObject = JSONObject.fromObject(newStr);
+				currentPrice = Double.parseDouble(jsonObject.get("cp").toString()) ;
+			}
+			if(oldStr != null) {
+				JSONObject jsonObject =JSONObject.fromObject(oldStr);
+				zsPrice = Double.parseDouble(jsonObject.get("cp").toString()) ;
+			}
+			//跌停价
+			double dropStopPrice = zsPrice *0.9;
+			//涨停价
+			double hardenPrice = zsPrice *1.1;
+			List<BuyingMessage> list =new ArrayList<BuyingMessage>();
+			BuyingMessage buyingMessage = new BuyingMessage();
+			buyingMessage.setCurrentPrice(currentPrice);
+			buyingMessage.setDropStopPrice(dropStopPrice);
+			buyingMessage.setHardenPrice(hardenPrice);
+			if(userId != null) { //可买股数
+				UserOrderMain main = userOrderMainService.getUserOrderMain(symbol, userId);
+				if(main != null) {
+					buyingMessage.setAllowSellNumber(main.getAllowSellNumber());
+				}else {
+					buyingMessage.setAllowSellNumber(0);
+				}
+			}
+			list.add(buyingMessage);
+			return JsonUtil.buildJsonByTotalCount(list, 1);
+
+	}
+}
+
+	/**
+	 * 买入交易  参数：用户id、证券代码、证券名称、价格、数量
+	 * @param order
+	 * @return
+	 */
+	@RequestMapping(value="/addBuying",method=RequestMethod.POST)
+	public String addBuying(UserOrder order){
+		return userOrderService.addUserOrder(order);
+	}
+
+	/**
+	 * 卖出交易  参数：用户id、证券代码、证券名称、价格、数量
+	 * @param order
+	 * @return
+	 */
+	@RequestMapping(value="/addSell",method=RequestMethod.POST)
+	public String addSell(UserOrder order){
+		return userOrderService.addUserSellOrder(order);
+	}
+
+
+	/**
+	 * 模拟买入交易
+	 * 参数：用户id[userId]、证券代码[stockCode]、证券名称[stockName]、个股价格[simulationPrice]、
+	 *      买价[simulationBuyer]、数量[simulationNumber]
+	 * @param st
+	 * @return
+	 */
+	@RequestMapping(value="/addSimulationBuying",method=RequestMethod.POST)
+	public String addSimulationBuying(SimulationTransaction st){
+		return simulationTransactionService.addSimulation(st);
+	}
+
+	public String selectBuying(UserOrder order){
+		int code = 0 ;
+		String msg ="成功";
+		//判断参数
+		if(order.getOrderPrice()== null || order.getStockCode() == null || order.getOrderNumber() == null || order.getUserId() == null || order.getStockName() == null){
+			code =1;
+			msg= "请求参数有误";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+		//根据用户Id获取用户的可用余额
+		User user = userService.getUserByUserId(order.getUserId());
+		//通过用户的可用余额与买入股票做验证
+		if(user.getUserExpendableFund() < order.getOrderPrice() * order.getOrderNumber()) {
+			code = 1;
+			msg = "余额不足";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+		User user1 = new User();
+		user1.setBuyShares((int)(user.getUserExpendableFund()/order.getOrderPrice()));
+		return JsonUtil.buildFalseJson(code, msg, user1.getBuyShares());
+	}
+
+	/**
+	 * 模拟卖入交易
+	 * 参数：用户id[userId]、证券代码[stockCode]、证券名称[stockName]、个股价格[simulationPrice]、
+	 *      卖价[simulationExitPrice]、数量[simulationNumber]
+	 * @param st
+	 * @return
+	 */
+	@RequestMapping(value="/addSimulationSell",method=RequestMethod.POST)
+	public String addSimulationSell(SimulationTransaction st){
+		return simulationTransactionService.addSimulationSell(st);
+	}
+
+    /**
+     * 添加上交所和深交所证券代码和证券名称相关信息[约三千只股票]
+     * @throws UnsupportedEncodingException
+     */
+//	@RequestMapping(value="/addAllStock",method=RequestMethod.POST)
+//	public void addAllStock() throws UnsupportedEncodingException {
+//		stockCodeService.addALLStockCode();
+//	}
+	@ApiOperation(value="获取我的持仓列表接口")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="main",value="对象",required=true,dataType="userOrderMain"),
+		@ApiImplicitParam(name="page",value="当前页数",required=false,dataType="Integer"),
+		@ApiImplicitParam(name="limit",value="每页条数",required=false,dataType="Integer")
+	})
+	@RequestMapping(value="/getUserOrderMainList",method=RequestMethod.POST)
+    public String getUserOrderMainList(UserOrderMain main,Integer page,Integer limit) {
+    	return userOrderMainService.chicangList(main, page, limit);
+    }
+	
+	public static void main(String[] args) {
+		//转换科学计数法
+		double num = 1.14988155E8;
+		String str=new DecimalFormat("0.00").format(num);
+		System.out.println(str);
+	}
+}

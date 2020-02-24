@@ -1,0 +1,199 @@
+package com.sjy.service.impl;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import com.sjy.util.Redis.RedisUtil1;
+import com.sjy.util.Redis.RedisUtil2;
+
+import net.sf.json.JSONObject;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sjy.dao.StockCodeDao;
+import com.sjy.dao.StockDetailsDao;
+import com.sjy.dao.UserOptionsDao;
+import com.sjy.entity.StockCode;
+import com.sjy.entity.StockDetails;
+import com.sjy.entity.UserOptions;
+import com.sjy.service.UserOptionsService;
+import com.sjy.util.JsonUtil;
+
+@Service
+public class UserOptionsServiceImpl implements UserOptionsService{
+	@Autowired
+	private UserOptionsDao userOptionsDao;
+	@Autowired
+	private StockCodeDao stockCodeDao;
+	@Autowired
+	private StockDetailsDao stockDetailsDao;
+	
+	/**
+	 * 添加自选
+	 */
+	@Override
+	public String addUserOptions(UserOptions option) {
+		int code = 1;
+		String msg = "添加自选失败";
+		if(option.getUserId() == null) {
+			msg = "非法参数";
+		}else {
+			if(option.getStockCode().equals("") || option.getStockCode() == null) {
+				msg = "非法参数";
+			}else {
+				StockCode info = stockCodeDao.getStockByCode(option.getStockCode());
+				if(info == null) {
+					msg = "股票不存在";
+				}else {
+					//判断是否已加入自选
+					int count = userOptionsDao.checkIsAlready(option.getUserId(), option.getStockCode());
+					if(count > 0) {
+						msg = "已经添加该股票为自选";
+					}else {
+						option.setMarket(info.getMarket());
+						option.setCreateTime(new Date());
+						Integer insertId = userOptionsDao.addUserOptions(option);
+						if(insertId != null) {
+							code = 0;
+							msg = "添加自选成功";
+						}
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+	/**
+	 * 批量删除自选
+	 */
+	@Override
+	public String delUserOptions(String codes, Integer userId) {
+		int code = 1;
+		String msg = "删除自选失败";
+		if(userId == null) {
+			msg = "参数非法";
+		}else {
+			if(codes.equals("") || codes == null) {
+				msg = "请选择要删除的数据";
+			}else {
+				String[] strArr = codes.split(",");
+				List<String> ids = Arrays.asList(strArr);
+				try {
+					userOptionsDao.delUserOptions(ids, userId);
+					code = 0;
+					msg = "删除自选成功";
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+	/**
+	 * 获取自选数据列表
+	 */
+	@Override
+	public String getUserOptionsList(Integer userId, Integer page, Integer limit) {
+
+		//参数判断
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		if(userId == null) {
+			int code = 1;
+			String msg = "参数为空";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+		int totalCount = userOptionsDao.getUserOptionsCount(userId);
+
+		//返回list集合
+		//List<UserOptions>  userOptionsList = new ArrayList<>();
+
+		//获取用户所有自选【收藏】的证券代码
+		List<UserOptions> list =  userOptionsDao.getUserAllStock(userId,(page-1) * limit,limit);
+		if(list.size() ==0){
+			int code = 2;
+			String msg = "用户无自选信息";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+		//遍历获取数据
+		for (UserOptions uo : list) {
+			uo.setUserOptionsId(uo.getUserOptionsId());
+			uo.setStockCode(uo.getStockCode());
+			uo.setCreateTime(uo.getCreateTime());
+			int args = Integer.valueOf(uo.getStockCode());
+			String key = uo.getStockCode()+":"+uo.getMarket();//股票:市场  = key值
+			String newStr = null;
+			double nowPrice=0.0;//现价
+			StockDetails stockDetails = stockDetailsDao.getNewDetailsList(uo.getStockCode(),uo.getMarket());
+			double ytPrice=stockDetails.getCp();//昨价
+			if(args % 2 == 0) { //Redis2
+				if(RedisUtil2.exists(key)) {
+					if(RedisUtil2.llen(key)>0) {
+						newStr = RedisUtil2.lindex(key, -1); // 最新
+					}
+				}
+			}else { //Redis1
+				if(RedisUtil1.exists(key)) {
+					if(RedisUtil1.llen(key)>0) {
+						newStr = RedisUtil1.lindex(key, -1); // 最新
+					}
+				}
+			}
+			if(newStr != null) {
+				try {
+					JSONObject object = JSONObject.fromObject(newStr);
+					if(!object.get("cp").equals("") && object.get("cp") != null) {
+						String cp = object.get("cp").toString();
+						uo.setStockNewMoney(Double.valueOf(cp));
+					}
+					if(!object.get("changeMoney").equals("") && object.get("changeMoney") != null) {
+						nowPrice=(double) object.get("cp");
+						Double changeMoney = nowPrice-ytPrice;
+						uo.setStockChange(changeMoney);
+
+					}
+					if(!object.get("changeRatio").equals("") && object.get("changeRatio") != null) {
+						nowPrice=(double) object.get("cp");
+						Double changeRatio = ((nowPrice-ytPrice)/ytPrice)*100/100;
+						uo.setStockApplies(changeRatio);
+					}
+				} catch (Exception e) {
+				}
+			}
+		}
+		
+		return JsonUtil.buildJsonByTotalCount(list, totalCount);
+
+	}
+
+	@Override
+	public String checkIsAlready(Integer userId, String stockCode) {
+		int code = 1;
+		String msg = "没有自选";
+		if(userId == null) {
+			msg = "参数非法";
+		}else {
+			if(stockCode.equals("") || stockCode == null) {
+				msg = "请选择要删除的数据";
+			}else {
+				try {
+					int count=userOptionsDao.checkIsAlready(userId, stockCode);
+					if(count!=0) {
+						code=0;
+						msg="有自选";
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+}

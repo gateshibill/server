@@ -1,0 +1,15 @@
+package com.sjy.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.sjy.entity.UserWithdrawal;
+@Mapper
+public interface UserWithdrawalDao {
+	int selectWithdrawalCount(@Param("userWithdrawal")UserWithdrawal userWithdrawal);	//查询总记录数
+	List<UserWithdrawal> selectUserWithdrawalList(@Param("userWithdrawal")UserWithdrawal userWithdrawal,@Param("page")Integer page,@Param("limit")Integer limit);
+	UserWithdrawal getWithdrawalById(@Param("withdrawalId")Integer withdrawalId);
+	Integer auditUserWithdrawal(UserWithdrawal userWithdrawal);	//提现审核
+}

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.UserDao">
+	<resultMap type="com.sjy.entity.User" id="BaseResultMap">
+		<id column="user_id" property="userId" />
+		<result column="user_name" property="userName" />
+		<result column="user_password" property="userPassword" />
+		<result column="inviter_id" property="inviterId" />
+		<result column="user_email" property="userEmail" />
+		<result column="user_phone" property="userPhone" />
+		<result column="is_certification" property="isCertification" />
+		<result column="create_time" property="createTime" />
+		<result column="member_state" property="memberState" />
+		<result column="user_transation_code" property="userTransationCode" />
+		<result column="user_code" property="userCode" />
+		<result column="code_img" property="codeImg" />
+		<result column="user_type" property="userType" />
+		<result column="user_img" property="userImg" />
+		<result column="type_name" property="types.userTypeName" />
+		<result column="user_information" property="userInformation" />
+		<result column="user_money" property="userMoney" />
+		<result column="net_asset" property="netAsset" />
+		<result column="expendable_fund" property="expendableFund" />
+		<result column="open_market_value" property="openMarketValue" />
+		<result column="floating_profit" property="floatingProfit" />
+		<result column="user_net_asset" property="userNetAsset" />
+		<result column="user_expendable_fund" property="userExpendableFund" />
+		<result column="user_open_market_value" property="userOpenMarketValue" />
+		<result column="user_floating_profit" property="userFloatingProfit" />
+	</resultMap>
+	<sql id="userField">
+		user_id,user_name,user_email,user_phone,inviter_id,
+		is_certification,create_time,member_state,user_transation_code,
+		user_code,code_img,user_type,user_img,user_institutions,user_money,
+		user_information,net_asset,expendable_fund,open_market_value,floating_profit,
+		user_net_asset,user_expendable_fund,user_open_market_value,user_floating_profit
+	</sql>
+	<insert id="addUser" parameterType="com.sjy.entity.User" useGeneratedKeys="true" keyProperty="userId">
+		insert into user(`user_name`,`user_password`,`inviter_id`,`user_email`,`user_phone`,`user_code`,`create_time`)
+		values (#{userName},#{userPassword},#{inviterId},#{userEmail},#{userPhone},#{userCode},#{createTime})
+	</insert>
+	<delete id="delUser" parameterType="com.sjy.entity.User">
+		delete from user where user_id = #{userId}
+	</delete>
+	<select id="selectUserCount" resultType="INT">
+		select count(1) from user where 1=1
+		<if test="userName != null and userName !=''">
+			and user_name =#{userName}
+		</if>
+	</select>
+	<select id="selectUserList" resultMap="BaseResultMap">
+		select <include refid="userField"></include> from user where 1=1
+		<if test="user.userName != null and user.userName !=''">
+			and user_name like concat('%',#{user.userName},'%')
+		</if>
+		<if test="user.userPhone != null and user.userPhone != ''">
+			and user_phone like concat('%',#{user.userPhone},'%')
+		</if>
+		<if test="user.inviterId != null">
+			and inviter_id = #{user.inviterId}
+		</if>
+		<if test="page != null and limit != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+	<update id="updateUser" parameterType="com.sjy.entity.User">
+		update user
+		<set>
+			<if test="userName != null and userName != ''">
+				user_name = #{userName},
+			</if>
+			<if test="userPassword != null and userPassword != ''">
+				user_password = #{userPassword},
+			</if>
+			<if test="inviterId != null">
+				inviter_id = #{inviterId},
+			</if>
+			<if test="userEmail != null and userEmail != ''">
+				user_email = #{userEmail},
+			</if>
+			<if test="userPhone != null and userPhone != ''">
+				user_phone = #{userPhone},
+			</if>
+			<if test="isCertification != null">
+				is_certification = #{isCertification},
+			</if>
+			<if test="memberState != null">
+				member_state = #{memberState},
+			</if>
+			<if test="userTransationCode != null and userTransationCode != ''">
+				user_transation_code = #{userTransationCode},
+			</if>
+			<if test="userCode != null and userCode != ''">
+				user_code = #{userCode},
+			</if>
+			<if test="codeImg != null and codeImg != ''">
+				code_img = #{codeImg},
+			</if>
+			<if test="userType != null">
+				user_type = #{userType},
+			</if>
+			<if test="netAsset != null">
+				net_asset = #{netAsset},
+			</if>
+			<if test="expendableFund != null">
+				expendable_fund = #{expendableFund},
+			</if>
+			<if test="openMarketValue != null">
+				open_market_value = #{openMarketValue},
+			</if>
+			<if test="floatingProfit != null">
+				floating_profit = #{floatingProfit},
+			</if>
+			<if test="userNetAsset != null">
+				user_net_asset = #{userNetAsset},
+			</if>
+			<if test="userExpendableFund != null">
+				user_expendable_fund = #{userExpendable},
+			</if>
+			<if test="userOpenMarketValue != null">
+				user_open_market_value = #{userOpenMarketValue},
+			</if>
+			<if test="userFloatingProfit != null">
+				user_floating_profit = #{userFloatingProfit},
+			</if>
+		</set>
+		where user_Id = #{userId}
+	</update>
+	<!-- 根据用户id修改资产 -->
+	<update id="updateUserCapital" parameterType="com.sjy.entity.User">
+		update user set user_id = #{userId}
+		<if test="userNetAsset != null and userNetAsset != 0">
+			,user_net_asset = (user_net_asset+#{userNetAsset})
+		</if>
+		<if test="userExpendableFund != null and userExpendableFund != 0">
+			,user_expendable_fund = (user_expendable_fund+#{userExpendableFund})
+		</if>
+		<if test="userOpenMarketValue != null and userOpenMarketValue != 0">
+			,user_open_market_value = (user_open_market_value+#{userOpenMarketValue})
+		</if>
+		<if test="userFloatingProfit != null and userFloatingProfit != 0">
+			,user_floating_profit = (user_floating_profit+#{userFloatingProfit})
+		</if>
+		<if test="netAsset != null and netAsset != 0">
+			,net_asset = (net_asset+#{netAsset})
+		</if>
+		<if test="expendableFund != null and expendableFund != 0">
+			,expendable_fund = (expendable_fund+#{expendableFund})
+		</if>
+		<if test="openMarketValue != null and openMarketValue != 0">
+			,open_market_value = (open_market_value+#{openMarketValue})
+		</if>
+		<if test="floatingProfit != null and floatingProfit != 0">
+			,floating_profit = (floating_profit+#{floatingProfit})
+		</if>
+		where user_id = #{userId}
+	</update>
+	<select id="getUserInfoById" resultMap="BaseResultMap">
+		select <include refid="userField"></include> from user where 1=1
+		<if test="userId != null">
+			and user_Id = #{userId}
+		</if>
+	</select>
+	<select id="checkIsAlready" resultType="INT">
+		select count(1) from user where 1=1
+		<if test="userName != null and userName != ''">
+			and user_name = #{userName}
+		</if>
+	</select>
+	<update id="auditUser" parameterType="com.sjy.entity.User">
+		update user
+		<set>
+			<if test="memberState != null and memberState != ''">
+				member_state = #{memberState}
+			</if>
+		</set>
+		where user_Id = #{userId}
+	</update>
+	<update id="updateuserById" parameterType="com.sjy.entity.User">
+		update user
+		<set>
+		<if test="userMoney != null and userMoney != ''">
+			user_money = #{userMoney},
+		</if>
+		<if test="userNetAsset != null and userNetAsset != ''">
+			user_net_asset = #{userNetAsset},
+		</if>
+		<if test="userExpendableFund != null">
+			user_expendable_fund = #{userExpendableFund}
+		</if>
+		</set>
+		where user_Id = #{userId}
+	</update>
+	<select id="userLogin" resultMap="BaseResultMap">
+		select 	<include refid="userField"></include> from user where user_phone = #{phone} and user_password = #{password}
+	</select>
+	<select id="getInfoByPhone" resultMap="BaseResultMap">
+		select <include refid="userField"></include> from user where user_phone = #{phone}
+	</select>
+	<select id="checkIsOldPwd" resultMap="BaseResultMap">
+		select <include refid="userField"></include> from user where 1=1
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="password != null and password != ''">
+			and user_password = #{password}
+		</if>
+	</select>
+	<!--用户总数-->
+	<select id="getUserCount" resultType="INT">
+		select COUNT(user_id) FROM `user`
+	</select>
+</mapper>

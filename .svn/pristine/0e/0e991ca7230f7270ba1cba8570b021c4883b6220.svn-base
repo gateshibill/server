@@ -1,0 +1,493 @@
+package com.sjy.controller;
+
+import com.sjy.dao.StockOperateDao;
+import com.sjy.entity.*;
+import com.sjy.service.CapitalDetailsService;
+import com.sjy.service.FlowRecordService;
+import com.sjy.service.StockOperateService;
+import com.sjy.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+@Controller
+@RequestMapping("/capitalDetail")
+public class CapitalDetailController {
+
+    @Autowired
+    private CapitalDetailsService capitalDetailsService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private StockOperateService stockOperateService;
+    @Autowired
+    private FlowRecordService flowRecordService;
+    @Autowired
+    private StockOperateDao stockOperateDao;
+
+
+    /**
+     * 进入充值申请列表页面
+     * @param model
+     * @param capitalDetails
+     * @return*/
+
+    @RequestMapping(value = "/applycentre", method = RequestMethod.GET)
+    public String applyCentre(Model model, CapitalDetails capitalDetails) {
+        model.addAttribute("capitalDetails", capitalDetails);
+        return "capitalDetail/applyCentre";
+    }
+
+    /**
+     * 进入配资页面
+     * @param capitalDetails
+     * @return*/
+
+    @RequestMapping(value = "/toadd", method = RequestMethod.GET)
+    public String toAdd( CapitalDetails capitalDetails) {
+        return "capitalDetail/toadd";
+    }
+
+    /**
+     * 充值申请列表页面
+     * @param response
+     * @param capitalDetailsVO
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value="/selectapplycentre",method=RequestMethod.POST)
+    public String selectApplyCentre(HttpServletRequest request,HttpServletResponse response,CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        String result =null;
+
+        //获取当前登录admin对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        Integer adminId = admin.getAdminId();
+        Integer parentId = admin.getParentId();
+
+        //判断用户是否是超级管理员  0：超级管理员
+        if(admin.getAdminLevel() == 0){
+            result = capitalDetailsService.selectApplyCentre(capitalDetailsVO, page, limit);
+        }else{
+            result = capitalDetailsService.getApplyCentre(capitalDetailsVO,page, limit,adminId,parentId);
+        }
+        return result;
+    }
+
+    /**
+     * 进入充值成功列表页面
+     * @param model
+     * @param capitalDetails
+     * @return*/
+
+    @RequestMapping(value = "/applythrough", method = RequestMethod.GET)
+    public String applyThrough(Model model, CapitalDetails capitalDetails) {
+        model.addAttribute("capitalDetails", capitalDetails);
+        return "capitalDetail/applyThrough";
+    }
+
+    /**
+     * 充值成功列表页面
+     * @param response
+     * @param capitalDetailsVO
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value="/selectapplythrough",method=RequestMethod.POST)
+    public String selectApplyThrough(HttpServletRequest request,HttpServletResponse response, CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        String result =null;
+
+        //获取当前登录admin对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        Integer adminId = admin.getAdminId();
+        Integer parentId = admin.getParentId();
+
+        //判断用户是否是超级管理员  0：超级管理员
+        if(admin.getAdminLevel() == 0){
+            result = capitalDetailsService.selectApplyThrough(capitalDetailsVO, page, limit);
+        }else{
+            result = capitalDetailsService.getApplyThrough(capitalDetailsVO,page, limit,adminId,parentId);
+        }
+        return result;
+    }
+
+    /**
+     * 进入充值失败列表页面
+     * @param model
+     * @param capitalDetails
+     * @return*/
+
+    @RequestMapping(value = "/applyfail", method = RequestMethod.GET)
+    public String applyFail(Model model, CapitalDetails capitalDetails) {
+        model.addAttribute("capitalDetails", capitalDetails);
+        return "capitalDetail/applyFail";
+    }
+
+    /**
+     * 充值失败列表页面
+     * @param response
+     * @param capitalDetailsVO
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value="/selectapplyfail",method=RequestMethod.POST)
+    public String selectApplyFail(HttpServletRequest request,HttpServletResponse response, CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        String result =null;
+
+        //获取当前登录admin对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        Integer adminId = admin.getAdminId();
+        Integer parentId = admin.getParentId();
+
+        //判断用户是否是超级管理员  0：超级管理员
+        if(admin.getAdminLevel() == 0){
+            result = capitalDetailsService.selectApplyFail(capitalDetailsVO, page, limit);
+        }else{
+            result = capitalDetailsService.getApplyFail(capitalDetailsVO,page, limit,adminId,parentId);
+        }
+        return result;
+    }
+
+    /**
+     * 进入提现申请列表页面
+     * @param model
+     * @param capitalDetails
+     * @return*/
+
+    @RequestMapping(value = "/withdrawalcentre", method = RequestMethod.GET)
+    public String withdrawalCentre(Model model, CapitalDetails capitalDetails) {
+        model.addAttribute("capitalDetails", capitalDetails);
+        return "capitalDetail/withdrawalCentre";
+    }
+
+    /**
+     * 提现申请列表页面
+     * @param response
+     * @param capitalDetailsVO
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value="/selectwithdrawalcentre",method=RequestMethod.POST)
+    public String selectWithdrawalCentre(HttpServletRequest request,HttpServletResponse response, CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        String result =null;
+
+        //获取当前登录admin对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        Integer adminId = admin.getAdminId();
+        Integer parentId = admin.getParentId();
+
+        //判断用户是否是超级管理员  0：超级管理员
+        if(admin.getAdminLevel() == 0){
+            result = capitalDetailsService.selectWithdrawalCentre(capitalDetailsVO, page, limit);
+        }else{
+            result = capitalDetailsService.getWithdrawalCentre(capitalDetailsVO,page, limit,adminId,parentId);
+        }
+        return result;
+    }
+
+    /**
+     * 进入提现成功列表页面
+     * @param model
+     * @param capitalDetails
+     * @return*/
+
+    @RequestMapping(value = "/withdrawalthrough", method = RequestMethod.GET)
+    public String withdrawalThrough(Model model, CapitalDetails capitalDetails) {
+        model.addAttribute("capitalDetails", capitalDetails);
+        return "capitalDetail/withdrawalThrough";
+    }
+
+    /**
+     * 充值提现列表页面
+     * @param response
+     * @param capitalDetailsVO
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value="/selectwithdrawalthrough",method=RequestMethod.POST)
+    public String selectWithdrawalThrough(HttpServletRequest request,HttpServletResponse response, CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        String result =null;
+
+        //获取当前登录admin对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        Integer adminId = admin.getAdminId();
+        Integer parentId = admin.getParentId();
+
+        //判断用户是否是超级管理员  0：超级管理员
+        if(admin.getAdminLevel() == 0){
+            result = capitalDetailsService.selectWithdrawalThrough(capitalDetailsVO, page, limit);
+        }else{
+            result = capitalDetailsService.getWithdrawalThrough(capitalDetailsVO,page, limit,adminId,parentId);
+        }
+        return result;
+    }
+
+    /**
+     * 进入提现失败列表页面
+     * @param model
+     * @param capitalDetails
+     * @return*/
+
+    @RequestMapping(value = "/withdrawalfail", method = RequestMethod.GET)
+    public String withdrawalFail(Model model, CapitalDetails capitalDetails) {
+        model.addAttribute("capitalDetails", capitalDetails);
+        return "capitalDetail/withdrawalFail";
+    }
+
+    /**
+     * 提现失败列表页面
+     * @param response
+     * @param capitalDetailsVO
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value="/selectwithdrawalfail",method=RequestMethod.POST)
+    public String selectWithdrawalFail(HttpServletRequest request,HttpServletResponse response, CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        String result =null;
+
+        //获取当前登录admin对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        Integer adminId = admin.getAdminId();
+        Integer parentId = admin.getParentId();
+
+        //判断用户是否是超级管理员  0：超级管理员
+        if(admin.getAdminLevel() == 0){
+            result = capitalDetailsService.selectWithdrawalFail(capitalDetailsVO, page, limit);
+        }else{
+            result = capitalDetailsService.getWithdrawalFail(capitalDetailsVO,page, limit,adminId,parentId);
+        }
+        return result;
+    }
+
+
+
+    /**
+     * 改变状态（拒绝）
+     * @param request
+     * @param id
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value = "/updateisdealfail")
+    public Map<String,String> updateIsDealFail(HttpServletRequest request, Integer id) throws IOException {
+        Map<String, String> map = new HashMap<String, String>();
+        CapitalDetails capitalDetails = capitalDetailsService.selectByPrimaryKey(id);
+        if(capitalDetails != null){
+            int falg = capitalDetailsService.updateIsDealFail(capitalDetails);
+            if(falg>0){
+                map.put("msg", "success");
+            }else{
+                map.put("msg", "error");
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 改变状态（通过）
+     * @param request
+     * @param id
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value = "/updateisdealpass")
+    public Map<String,String> updateIsDealPass(Model model,HttpServletRequest request, Integer id) throws IOException {
+        Map<String, String> map = new HashMap<String, String>();
+        CapitalDetails capitalDetails = capitalDetailsService.selectByPrimaryKey(id);
+        User user = userService.getUserByUserId(capitalDetails.getUserId());
+        StockOperate operate  =stockOperateDao.getStockOperateDetailOne(capitalDetails.getUserId());
+        FlowRecord flowRecord = new FlowRecord();
+        if(capitalDetails != null){
+            //获取当前登录用户对象
+            Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+            if(admin == null){
+                return null;
+            }
+            Integer adminId =  admin.getAdminId();
+            String name = admin.getAdminName();
+            model.addAttribute("name", name);
+            capitalDetails.setAdminId(adminId);
+            capitalDetails.setCreateTime(new Date());
+            capitalDetails.setIsDeal(1);
+            capitalDetails.setQuota(1);
+            if(capitalDetails.getTradeType() == 1 ){
+                user.setUserMoney(user.getUserMoney() + capitalDetails.getTradeMoney());
+                user.setUserNetAsset(user.getUserNetAsset() + capitalDetails.getTradeMoney());
+                user.setUserExpendableFund(user.getUserExpendableFund() + capitalDetails.getTradeMoney());
+                flowRecord.setUserId(user.getUserId());
+                flowRecord.setFlowNumber(capitalDetails.getTradeMoney());
+                flowRecord.setFlowWay(1);
+                flowRecord.setFlowType(1);
+                flowRecord.setAfterMoney(user.getUserMoney());
+                flowRecord.setCreateTime(new Date());
+                flowRecordService.addFlowRecord(flowRecord);
+                System.out.println(capitalDetails.getTradeMoney());
+                operate.setTraderMoney(operate.getTotalMoney() + capitalDetails.getTradeMoney()); //可操盘资金累计
+                operate.setTotalMoney(operate.getTotalMoney() + capitalDetails.getTradeMoney()); // 总资金累计
+                operate.setZjBzjMoney(operate.getZjBzjMoney() + capitalDetails.getTradeMoney()); //追加的保证金
+                stockOperateDao.updateStockOperate(operate);
+            }else if(capitalDetails.getTradeType() == 2 ){
+                if(user.getUserMoney() < capitalDetails.getTradeMoney()){
+                    map.put("msg","error");
+                }else{
+                    user.setUserMoney(user.getUserMoney() - capitalDetails.getTradeMoney());
+                    user.setUserNetAsset(user.getUserNetAsset() - capitalDetails.getTradeMoney());
+                    user.setUserExpendableFund(user.getUserExpendableFund() - capitalDetails.getTradeMoney());
+                    flowRecord.setUserId(user.getUserId());
+                    flowRecord.setFlowNumber(capitalDetails.getTradeMoney());
+                    flowRecord.setFlowWay(5);
+                    flowRecord.setFlowType(2);
+                    flowRecord.setAfterMoney(user.getUserMoney());
+                    flowRecord.setCreateTime(new Date());
+                    flowRecordService.addFlowRecord(flowRecord);
+                }
+            }
+            userService.updateUser(user);
+            int falg = capitalDetailsService.updateIsDealFailAll(capitalDetails);
+            if(falg>0){
+                map.put("msg", "success");
+            }else{
+                map.put("msg", "error");
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 添加拒绝理由
+     */
+    @ResponseBody
+    @RequestMapping(value = "/failReason", method = RequestMethod.POST)
+    public Map<String,String> updateIsDealFailReason(HttpServletRequest request,Model model) throws IOException {
+        Map<String, String> map = new HashMap<String, String>();
+        CapitalDetails capitalDetails = new CapitalDetails();
+        String id = request.getParameter("id");
+        if (id != null) {
+            capitalDetails.setId(Integer.valueOf(id));
+        }
+        String reason = request.getParameter("reason");
+        if (reason != null) {
+            capitalDetails.setThroughReasonFail(reason);
+        }
+        //获取当前登录用户对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        if(admin == null){
+            return null;
+        }
+        Integer adminId =  admin.getAdminId();
+        String name = admin.getAdminName();
+        model.addAttribute("name", name);
+        capitalDetails.setAdminId(adminId);
+        capitalDetails.setCreateTime(new Date());
+        capitalDetails.setIsDeal(2);
+        int falg = capitalDetailsService.updateIsDealFailAll(capitalDetails);
+            if(falg>0){
+                map.put("msg", "success");
+            }else{
+                map.put("msg", "error");
+            }
+
+        return map;
+    }
+
+    /**
+     * 添加配额
+     */
+    @ResponseBody
+    @RequestMapping(value = "/quota", method = RequestMethod.POST)
+    public Map<String,String> quota(HttpServletRequest request,Model model, Integer id) throws IOException {
+        Map<String, String> map = new HashMap<String, String>();
+        FlowRecord flowRecord = new FlowRecord();
+        StockOperate stockOperate = new StockOperate();
+        CapitalDetails capitalDetails = capitalDetailsService.selectByPrimaryKey(id);
+        User user = userService.getUserByUserId(capitalDetails.getUserId());
+        List<CapitalDetailsVO> capitalDetailsVOS = capitalDetailsService.selectUserCZ(capitalDetails.getUserId());
+        String quota = request.getParameter(String.valueOf("quota"));
+        if (quota != null) {
+            capitalDetails.setQuota(Integer.valueOf(quota));
+        }
+        String type = request.getParameter("type");
+        System.out.println(type);
+        String test5 = request.getParameter("test5");
+        System.out.println(test5);
+        //获取当前登录用户对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        if(admin == null){
+            return null;
+        }
+        Integer adminId =  admin.getAdminId();
+        String name = admin.getAdminName();
+        model.addAttribute("name", name);
+        capitalDetails.setAdminId(adminId);
+        capitalDetails.setCreateTime(new Date());
+        capitalDetails.setIsDeal(1);
+       //根据配资比例获取
+//        List<Integer> quotaLsit = capitalDetailsVOS.stream().map(o -> o.getQuota()).collect(Collectors.toList());
+//        if(!quotaLsit.contains(1)){
+//            map.put("msg", "error1");
+//        }else {
+            user.setUserMoney(user.getUserMoney() + capitalDetails.getTradeMoney());
+            user.setUserNetAsset(user.getUserNetAsset() + capitalDetails.getTradeMoney() * capitalDetails.getQuota()+capitalDetails.getTradeMoney());
+            user.setUserExpendableFund(user.getUserExpendableFund() + capitalDetails.getTradeMoney() * capitalDetails.getQuota() + capitalDetails.getTradeMoney());
+            flowRecord.setUserId(user.getUserId());
+            flowRecord.setFlowNumber(capitalDetails.getTradeMoney());
+            flowRecord.setFlowWay(4);
+            flowRecord.setFlowType(1);
+            flowRecord.setAfterMoney(user.getUserMoney());
+            flowRecord.setCreateTime(new Date());
+            flowRecordService.addFlowRecord(flowRecord);
+            stockOperate.setUserId(user.getUserId());
+            stockOperate.setOperateStatus(1);
+            stockOperate.setOperateProduce(type);
+            stockOperate.setApplyTime(new Date());
+            stockOperate.setStartTime(new Date());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                stockOperate.setEndTime(sdf.parse(test5));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if(type == "月配" || type.equals("月配")){
+                stockOperate.setOperateType(2);
+                try {
+                    stockOperate.setMoneyRatesTime(sdf.parse(test5));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }else if(type == "日配" || type.equals("日配")){
+                stockOperate.setOperateType(1);
+                Calendar c = Calendar.getInstance();
+                String format = sdf.format(c.getTime());
+                c.add(Calendar.DAY_OF_MONTH, 1);
+                try {
+                    stockOperate.setMoneyRatesTime(sdf.parse(format));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            stockOperate.setBzjMoney(user.getUserMoney());
+            stockOperate.setPzMultiple(Integer.valueOf(quota));
+            stockOperate.setServiceFee(null);
+            stockOperate.setTotalMoney(user.getUserNetAsset());
+            stockOperate.setTraderMoney(user.getUserExpendableFund());
+            if( capitalDetailsService.selectUserZJBZJ(user.getUserId()) == null){
+                stockOperate.setZjBzjMoney(0.00);
+            }else{
+                stockOperate.setZjBzjMoney(capitalDetailsService.selectUserZJBZJ(user.getUserId()));
+            }
+            stockOperateService.addStockOperate(stockOperate);
+            userService.updateUser(user);
+            int falg = capitalDetailsService.updateIsDealFailAll(capitalDetails);
+            if(falg>0){
+            	map.put("code", "0");
+                map.put("msg", "success");
+            }else{
+            	map.put("code", "1");
+                map.put("msg", "error");
+            }
+//        }
+        
+        return map;
+    }
+}

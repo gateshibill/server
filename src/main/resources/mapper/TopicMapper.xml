@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.TopicDao">
+	<resultMap type="com.ylb.entity.Topic" id="BaseResultMap">
+		<id column="id" property="id" />
+		<result column="official_account_id"
+			property="officialAccountId" />
+		<result column="header" property="header" />
+		<result column="name" property="name" />
+		<result column="title" property="title" />
+		<result column="content" property="content" />
+		<result column="summary" property="summary" />
+		<result column="poster" property="poster" />
+		<result column="type" property="type" />
+		<result column="url" property="url" />
+		<result column="audience" property="audience" />
+		<result column="hits" property="hits" />
+		<result column="applauds" property="applauds" />
+		<result column="status" property="status" />
+		<result column="create_time" property="createTime" />
+		<result column="upate_time" property="upateTime" />
+	</resultMap>
+
+	<insert id="addTopic" parameterType="com.ylb.entity.Topic"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		exTopic(`official_account_id`,`title`,`content`,`summary`,`poster`,`type`,`audience`,`hits`,`applauds`,`status`,`create_time`)
+		values
+		(#{officialAccountId},#{title},#{content},#{summary},#{poster},#{type},#{audience},#{hits},#{applauds},#{status},#{createTime})
+	</insert>
+
+	<update id="updateTopic" parameterType="com.ylb.entity.Topic">
+		update exTopic
+		<set>
+			<if test="title != null and title != ''">
+				title = #{title},
+			</if>
+			<if test="content != null and content != ''">
+				content = #{content},
+			</if>
+			<if test="summary != null and summary != ''">
+				summary = #{summary},
+			</if>
+			<if test="poster != null and poster != ''">
+				poster = #{poster},
+			</if>
+			<if test="hits != null">
+				hits = #{hits},
+			</if>
+			<if test="applauds != null">
+				applauds = #{applauds},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<select id="getFollowOfficialAccountTopicListByUserId"
+		resultMap="BaseResultMap">
+		select topic.*,
+		oa.header as header,
+		oa.name as name
+		from exTopic as topic left join exOfficialAccountFollower as oaf
+		on
+		topic.official_account_id = oaf.official_account_id
+		left join
+		exOfficialAccount as oa on topic.official_account_id = oa.id
+
+		where oaf.user_id=#{username} and oaf.status=1 and topic.status&lt;3
+		<!-- group by topic.official_account_id -->
+		order by topic.create_time desc
+		limit #{page},#{limit}
+	</select>
+
+	<select id="getAllTopicList" resultMap="BaseResultMap">
+		select *
+		from exTopic
+		order by create_time desc 
+		limit #{page},#{limit}
+	</select>
+
+	<select id="searchOfficialAccountTopic"
+		resultMap="BaseResultMap">
+		select *from exTopic where
+		official_account_id=#{officialAccountId}
+		<if test="title != null and title != ''">
+			and title like concat('%',#{title},'%')
+		</if>
+		<if test="content != null and content != ''">
+			and content like concat('%',#{content},'%')
+		</if>		
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="type != null">
+			and type = #{type}
+		</if>		
+		<if test="url != null and url != ''">
+			and url like concat('%',#{url},'%')
+		</if>
+		<if test="sdate != null">
+			and create_time &gt;=#{sdate}
+		</if>
+		<if test="edate != null">
+			and create_time &lt;=#{edate}
+		</if>
+	</select>
+
+	<select id="getTopicById" resultMap="BaseResultMap">
+		select topic.*,
+		oa.header as header,
+		oa.name as name
+		from exTopic topic  
+	    left join
+		exOfficialAccount as oa on topic.official_account_id = oa.id
+		where topic.id=#{id}
+	</select>
+
+</mapper>

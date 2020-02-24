@@ -1,0 +1,330 @@
+package com.sjy.service.impl;
+
+import com.sjy.dao.SimulationTransactionDao;
+import com.sjy.dao.UserDao;
+import com.sjy.entity.SimulationTransaction;
+import com.sjy.entity.User;
+import com.sjy.service.SimulationTransactionService;
+import com.sjy.util.DateUtil;
+import com.sjy.util.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.util.Date;
+import java.util.List;
+
+/**
+ * 该处的接口都需求优化
+ */
+@Service
+public class SimulationTransactionServiceImpl implements SimulationTransactionService {
+
+    @Autowired
+    private SimulationTransactionDao simulationTransactionDao;
+    @Autowired
+    private UserDao userDao;
+
+    /**
+     * 查询成交管理列表
+     * @param simulationTransaction
+     * @param page
+     * @param limit
+     * @return
+     */
+    @Override
+    public String selectSimulationTransactionList(SimulationTransaction simulationTransaction, Integer page, Integer limit) {
+
+        if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = simulationTransactionDao.selectSimulationTransactionCount(simulationTransaction);
+        List<SimulationTransaction> lists = simulationTransactionDao.selectSimulationTransactionList(simulationTransaction, (page - 1) * limit, limit);
+
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 创建模拟策略
+     */
+    @Transactional //事务
+	@Override
+	public String addSimulation(SimulationTransaction st) {
+		int code = 1;
+		String msg = "创建模拟买入交易策略失败";
+		if(st.getUserId() == null) {
+			msg = "请先登录";
+		}else {
+			if(st.getStockCode().equals("") || st.getStockCode() == null) {
+				msg = "股票代码不能为空";
+			}else {
+				 //后续在做判断
+				st.setCreateTime(new Date());
+				st.setSimulationTradeTime(new Date());
+				st.setSimulationType(1); //买入
+				st.setSimulationParticipationType(1);//直接持仓
+				try {
+					Integer insertId = simulationTransactionDao.addSimulationTransaction(st);
+					if(insertId != null) {
+						/*//更新用户模拟金额
+						int expendableFundNumber = 0;
+						//st.getSimulationCashDeposit(); 保证金
+						//st.getSimulationDemurrage(); 递延费
+						//st.getSimulationOpenPosition();建仓费
+						Double expendableFund = expendableFundNumber-(st.getSimulationDemurrage()+st.getSimulationOpenPosition());
+						User user = new User();
+						user.setUserId(st.getUserId());
+						user.setExpendableFund(expendableFund);
+						user.setNetAsset(expendableFund);
+						userDao.updateUserCapital(user);*/
+						code = 0;
+						msg = "创建模拟买入交易策略成功";
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//事务回滚
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	@Transactional
+	public String addSimulationSell(SimulationTransaction st) {
+		int code = 1;
+		String msg = "模拟卖出成功";
+		if(st.getUserId() == null) {
+			msg = "请先登录";
+		}else {
+			if(st.getStockCode().equals("") || st.getStockCode() == null) {
+				msg = "股票代码不能为空";
+			}else {
+				//后续在做判断
+
+				st.setCreateTime(new Date());
+				st.setSimulationTradeTime(new Date());
+				st.setSimulationType(2); //卖入
+				st.setSimulationParticipationType(3);//直接持仓
+				try {
+					Integer updateId = simulationTransactionDao.updateSimulationSellTransaction(st);
+					if(updateId != null) {
+						/*//更新用户模拟金额
+						int expendableFundNumber = 0;
+						//st.getSimulationCashDeposit(); 保证金
+						//st.getSimulationDemurrage(); 递延费
+						//st.getSimulationOpenPosition();建仓费
+						Double expendableFund = expendableFundNumber-(st.getSimulationDemurrage()+st.getSimulationOpenPosition());
+						User user = new User();
+						user.setUserId(st.getUserId());
+						user.setExpendableFund(expendableFund);
+						user.setNetAsset(expendableFund);
+						userDao.updateUserCapital(user);*/
+						code = 0;
+						msg = "模拟卖出成功";
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//事务回滚
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+
+	@Transactional
+	@Override
+	public String delSimulation(Integer simulationId) {
+		int code = 1;
+		String msg = "删除模拟策略失败";
+		if(simulationId == null) {
+			msg = "非法参数";
+		}else {
+			try {
+				SimulationTransaction st = simulationTransactionDao.getSimulationTransactionInfo(simulationId);
+				if(st != null) {
+					Double orderCashDeposit = st.getSimulationCashDeposit();//保证金
+					Double orderOpenPosition = st.getSimulationOpenPosition();//建仓费
+			        orderCashDeposit = orderCashDeposit+orderOpenPosition;//保证金+建仓费
+			        User user = new User();
+			        user.setUserId(st.getUserId());
+			        user.setExpendableFund(orderCashDeposit);
+			        user.setNetAsset(orderCashDeposit);
+			        userDao.updateUserCapital(user);
+			        Integer delId = simulationTransactionDao.delSimulationTransaction(simulationId);
+					if(delId != null) {
+						code = 0;
+						msg = "删除模拟策略成功";
+					}
+				}
+				
+			} catch (Exception e) {
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String updateSimulation(SimulationTransaction st) {
+		int code = 1;
+		String msg = "更新模拟策略失败";
+		if(st.getSimulationTransactionId() == null) {
+			msg = "参数非法";
+		}else {
+			Integer updateId = simulationTransactionDao.updateSimulationTransaction(st);
+			if(updateId != null) {
+				code = 0;
+				msg = "更新模拟策略成功";
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+	/**
+	 * 委托
+	 */
+	@Override
+	public String getSimulationEntrustList(SimulationTransaction st, Integer type, Integer page, Integer limit) {
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		int totalCount = simulationTransactionDao.dayWTCount(st, type);
+		List<SimulationTransaction> lists = simulationTransactionDao.dayWTList(st, type, (page-1)*limit, limit);
+		return JsonUtil.buildJsonByTotalCount(lists, totalCount);
+	}
+	/**
+	 * 交易
+	 */
+	@Override
+	public String getSimulationTradeList(SimulationTransaction st, Integer type, Integer page, Integer limit) {
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		int totalCount = simulationTransactionDao.daySuccessTradeCount(st, type);
+		List<SimulationTransaction> lists = simulationTransactionDao.daySuccessTradeList(st, type, (page-1)*limit, limit);
+		return JsonUtil.buildJsonByTotalCount(lists, totalCount);
+	}
+	/**
+	 * 撤单
+	 */
+	@Transactional
+	@Override
+	public String simulationCancelOrder(Integer orderId) {
+		int code=1;
+		String msg="模拟撤单失败";
+		if(orderId==null) {
+			msg="订单号不存在";
+		}else {
+			try {
+				SimulationTransaction simulationTransaction=simulationTransactionDao.getSimulationTransactionInfo(orderId);	//根据订单号查询订单信息
+				simulationTransaction.setSimulationParticipationType(5);	//模拟订单状态
+				simulationTransaction.setSimulationTradeTime(new Date());	//模拟交易时间
+				simulationTransactionDao.updateSimulationTransaction(simulationTransaction);
+				User user=new User();
+				user.setUserId(simulationTransaction.getUserId());
+				int csmoney = 0;
+				Double cdPrice = simulationTransaction.getSimulationNumber() * simulationTransaction.getSimulationBuyer();
+				Double szmoney = csmoney - cdPrice;
+				user.setNetAsset(cdPrice); //撤单的钱还回给总资产
+				user.setOpenMarketValue(szmoney); //减去撤单的市值
+				user.setExpendableFund(cdPrice); //增加撤单的可用资产
+				userDao.updateUserCapital(user);
+				code=0;
+				msg="模拟撤单成功";
+			} catch (Exception e) {
+				e.printStackTrace();
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+	/**
+	 * 模拟卖出
+	 */
+	@Transactional
+	@Override
+	public String simulationEntrutSell(SimulationTransaction st) {
+		int code = 1;
+		String msg = "模拟卖出失败";
+		if(st.getSimulationTransactionId() == null) {
+			msg = "未识别的模拟订单号";
+		}else {
+			SimulationTransaction oldSt = simulationTransactionDao.getSimulationTransactionInfo(st.getSimulationTransactionId());
+			if(oldSt == null) {
+				msg = "未识别的模拟订单号";
+			}else {
+				if(st.getSimulationNumber() == null && st.getSimulationNumber() <= 0) {
+					msg = "请输入合法的卖出数量";
+				}else {
+					if(st.getSimulationNumber() > oldSt.getSimulationNumber()) {
+						msg = "卖出股数不能大于持有股数";
+					}else {
+						//是否判断t+1;
+						try {
+							if(DateUtil.judgmentDate(oldSt.getSimulationTradeTime(), new Date())) {
+								msg = "该股票不可卖出,请遵循t+1规则";
+							}else {
+								try {
+									if(st.getSimulationNumber().equals(oldSt.getSimulationNumber())) {//全部卖出
+										//1.全部卖出:只把订单状态处理，把资金处理, 问题：卖出是否要收取手续费?  simulationTradeTime：交易时间    simulationType：2 卖出    simulationParticipationType：4
+										//2.既要判断委托卖出价是否和现价相等， 相等的话直接卖出,否则则是委托卖出中
+										if(st.getSimulationExitPrice() > 0) { //这里判断卖价和股票现价的比较，目前股票现价先写死0
+											st.setSimulationType(2);//卖出
+											st.setSimulationTradeTime(new Date()); //交易时间
+											st.setSimulationParticipationType(4); //交易成功
+											st.setSimulationTransactionId(oldSt.getSimulationTransactionId());
+											//3.这里是否要计算：收益率、盈亏....
+											Integer updateId = simulationTransactionDao.updateSimulationTransaction(st);
+											if(updateId == null) {
+												msg = "模拟卖出失败";
+											}else {
+												//修改用户金额
+												User user = new User();
+												user.setUserId(oldSt.getUserId());
+												Double price = st.getSimulationExitPrice() * st.getSimulationNumber();//卖出价格 乘以 卖出股数
+												int cs = 0; //定义一个参数
+												Double szPrice = cs-price; //减去一个市值
+												user.setNetAsset(price);  //模拟总资产
+												user.setExpendableFund(price);//模拟可用资产
+												user.setOpenMarketValue(szPrice); //模拟用户持仓市值
+												userDao.updateUserCapital(user); //修改模拟资金
+												code = 0;
+												msg = "模拟卖出成功";
+											}
+											
+										}else {
+											
+										}
+										
+									}else { //先忽略
+										//新增一条卖出数据,把资金处理
+										
+									}
+								} catch (Exception e) {
+									//事务回滚:防止单步错误
+									e.printStackTrace();
+									msg = "模拟卖出失败";
+									TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+								}
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+}

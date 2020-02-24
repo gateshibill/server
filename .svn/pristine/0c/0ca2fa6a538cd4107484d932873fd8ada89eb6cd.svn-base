@@ -1,0 +1,108 @@
+package com.sjy.service.impl;
+
+
+import com.sjy.dao.CapitalDetailsDao;
+import com.sjy.entity.CapitalDetailsVO;
+import com.sjy.service.CapitalDetailsService;
+import com.sjy.util.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class CapitalDetailsServiceImpl implements CapitalDetailsService {
+
+    @Autowired
+    private CapitalDetailsDao capitalDetailsDao;
+    /**
+     * 查询充值申请中数据
+     **/
+    @Override
+    public String selectApplyCentre(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectApplyCentreCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectApplyCentre(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询充值申请通过数据
+     **/
+    @Override
+    public String selectApplyThrough(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectApplyThroughCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectApplyThrough(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询充值申请未通过数据
+     **/
+    @Override
+    public String selectApplyPass(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectApplyPassCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectApplyPass(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询提现申请中数据
+     **/
+    @Override
+    public String selectWithdrawalCentre(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectWithdrawalCentreCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectWithdrawalCentre(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询提现申请通过数据
+     **/
+    @Override
+    public String selectWithdrawalThrough(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectWithdrawalThroughCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectWithdrawalThrough(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询提现申请未通过数据
+     **/
+    @Override
+    public String selectWithdrawalPass(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectWithdrawalPassCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectWithdrawalPass(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+}

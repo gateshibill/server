@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.UserDao">
+	<resultMap type="com.ylb.entity.User" id="BaseResultMap">
+		<result column="username" property="username" />
+		<result column="name" property="name" />
+		<result column="nickname" property="nickname" />
+		<result column="avatar" property="avatar" />
+		<result column="phone" property="phone" />
+		<result column="email" property="email" />
+		<result column="jid" property="jid" />
+		<result column="sex" property="sex" />
+		<result column="signation" property="signation" />
+		<result column="encryptedPassword" property="encrypted" />
+		<result column="storedKey" property="storedKey" />
+		<result column="serverKey" property="serverKey" />
+		<result column="salt" property="salt" />
+		<result column="role" property="role" />	
+		<result column="role_id" property="roleId" />		
+		<result column="creationDate" property="createTime" />
+				<result column="salt" property="salt" />
+				<result column="status" property="status" />
+	</resultMap>
+
+	<insert id="addUser" parameterType="com.ylb.entity.User"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		ofUser(`username`,`name`,`nickname`,`avatar`,`phone`,`email`,`jid`,`sex`,`signation`,`encryptedPassword`,`storedKey`,`serverKey`,`salt`)
+		values
+		(#{username},#{name},#{nickname},#{avatar},#{phone},#{email},#{jid},#{sex},#{signation},#{encryptedPassword},#{storedKey},#{serverKey},#{salt})
+	</insert>
+
+	<update id="updateUser" parameterType="com.ylb.entity.User">
+		update ofUser
+		<set>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="nickname != null and nickname != ''">
+				nickname = #{nickname},
+			</if>
+			<if test="avatar != null and avatar != ''">
+				avatar = #{avatar},
+			</if>
+			<if test="phone != null and phone != ''">
+				phone = #{phone},
+			</if>
+			<if test="email != null and email != ''">
+				email = #{email},
+			</if>
+			<if test="sex != null">
+				sex = #{sex},
+			</if>
+			<if test="signation != null and signation != ''">
+				signation = #{signation},
+			</if>
+			<if test="encrypted != null and encrypted != ''">
+				encryptedPassword = #{encrypted},
+			</if>
+			<if test="storedKey != null and storedKey != ''">
+				storedKey = #{storedKey},
+			</if>
+			<if test="serverKey != null and serverKey != ''">
+				serverKey = #{serverKey},
+			</if>
+			<if test="salt != null and salt != ''">
+				salt = #{salt},
+			</if>			
+		</set>
+		where username = #{username}
+	</update>
+
+	<select id="getUserListByGroupId" resultMap="BaseResultMap">
+		select
+		m.jid
+		from
+		ofMucMember as m left join ofmucroom as r on m.roomID =r.roomID
+		where
+		r.name=#{groupId}
+		limit #{page},#{limit}
+	</select>
+
+	<select id="getFollowerListByOfficialAccountId"
+		resultMap="BaseResultMap">
+		select
+		ou.*
+		from ofUser as ou left join
+		exOfficialAccountFollower as oaf on
+		ou.username = oaf.user_id where
+		oaf.official_username_id=#{officialAccountId}
+		limit #{page},#{limit}
+	</select>
+	<select id="searchOfficialAccountFollower"
+		resultMap="BaseResultMap">
+	select
+		ou.*
+		from ofUser as ou left join
+		exOfficialAccountFollower as oaf
+		on
+		ou.username = oaf.user_id 
+		where
+		oaf.official_account_id=#{officialAccountId}
+		<if test="username != null and username != ''">
+			and ou.username = #{username}
+		</if>
+		<if test="name != null and name != ''">
+			and ou.name = #{name}
+		</if>
+		<if test="phone != null and phone != ''">
+			and ou.phone = #{phone}
+		</if>
+		<if test="sdate != null">
+			and ou.creationDate &gt;=#{sdate}
+		</if>
+		<if test="edate != null">
+			and ou.creationDate &lt;=#{edate}
+		</if>			
+	</select>
+	<select id="searchUserByKeyword" resultMap="BaseResultMap">
+		select * from ofUser
+		where username=#{keyword} or name=#{keyword} or phone =#{keyword}
+		limit #{page},#{limit}
+	</select>
+	<select id="getAccountByPhone" resultMap="BaseResultMap">
+		select * from ofUser
+		where vcard like
+		CONCAT('%',#{phone,jdbcType=VARCHAR},'%')
+	</select>
+	<select id="getUserByPhone" resultMap="BaseResultMap">
+		select * 
+		from ofUser
+		where phone=#{phone}
+	</select>
+	<select id="getUserByName" resultMap="BaseResultMap">
+		select * from ofUser
+		where name=#{name}
+	</select>
+	<select id="getUserByUsername" resultMap="BaseResultMap">
+		select * from ofUser
+		where username=#{username}		
+	</select>
+	<select id="searchManageUsers" resultMap="BaseResultMap">
+		select 
+		umor.username,
+		ou.nickname,
+		ou.name,
+		umor.role_id as role_id,
+		ur.role_name as role,
+		ou.creationDate,
+		umor.status as status
+		from exUserManageOaRole as umor 
+		left join ofUser as ou on ou.username = umor.username
+		left join exUserRole as ur on umor.role_id = ur.role_id
+		where 
+		umor.official_account_id=#{officialAccountId}		
+		<if test="roleId != null">
+			and umor.role_id =#{roleId}
+		</if>			
+		order by umor.create_time desc
+	</select>	
+</mapper>

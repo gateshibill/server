@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org"
+	xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<meta charset="utf-8">
+	<title>系统基本参数</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="/static/admin/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/static/admin/css/public.css" media="all" />
+	<style type="text/css">
+		.layui-table img {
+		    max-width: 200px;
+		    max-height:200px;
+		}
+	</style>
+</head>
+<body class="childrenBody">
+	<form class="layui-form">
+		<table class="layui-table mag0">
+			<colgroup>
+				<col width="25%">
+				<col width="45%">
+				<col>
+		    </colgroup>
+		    <thead>
+		    	<tr>
+		    		<th>参数说明</th>
+		    		<th>参数值</th>
+		    		<th pc>变量名</th>
+		    	</tr>
+		    </thead>
+		    <tbody>
+		    	<tr>
+		    		<td>会员风控值[0-1之间]</td>
+		    		<td><input type="number" name="hyfkWind" th:value="${config.hyfkWind}" class="layui-input hyfkWind" min="0" max="1" lay-verify="required" placeholder="请输入会员风控值：如（0.5）"></td>
+		    		<td pc>hyfkWind</td>
+		    	</tr>
+		    	<tr>
+		    		<td>预警线风控值[0-1之间]</td>
+		    		<td><input type="number" name="yjxWind" th:value="${config.yjxWind}" class="layui-input yjxWind" min="0" max="1" placeholder="请输入预警线风控值：如（0.3）"></td>
+		    		<td pc>yjxWind</td>
+		    	</tr>
+		    	<tr>
+		    		<td>平仓线风控值[0-1之间]</td>
+		    		<td><input type="number" name="pcxWind" th:value="${config.pcxWind}" class="layui-input pcxWind" min="0" max="1" placeholder="请输入平仓线风控值：如（0.7）"></td>
+		    		<td pc>pcxWind</td>
+		    	</tr>
+		    	<!-- <tr>
+		    		<td>保证金比例[0-1之间]</td>
+		    		<td><input type="number" name="bzjSet" th:value="${config.bzjSet}" class="layui-input bzjSet" min="0" max="1" placeholder="请输入保证金比例：如（0.1）"></td>
+		    		<td pc>bzjSet</td>
+		    	</tr> -->
+		    	<!-- <tr>
+		    		<td>一级代理分成比例[0-1之间]</td>
+		    		<td><input type="number" name="oneAgent" th:value="${config.oneAgent}" class="layui-input oneAgent" min="0" max="1" placeholder="请输入一级代理分成比例：如（0.1）"></td>
+		    		<td pc>oneAgent</td>
+		    	</tr>
+		    	<tr>
+		    		<td>二级代理分成比例[0-1之间]</td>
+		    		<td><input type="number" name="twoAgent" th:value="${config.twoAgent}" class="layui-input twoAgent" min="0" max="1" placeholder="请输入二级代理分成比例：如（0.1）"></td>
+		    		<td pc>twoAgent</td>
+		    	</tr>
+		    	<tr>
+		    		<td>三级代理分成比例[0-1之间]</td>
+		    		<td><input type="number" name="threeAgent" th:value="${config.threeAgent}" class="layui-input threeAgent" min="0" max="1" placeholder="请输入三级代理分成比例：如（0.1）"></td>
+		    		<td pc>threeAgent</td>
+		    	</tr> -->
+		    	<!-- <tr>
+		    		<td>充值比例</td>
+		    		<td><input type="number" name="rechargeRatio" th:value="${config.rechargeRatio}" class="layui-input rechargeRatio" min="0" max="1" placeholder="请输入充值比例"></td>
+		    		<td pc>rechargeRatio</td>
+		    	</tr>
+		    	<tr>
+		    		<td>递延费</td>
+		    		<td><input type="number" name="deferredCharges" th:value="${config.deferredCharges}" class="layui-input deferredCharges" min="0" max="1" placeholder="请输入递延费"></td>
+		    		<td pc>deferredCharges</td>
+		    	</tr> -->
+				<tr>
+					<td>客服电话</td>
+					<td><input type="text" name="servicePhone" th:value="${config.servicePhone}" class="layui-input servicePhone" min="0" max="1" placeholder="请输入客服电话"></td>
+					<td pc>servicePhone</td>
+				</tr>
+				<tr>
+					<td>支付宝二维码</td>
+					<td>
+						<div class="layui-input-block">
+							<button type="button" class="layui-btn layui-btn-primary" id="alipayPic"><i class="layui-icon">&#xe67c;</i>上传图片</button>
+						</div>
+						<br/>
+						<div class="layui-input-block" th:if="${config.alipay}">
+							<img id="uploadAlipay" class="uploadAlipay" alt="" th:src="${config.alipay}">
+						</div>
+						<div class="layui-input-block" th:else>
+							<img id="uploadAlipay" class="uploadAlipay" alt="" style="display:none">
+						</div>
+					</td>
+					<td pc>alipay</td>
+				</tr>
+				<tr>
+					<td>微信二维码</td>
+					<td>
+						<div class="layui-input-block">
+							<button type="button" class="layui-btn layui-btn-primary" id="wechatPic"><i class="layui-icon">&#xe67c;</i>上传图片</button>
+						</div>
+						<br/>
+						<div class="layui-input-block" th:if="${config.wechat}">
+							<img id="uploadWechat" class="uploadWechat" alt="" th:src="${config.wechat}">
+						</div>
+						<div class="layui-input-block" th:else>
+							<img id="uploadWechat" class="uploadWechat" alt="" style="display:none">
+						</div>
+					</td>
+					<td pc>wechat</td>
+				</tr>
+				<tr>
+					<td>银行卡账户</td>
+					<td><input type="text" name="bank" th:value="${config.bank}" class="layui-input bank"  placeholder="请输入银行卡号">
+					<input type="text" name="account" th:value="${config.account}" class="layui-input account"  placeholder="开户银行">
+					<input type="text" name="bankName" th:value="${config.bankName}" class="layui-input bankName"  placeholder="持卡人姓名"></td>
+					<td pc>bank</td>
+				</tr>
+		    </tbody>
+		</table>
+		<div class="magt10 layui-right">
+			<div class="layui-input-block">
+			<input type="hidden" name="sysId" th:value="${config.sysId}" />
+				<button class="layui-btn" lay-submit="" lay-filter="systemParameter">确认编辑</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		    </div>
+		</div>
+	</form>
+	<script type="text/javascript" src="/static/admin/layui/layui.js"></script>
+	<script type="text/javascript" src="/static/admin/datajs/system/setting.js"></script>
+</body>
+</html>

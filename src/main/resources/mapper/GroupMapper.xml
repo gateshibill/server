@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.GroupDao">
+	<resultMap type="com.ylb.entity.Group" id="BaseResultMap">
+		<result column="name" property="name" />
+		<result column="roomID" property="roomID" />
+		<result column="subject" property="subject" />
+		<result column="naturalName" property="naturalName" />
+		<result column="membersOnly" property="membersOnly" />
+		<result column="creationDate" property="createTime" />
+		<result column="manageCount" property="manageCount" />
+		<result column="memberCount" property="memberCount" />
+	</resultMap>
+
+
+	<select id="searchUserGroup" resultMap="BaseResultMap">
+		select
+		r.name ,
+		r.roomID,
+		r.subject,
+		r.naturalName,
+		r.membersOnly,
+		r.creationDate
+		from ofMucRoom as r left join 
+		ofMucAffiliation as m on
+		m.roomID =r.roomID
+		where m.jid=#{userId}
+		<if test="name != null and name != ''">
+			and r.subject like concat('%',#{name},'%')
+		</if>
+		<if test="roomID != null">
+			and r.roomID like
+			concat('%',#{roomID},'%')
+		</if>
+	</select>
+	<select id="searchPublicGroup" resultMap="BaseResultMap">
+		select * from ofMucRoom
+		where subject like concat('%',#{subject},'%')
+	</select>
+	<select id="getGroupByName" resultMap="BaseResultMap">
+		select * from ofMucRoom
+		where name = #{name}
+	</select>
+</mapper>

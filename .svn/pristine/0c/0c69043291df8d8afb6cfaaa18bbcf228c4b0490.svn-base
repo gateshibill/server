@@ -1,0 +1,257 @@
+package com.sjy.entity;
+
+import java.util.Date;
+
+public class UserOrder {
+	private Integer orderId;
+	private Integer id;//关联user_order_main
+	private Integer userId;
+	private Double orderPrice;
+	private String stockCode;
+	private String stockName;
+	private Integer orderType;
+	private Date createTime;
+	private Double orderBuyer;
+	private Double orderNumber;
+	private Double orderMarketValue;
+	private Double orderYield;
+	private Double orderProfit;
+	private Double orderCashDeposit;
+	private Double orderStopLoss;
+	private Double orderStopProfit;
+	private Double orderDemurrage;
+	private Double orderParticipation;
+	private Integer orderParticipationType;
+	private Double orderExitPrice;
+	private Double orderOpenPosition;
+	private Integer orderSelfMotion;
+	private Date tradeTime; //成交时间
+	private Double orderSupplement;
+	private String market;//所属市场
+	private Date entrustTime;//委托时间
+	private String currentPrice; //现价
+	private Double gmv;//成交金额
+	private Integer isAdd; //是否已经添加：t+1
+	public Double getGmv() {
+		return gmv;
+	}
+	public void setGmv(Double gmv) {
+		this.gmv = gmv;
+	}
+	//关联用户表
+	private String userName;
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	private Double turnover;
+
+	public Double getTurnover() {
+		return turnover;
+	}
+
+	public void setTurnover(Double turnover) {
+		this.turnover = turnover;
+	}
+
+	public Integer getOrderId() {
+		return orderId;
+	}
+	public Integer getUserId() {
+		return userId;
+	}
+	public Double getOrderPrice() {
+		return orderPrice;
+	}
+	public String getStockCode() {
+		return stockCode;
+	}
+	public String getStockName() {
+		return stockName;
+	}
+	public Integer getOrderType() {
+		return orderType;
+	}
+	public Date getCreateTime() {
+		return createTime;
+	}
+	public Double getOrderBuyer() {
+		return orderBuyer;
+	}
+	public Double getOrderNumber() {
+		return orderNumber;
+	}
+	public Double getOrderMarketValue() {
+		return orderMarketValue;
+	}
+	public Double getOrderYield() {
+		return orderYield;
+	}
+	public Double getOrderProfit() {
+		return orderProfit;
+	}
+	public Double getOrderCashDeposit() {
+		return orderCashDeposit;
+	}
+	public Double getOrderStopLoss() {
+		return orderStopLoss;
+	}
+	public Double getOrderStopProfit() {
+		return orderStopProfit;
+	}
+	public Double getOrderDemurrage() {
+		return orderDemurrage;
+	}
+	public Double getOrderParticipation() {
+		return orderParticipation;
+	}
+	public Integer getOrderParticipationType() {
+		return orderParticipationType;
+	}
+	public Double getOrderExitPrice() {
+		return orderExitPrice;
+	}
+	public Double getOrderOpenPosition() {
+		return orderOpenPosition;
+	}
+	public Integer getOrderSelfMotion() {
+		return orderSelfMotion;
+	}
+	public Double getOrderSupplement() {
+		return orderSupplement;
+	}
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+	public void setOrderPrice(Double orderPrice) {
+		this.orderPrice = orderPrice;
+	}
+	public void setStockCode(String stockCode) {
+		this.stockCode = stockCode;
+	}
+	public void setStockName(String stockName) {
+		this.stockName = stockName;
+	}
+	public void setOrderType(Integer orderType) {
+		this.orderType = orderType;
+	}
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	public void setOrderBuyer(Double orderBuyer) {
+		this.orderBuyer = orderBuyer;
+	}
+	public void setOrderNumber(Double orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+	public void setOrderMarketValue(Double orderMarketValue) {
+		this.orderMarketValue = orderMarketValue;
+	}
+	public void setOrderYield(Double orderYield) {
+		this.orderYield = orderYield;
+	}
+	public void setOrderProfit(Double orderProfit) {
+		this.orderProfit = orderProfit;
+	}
+	public void setOrderCashDeposit(Double orderCashDeposit) {
+		this.orderCashDeposit = orderCashDeposit;
+	}
+	public void setOrderStopLoss(Double orderStopLoss) {
+		this.orderStopLoss = orderStopLoss;
+	}
+	public void setOrderStopProfit(Double orderStopProfit) {
+		this.orderStopProfit = orderStopProfit;
+	}
+	public void setOrderDemurrage(Double orderDemurrage) {
+		this.orderDemurrage = orderDemurrage;
+	}
+	public void setOrderParticipation(Double orderParticipation) {
+		this.orderParticipation = orderParticipation;
+	}
+	public void setOrderParticipationType(Integer orderParticipationType) {
+		this.orderParticipationType = orderParticipationType;
+	}
+	public void setOrderExitPrice(Double orderExitPrice) {
+		this.orderExitPrice = orderExitPrice;
+	}
+	public void setOrderOpenPosition(Double orderOpenPosition) {
+		this.orderOpenPosition = orderOpenPosition;
+	}
+	public void setOrderSelfMotion(Integer orderSelfMotion) {
+		this.orderSelfMotion = orderSelfMotion;
+	}
+	
+	public void setOrderSupplement(Double orderSupplement) {
+		this.orderSupplement = orderSupplement;
+	}
+	public Date getEntrustTime() {
+		return entrustTime;
+	}
+	public void setEntrustTime(Date entrustTime) {
+		this.entrustTime = entrustTime;
+	}
+	public Date getTradeTime() {
+		return tradeTime;
+	}
+	public void setTradeTime(Date tradeTime) {
+		this.tradeTime = tradeTime;
+	}
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public String getMarket() {
+		return market;
+	}
+	public void setMarket(String market) {
+		this.market = market;
+	}
+	public String getCurrentPrice() {
+		return currentPrice;
+	}
+	public void setCurrentPrice(String currentPrice) {
+		this.currentPrice = currentPrice;
+	}
+	
+	public Integer getIsAdd() {
+		return isAdd;
+	}
+	public void setIsAdd(Integer isAdd) {
+		this.isAdd = isAdd;
+	}
+	@Override
+	public String toString() {
+		return "UserOrder [orderId=" + orderId + ", userId=" + userId + ", orderPrice=" + orderPrice + ", stockCode="
+				+ stockCode + ", stockName=" + stockName + ", orderType=" + orderType + ", createTime=" + createTime
+				+ ", orderBuyer=" + orderBuyer + ", orderNumber=" + orderNumber + ", orderMarketValue="
+				+ orderMarketValue + ", orderYield=" + orderYield + ", orderProfit=" + orderProfit
+				+ ", orderCashDeposit=" + orderCashDeposit + ", orderStopLoss=" + orderStopLoss + ", orderStopProfit="
+				+ orderStopProfit + ", orderDemurrage=" + orderDemurrage + ", orderParticipation=" + orderParticipation
+				+ ", orderParticipationType=" + orderParticipationType + ", orderExitPrice=" + orderExitPrice
+				+ ", orderOpenPosition=" + orderOpenPosition + ", orderSelfMotion=" + orderSelfMotion + ", tradeTime="
+				+ tradeTime + ", orderSupplement=" + orderSupplement + ", entrustTime=" + entrustTime + ", userName="
+				+ userName + ", getUserName()=" + getUserName() + ", getOrderId()=" + getOrderId() + ", getUserId()="
+				+ getUserId() + ", getOrderPrice()=" + getOrderPrice() + ", getStockCode()=" + getStockCode()
+				+ ", getStockName()=" + getStockName() + ", getOrderType()=" + getOrderType() + ", getCreateTime()="
+				+ getCreateTime() + ", getOrderBuyer()=" + getOrderBuyer() + ", getOrderNumber()=" + getOrderNumber()
+				+ ", getOrderMarketValue()=" + getOrderMarketValue() + ", getOrderYield()=" + getOrderYield()
+				+ ", getOrderProfit()=" + getOrderProfit() + ", getOrderCashDeposit()=" + getOrderCashDeposit()
+				+ ", getOrderStopLoss()=" + getOrderStopLoss() + ", getOrderStopProfit()=" + getOrderStopProfit()
+				+ ", getOrderDemurrage()=" + getOrderDemurrage() + ", getOrderParticipation()="
+				+ getOrderParticipation() + ", getOrderParticipationType()=" + getOrderParticipationType()
+				+ ", getOrderExitPrice()=" + getOrderExitPrice() + ", getOrderOpenPosition()=" + getOrderOpenPosition()
+				+ ", getOrderSelfMotion()=" + getOrderSelfMotion() + ", getOrderSupplement()=" + getOrderSupplement()
+				+ ", getEntrustTime()=" + getEntrustTime() + ", getTradeTime()=" + getTradeTime() + ", getClass()="
+				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+	}
+}

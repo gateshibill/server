@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<!-- saved from url=(0032)http://mhh.hhgpb.com/paylog.aspx -->
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资金明细</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+
+<link href="./bootstrap.css" rel="stylesheet">
+<link href="./font-awesome.css" rel="stylesheet">
+<link href="./common.css" rel="stylesheet">
+<script src="./jquery-1.js(1).下载"></script>
+
+
+<script src="./bootstrap.js.下载" data-requiremodule="bootstrap"
+	data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script>
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+	<br>
+
+	<div class="container-fluid">
+
+
+
+		<div class="main">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			<div class="panel panel-info">
+
+				<div class="panel-heading">资金明细</div>
+
+				<div class="panel-body">
+
+					<form action="http://mhh.hhgpb.com/paylog.aspx" name="sform"
+						id="sform" method="get" class="form-horizontal" role="form">
+
+						<input name="orderby" id="orderby" value="" type="hidden">
+						<input name="orderby_value" id="orderby_value" value="1"
+							type="hidden">
+
+
+						<div class="form-group">
+
+							<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">登陆账号</label>
+
+							<div class="col-xs-12 col-sm-8 col-lg-7">
+
+								<input class="form-control" name="keyword" id="keyword"
+									type="text" value="">
+
+							</div>
+							<div class="col-xs-12 col-sm-2 col-lg-2">
+								<a class="btn btn-default" onclick="checkorderby2()"><i
+									class="fa fa-search"></i> 搜索</a>
+
+							</div>
+
+						</div>
+
+
+
+						<script type="text/javascript">
+         
+              $(function() {
+                  $(".datetimepicker").each(function() {
+                      var option = {
+                          lang: "zh",
+                          step: "10",
+                          timepicker: false, closeOnDateSelect: true,
+                          format: "Y-m-d"
+                      };
+                      $(this).datetimepicker(option);
+                  });
+              });
+
+              function checkorderby(op) {
+
+                  var bd = $("#orderby_value").val();
+                  var ed = $("#orderby").val(op);
+
+                  if (bd == "1") {
+                      $("#orderby_value").val("0");
+
+                  }
+                  else {
+                      $("#orderby_value").val("1");
+                  }
+
+                  $("#sform").submit();
+
+
+
+              }
+
+              function checkorderby2(op) {
+                  $("#orderby").val("");
+                  $("#sform").submit();
+              }
+
+
+              function checkorderby3(a) {
+                  var typem = a;
+                  //alert(44);
+                      $("#betclass").val(typem);
+                  $("#sform").submit();
+          
+                     }
+              function checkorderby4(a) {
+                  var typem = a;
+                  $("#uid_id").val(typem);
+                  $("#sform").submit();
+
+              }
+
+            
+
+              
+       function getdates(ii)
+              {
+              
+              var date = new Date();
+                    var getyear=date.getFullYear();
+                    var endDate = new Date(getyear, ii, 0).getDate();
+                   // date.setDate(-1);
+                    //date.setDate(date.getDate() - 1);
+                   // alert(date.getDate());
+ $("#starttime").val(getyear+"-"+ii.toString()+"-1");
+ $("#endtime").val(getyear+"-"+ii.toString()+"-"+endDate);
+              }
+    
+       function getdates_jintian(ii) {
+
+           var date = new Date();
+
+           date.setDate(date.getDate() + ii);
+           var getyear = date.getFullYear();
+           var getmonth = date.getMonth()+1;
+           var getday = date.getDate();
+           $("#starttime").val(getyear + "-" + getmonth.toString() + "-" + getday.toString());
+           $("#endtime").val(getyear + "-" + getmonth.toString() + "-" + getday.toString());
+       }
+
+
+  
+       function getTimeuuuuu(n) {
+           var now = new Date();
+           var year = now.getFullYear();
+           //因为月份是从0开始的,所以获取这个月的月份数要加1才行
+           var month = now.getMonth() + 1;
+           var date = now.getDate();
+           var day = now.getDay();
+           console.log(date);
+           //判断是否为周日,如果不是的话,就让今天的day-1(例如星期二就是2-1)
+           if (day !== 0) {
+               n = n + (day - 1);
+           }
+           else {
+               n = n + day;
+           }
+           if (day) {
+               //这个判断是为了解决跨年的问题
+               if (month > 1) {
+                   month = month;
+               }
+                   //这个判断是为了解决跨年的问题,月份是从0开始的
+               else {
+                   year = year - 1;
+                   month = 12;
+               }
+           }
+           now.setDate(now.getDate() - n);
+           year = now.getFullYear();
+           month = now.getMonth() + 1;
+           date = now.getDate();
+           console.log(n);
+           s = year + "-" + (month < 10 ? ('0' + month) : month) + "-" + (date < 10 ? ('0' + date) : date) + "";
+           return s;
+       }
+
+       ///***参数都是以周一为基准的***/
+       ////上周的开始时间
+       //console.log(getTime(7));
+       ////上周的结束时间
+       //console.log(getTime(1));
+       ////本周的开始时间
+       //console.log(getTime(0));
+       ////本周的结束时间
+       //console.log(getTime(-6));
+       function getdates_shangzhou()
+       {
+
+           $("#starttime").val(getTimeuuuuu(7));
+           $("#endtime").val(getTimeuuuuu(1));
+
+
+       }
+       function getdates_benzhou() {
+
+           $("#starttime").val(getTimeuuuuu(0));
+           $("#endtime").val(getTimeuuuuu(-6));
+
+
+       }
+
+    
+
+
+
+
+       
+
+
+
+</script>
+
+
+						<link rel="stylesheet" type="text/css"
+							href="./jquery.datetimepicker.css">
+						<script src="./jquery.datetimepicker.full.js.下载"></script>
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">日期</label>
+							<div class="row row-fix">
+								<div class="col-sm-4">
+									<input name="starttime" id="starttime"
+										class="datetimepicker form-control" value="" type="text">
+								</div>
+								<div class="col-sm-4">
+									<input name="endtime" id="endtime"
+										class="datetimepicker form-control" value="" type="text">
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+
+							<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">快速查询</label>
+
+							<div class="col-xs-12 col-sm-8 col-lg-7">
+
+
+								<a class="btn btn-default" onclick="getdates(5)"><i
+									class="fa fa-search"></i> 上月</a> <a class="btn btn-default"
+									onclick="getdates(6)"><i class="fa fa-search"></i> 本月</a> <a
+									class="btn btn-default" onclick="getdates_shangzhou()"><i
+									class="fa fa-search"></i> 上周</a> <a class="btn btn-default"
+									onclick="getdates_benzhou()"><i class="fa fa-search"></i>
+									本周</a> <a class="btn btn-default" onclick="getdates_jintian(-1)"><i
+									class="fa fa-search"></i> 昨天</a> <a class="btn btn-default"
+									onclick="getdates_jintian(0)"><i class="fa fa-search"></i>
+									今天</a>
+
+
+							</div>
+							<div class="col-xs-12 col-sm-2 col-lg-2"></div>
+
+						</div>
+
+						<div class="form-group">
+
+							<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label"></label>
+
+							<div class="col-xs-12 col-sm-8 col-lg-7">
+
+								<a class="btn btn-default" onclick="checkorderby3(&#39;&#39;)"><i
+									class="fa fa-search"></i> 全部</a> <a class="btn btn-default"
+									onclick="checkorderby3(&#39;充值&#39;)"><i
+									class="fa fa-search"></i>充值</a> <a class="btn btn-default"
+									onclick="checkorderby3(&#39;提现&#39;)"><i
+									class="fa fa-search"></i>提现</a> <a class="btn btn-default"
+									onclick="checkorderby3(&#39;服务费&#39;)"><i
+									class="fa fa-search"></i>服务费</a> <a class="btn btn-default"
+									onclick="checkorderby3(&#39;收入&#39;)"><i
+									class="fa fa-search"></i>收入</a> <a class="btn btn-default"
+									onclick="checkorderby3(&#39;风险保证金&#39;)"><i
+									class="fa fa-search"></i>风险保证金</a> <a class="btn btn-default"
+									onclick="checkorderby3(&#39;支出&#39;)"><i
+									class="fa fa-search"></i>其他</a>
+
+
+
+
+
+							</div>
+							<div class="col-xs-12 col-sm-2 col-lg-2">
+
+								<input name="betclass" type="hidden" id="betclass" value="">
+
+
+
+							</div>
+
+						</div>
+
+
+					</form>
+
+				</div>
+
+			</div>
+
+
+
+
+
+			<div class="panel panel-default">
+
+				<div class="panel-body table-responsive">
+					<table class="table table-hover">
+
+						<thead class="navbar-inner">
+
+							<tr>
+
+								<th><a href="javascript:checkorderby(1)">编号</a></th>
+
+								<th><a href="javascript:checkorderby(7)">订单号</a></th>
+
+								<th><a href="javascript:checkorderby(2)">会员名(账号)</a></th>
+
+								<th>分销商</th>
+
+								<th><a href="javascript:checkorderby(3)">金额</a></th>
+								<th><a href="javascript:checkorderby(4)">账户余额</a></th>
+
+								<th><a href="javascript:checkorderby(4)">目前余额</a></th>
+
+								<th><a href="javascript:checkorderby(5)">类型</a></th>
+
+								<th style="width: 560px;">备注信息</th>
+								<th><a href="javascript:checkorderby(6)">时间</a></th>
+
+								<th>状态</th>
+
+							</tr>
+						</thead>
+
+
+
+
+
+
+
+
+						<tbody>
+
+							<tr>
+								<td nowrap="nowrap">132260</td>
+								<td nowrap="nowrap">20191228600132260</td>
+								<td nowrap="nowrap">刘晨兆(liushendao)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">6011.22</td>
+								<td nowrap="nowrap">6011.22</td>
+								<td nowrap="nowrap">收入</td>
+								<td nowrap="nowrap" title="操盘撤回">操盘撤回</td>
+								<td nowrap="nowrap">2019/6/20 15:33:20</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">130600</td>
+								<td nowrap="nowrap">20191182100130600</td>
+								<td nowrap="nowrap">谢阿南(758341287)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">-1547.40</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">提现</td>
+								<td nowrap="nowrap" title="提现到：支付宝姓名：谢阿南,支付宝账号：18839613625">提现到：支付宝姓名：谢阿南,支付宝账号：18839613625</td>
+								<td nowrap="nowrap">2019/6/12 8:45:50</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">130595</td>
+								<td nowrap="nowrap">20191182100130595</td>
+								<td nowrap="nowrap">谢阿南(758341287)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">1547.40</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">收入</td>
+								<td nowrap="nowrap" title="操盘撤回">操盘撤回</td>
+								<td nowrap="nowrap">2019/6/12 8:14:11</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">130592</td>
+								<td nowrap="nowrap">20191182100130592</td>
+								<td nowrap="nowrap">谢阿南(758341287)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">-2000.90</td>
+								<td nowrap="nowrap">5.03</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">提现</td>
+								<td nowrap="nowrap" title="提现到：支付宝姓名：谢阿南,支付宝账号：18839613625">提现到：支付宝姓名：谢阿南,支付宝账号：18839613625</td>
+								<td nowrap="nowrap">2019/6/11 22:32:08</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">130574</td>
+								<td nowrap="nowrap">20191182100130574</td>
+								<td nowrap="nowrap">谢阿南(758341287)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">2000.00</td>
+								<td nowrap="nowrap">2005.93</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">充值</td>
+								<td nowrap="nowrap" title="广州顺势">广州顺势</td>
+								<td nowrap="nowrap">2019/6/11 16:34:32</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">130443</td>
+								<td nowrap="nowrap">20191228600130443</td>
+								<td nowrap="nowrap">刘晨兆(liushendao)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">3000.00</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">6011.22</td>
+								<td nowrap="nowrap">支出</td>
+								<td nowrap="nowrap" title="追加保证金">追加保证金</td>
+								<td nowrap="nowrap">2019/6/11 9:53:07</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">130442</td>
+								<td nowrap="nowrap">20191228600130442</td>
+								<td nowrap="nowrap">刘晨兆(liushendao)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">3000.00</td>
+								<td nowrap="nowrap">3000.00</td>
+								<td nowrap="nowrap">6011.22</td>
+								<td nowrap="nowrap">充值</td>
+								<td nowrap="nowrap" title="顺势建行">顺势建行</td>
+								<td nowrap="nowrap">2019/6/11 9:51:56</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">130263</td>
+								<td nowrap="nowrap">20191060600130263</td>
+								<td nowrap="nowrap">宋邦根(回忆中相逢)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">-5958.84</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">提现</td>
+								<td nowrap="nowrap" title="提现到：安徽巢湖中国建设银行(6217001630051370432)">提现到：安徽巢湖中国建设银行(6217001630051370432)</td>
+								<td nowrap="nowrap">2019/6/10 10:32:43</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">130233</td>
+								<td nowrap="nowrap">20191060600130233</td>
+								<td nowrap="nowrap">宋邦根(回忆中相逢)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">5958.84</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">收入</td>
+								<td nowrap="nowrap" title="操盘撤回">操盘撤回</td>
+								<td nowrap="nowrap">2019/6/10 9:59:23</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">129419</td>
+								<td nowrap="nowrap">20191182100129419</td>
+								<td nowrap="nowrap">谢阿南(758341287)</td>
+								<td nowrap="nowrap">何杰</td>
+								<td nowrap="nowrap">2000.00</td>
+								<td nowrap="nowrap">5.93</td>
+								<td nowrap="nowrap">0.00</td>
+								<td nowrap="nowrap">支出</td>
+								<td nowrap="nowrap" title="追加保证金">追加保证金</td>
+								<td nowrap="nowrap">2019/6/4 13:50:18</td>
+								<td nowrap="nowrap"><span class="label label-success">成功</span></td>
+							</tr>
+						</tbody>
+
+
+
+
+						<thead class="navbar-inner">
+
+							<tr>
+
+								<th></th>
+								<th></th>
+								<th></th>
+
+								<th>合计：492.86</th>
+
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</thead>
+
+
+
+
+
+
+
+					</table>
+
+
+
+
+					<div class="imos_pagebox"
+						style="margin-top: 3px; text-align: center;" align="center">
+						<div class="imos_pagebox font12_7C7C7C">
+							<a class="cur">1</a> <a
+								href="http://mhh.hhgpb.com/paylog.aspx?p=2">2</a> <a
+								href="http://mhh.hhgpb.com/paylog.aspx?p=3">3</a> <a
+								href="http://mhh.hhgpb.com/paylog.aspx?p=4">4</a> <a
+								href="http://mhh.hhgpb.com/paylog.aspx?p=5">5</a> ... <a
+								href="http://mhh.hhgpb.com/paylog.aspx?p=2">下页</a> <a
+								href="http://mhh.hhgpb.com/paylog.aspx?p=7">尾页</a>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+
+
+
+
+	</div>
+
+
+
+	</div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+package com.sjy.service;
+
+import java.util.List;
+
+import com.sjy.entity.Power;
+
+public interface PowerService {
+	public List<Power> getPowerList();
+}

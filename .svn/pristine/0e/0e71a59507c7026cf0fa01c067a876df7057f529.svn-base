@@ -1,0 +1,250 @@
+package com.sjy.api;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.OnError;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
+
+import net.sf.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import com.google.gson.Gson;
+import com.sjy.data.StockData;
+import com.sjy.data.StockObj;
+import com.sjy.entity.StockCode;
+import com.sjy.entity.UserOptions;
+import com.sjy.service.StockCodeService;
+import com.sjy.service.UserOptionsService;
+import com.sjy.service.UserService;
+import com.sjy.util.JsonUtil;
+import com.sjy.util.RedisUtil;
+import com.sjy.util.websocket.MyEndpointConfigure;
+
+/**
+ * 使用长连接需要考虑最大连接数的问题
+ * 
+ * @author Administrator
+ *
+ */
+@ServerEndpoint(value = "/websocket", configurator = MyEndpointConfigure.class)
+@Scope("prototype")
+@Component
+public class WebSocketServer {
+	private Session session;
+	// 静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
+	private static int onlineCount = 0;
+	// concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
+	private static CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<WebSocketServer>();
+	// 用户
+	@Autowired
+	private UserService userService;
+
+	//自选
+	@Autowired
+	private UserOptionsService userOptionsService;
+	//股票 
+	@Autowired
+	private StockCodeService stockCodeService;
+	@OnOpen
+	public void onOpen(Session session) {
+		this.session = session;
+		webSocketSet.add(this); // 加入set中
+		addOnlineCount();// 在线加1
+		getOnlineCount();
+	}
+
+	@OnClose
+	public void onClose() {
+		System.out.println("onclose:");
+		webSocketSet.remove(this); // 从set中删除
+		subOnlineCount(); // 在线数减1
+		getOnlineCount();
+	}
+
+	/**
+	 * 收到客户端消息后调用的方法
+	 * 
+	 * @param message
+	 * @param session
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@OnMessage
+	public void onMessage(String message, Session session) throws IOException {
+		// 解析message
+		Gson gson = new Gson();
+		Map<String, String> map = new HashMap<String, String>();
+		map = gson.fromJson(message, map.getClass());
+		Integer type = Integer.valueOf(map.get("type"));
+		if (type == 1) { // 获取用户信息 {"type":"1","userId":"1"}
+			Integer userId = Integer.valueOf(map.get("userId"));
+			try {
+				String result = "";
+				if (userId != null) {
+					result = JsonUtil.buildFalseJson1(1, "成功", 0,type, userService.getUserById1(userId));
+				} else {
+					result = JsonUtil.buildFalseJson1(1, "该用户没有数据", 0,type, "");
+				}
+				sendMessage(result);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} else if (type == 2) {// 三证指数 {"type":"2"}
+			DecimalFormat df = new DecimalFormat("######0.00");
+			List<Map<String, String>> szlists = new ArrayList<Map<String, String>>();
+			List<StockObj> lists = StockData.getSanZhengInfo();
+			if(lists.size() > 0) {
+				for (StockObj s : lists) {
+					Double PrevClode = s.getPrevClose();
+
+					Double nowPrice = s.getPrice();
+
+					// 涨跌价
+					String changeMoney = df.format(nowPrice - PrevClode);
+					// 涨跌幅
+					String changeRatio = df.format((nowPrice - PrevClode) / PrevClode * 100);
+					Map<String, String> map0 = new HashMap<>();
+					map0.put("thscode", s.getSecuCode());
+					map0.put("latest", df.format(nowPrice)); // 最新价
+					map0.put("change", changeMoney);// 涨幅价
+					map0.put("changeRatio", changeRatio); // 涨跌幅
+					szlists.add(map0);
+				}
+			}
+			JSONArray array = JSONArray.fromObject(szlists);
+			try {
+				sendMessage(JsonUtil.buildFalseJson1(0, "cjmg", 0, type, array.toString()));
+			} catch (IOException e) {
+				System.out.println("sanzheng");
+				e.printStackTrace();
+			}
+		} else if (type == 3) {// 股票详情 {"type":"3","stockCode":"600028.SH"}
+			String symbol = map.get("symbol");
+			StockCode info = stockCodeService.getStockByCode(symbol);
+			List<Map<String,Object>> list = new ArrayList<>();
+			String str = "";
+			if(info == null) {
+				str = JsonUtil.buildFalseJson(1, "股票不存在","");
+			}else {
+				StockObj data =StockData.getStockInfo(symbol, info.getMarket());	
+				if(data == null) {
+					str = JsonUtil.buildFalseJson(1, "股票不存在","");
+				}else {
+					list = StockData.getStockDataList(data);
+				}
+				JSONArray array = JSONArray.fromObject(list);	
+				str = array.toString();
+			}
+			try {
+				sendMessage(JsonUtil.buildFalseJson1(0, "cjmg", 0, type, str));
+			} catch (IOException e) {
+				System.out.println("stockdetail");
+				//e.printStackTrace();
+			}
+		}else if(type == 4) { //自选
+			Integer userId = Integer.valueOf(map.get("userId"));
+			Integer page = Integer.valueOf(map.get("page"));
+			Integer limit = Integer.valueOf(map.get("limit"));
+			//String result = userOptionsService.getUserOptionsList(userId, page, limit);
+			List<UserOptions> lists = userOptionsService.getNewUserOptionsList(userId, page, limit);
+			try {
+				if(lists.size() > 0) {
+					String result = JsonUtil.buildJsonByTotalCount1(lists, lists.size());
+					sendMessage(JsonUtil.buildFalseJson1(0, "cjmg", lists.size(), type, result));
+				}else {
+					sendMessage(JsonUtil.buildFalseJson1(1, "cjmg", 0, type, lists));
+				}
+//				sendMessage(result);
+			} catch (IOException e) {
+				System.out.println("zixuan");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@OnError
+	public void OnError(Session session, Throwable error) {
+		System.out.println("onerror:");
+		// getOnlineCount();
+		// error.printStackTrace();
+	}
+
+	/**
+	 * 服务器发送消息
+	 * 
+	 * @param message
+	 * @throws IOException
+	 */
+	public void sendMessage(String message) throws IOException {
+		try {
+			if (webSocketSet.size() > 0) { // 有人连接的时候发送
+				//System.out.println("发送的内容：" + message);
+				if (this.session != null) {
+					if (this.session.getBasicRemote() != null) {
+						this.session.getBasicRemote().sendText(message);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 获取连接数
+	 * 
+	 * @return
+	 */
+	public static synchronized int getOnlineCount() {
+		System.out.println("online people number:" + onlineCount);
+		return onlineCount;
+	}
+
+	/**
+	 * 增加在线人数
+	 */
+	public static synchronized void addOnlineCount() {
+		WebSocketServer.onlineCount++;
+	}
+
+	/**
+	 * 减去在线人数
+	 */
+	public static synchronized void subOnlineCount() {
+		WebSocketServer.onlineCount--;
+	}
+
+	public static void main(String[] args) {
+
+		// 000001.SSE是上证，399001.SZSE是深证成指，399006.SZSE是创业板指
+		// String abc =
+		// "{\"symbol\":\"399001\",\"sellVolume02\":131812,\"sellVolume03\":413300,\"sellVolume01\":100123,\"tradingDate\":20190528,\"vwap\":12.512,\"lop\":12.5,\"hip\":12.52,\"changeMoney\":-0.01,\"buyVolume05\":138400,\"changeRatio\":10,\"sellPrice05\":12.55,\"buyVolume04\":83000,\"sellVolume04\":305893,\"id\":0,\"sellVolume05\":345055,\"buyVolume01\":242843,\"sellPrice01\":12.51,\"sellPrice02\":12.52,\"buyVolume03\":44558,\"sellPrice03\":12.53,\"buyVolume02\":113180,\"sellPrice04\":12.54,\"op\":12.51,\"tradingTime\":\"2019-05-28
+		// 11:22:00.000\",\"buyPrice04\":12.47,\"buyPrice03\":12.48,\"buyPrice02\":12.49,\"buyPrice01\":12.5,\"cm\":4909816,\"buyPrice05\":12.46,\"cp\":12.5,\"cq\":392422,\"market\":\"SZSE\",\"obpd\":12.37,\"createTime\":1559013720000,\"clvLop\":12.26,\"clvHip\":12.55,\"shortName\":\"平安银行\",\"tq\":4.4120914E7}";
+		// JSONArray array = JSONArray.fromObject(list);
+		List<String> lists = new ArrayList<String>();
+		String shzStr = RedisUtil.lindex("99999", 0);// 上证指数
+		System.out.println(shzStr);
+		if (shzStr != null) {
+			lists.add(shzStr);
+		}
+		String szStr = RedisUtil.lindex("399001", 0); // 深证指数
+		if (szStr != null) {
+		}
+		String cyStr = RedisUtil.lindex("399006", 0); // 创业指数
+		if (cyStr != null) {
+		}
+		System.out.println(lists.toString());
+	}
+}

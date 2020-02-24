@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.AdminDao">
+	<resultMap type="com.sjy.entity.Admin" id="BaseResultMap">
+		<id column="admin_id" property="adminId" jdbcType="INTEGER"/>
+		<result column="admin_name" property="adminName" jdbcType="VARCHAR"/>
+		<result column="admin_account" property="adminAccount" jdbcType="VARCHAR"/>
+		<result column="password" property="password" jdbcType="VARCHAR"/>
+		<result column="phone" property="phone" jdbcType="VARCHAR"/>
+		<result column="is_effect" property="isEffect" jdbcType="INTEGER"/>
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR"/>
+		<result column="admin_level" property="adminLevel" jdbcType="INTEGER"/>
+		<result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<resultMap type="com.sjy.entity.Admin" id="PoweMap">
+		<id column="admin_id" property="adminId" jdbcType="INTEGER"/>
+		<result column="admin_account" property="adminAccount" jdbcType="VARCHAR"/>
+		<result column="password" property="password" jdbcType="VARCHAR"/>
+		<result column="is_effect" property="isEffect" jdbcType="INTEGER"/>
+		<collection property="roles" ofType="com.sjy.entity.Role">
+            <id column="role_id" property="roleId"/>
+            <result column="role_name" property="roleName"/>
+            <collection property="powers" ofType="com.sjy.entity.Power">
+                <id column="power_id"  property="powerId"/>
+                <result column="power_en_name" property="powerEnName"/>
+            </collection>
+        </collection>
+	</resultMap>
+	<insert id="addAdmin" parameterType="com.sjy.entity.Admin" useGeneratedKeys="true" keyProperty="adminId">
+		insert into admin(`admin_name`,`admin_account`,`password`,`phone`,`is_effect`,`parent_id`,`admin_level`,
+		`last_login_time`,`create_time`) values (#{adminName},#{adminAccount},#{password},#{phone},#{isEffect},
+		#{parentId},#{adminLevel},#{lastLoginTime},#{createTime})
+	</insert>
+	<delete id="delAdmin" parameterType="com.sjy.entity.Admin">
+		delete from admin where admin_id = #{adminId}
+	</delete>
+	<select id="selectAdminList" resultMap="BaseResultMap">
+		select admin_id,admin_name,admin_account,password,phone,is_effect,parent_id,admin_level,last_login_time,create_time
+		from admin where 1=1
+		<if test="admin != null">
+			<if test="admin.adminName != null and admin.adminName != ''">
+				and admin_name like concat ('%',#{admin.adminName},'%')
+			</if>
+			<if test="admin.isEffect != null">
+				and is_effect = #{admin.isEffect}
+			</if>
+			<if test="admin.phone != null and admin.phone != ''">
+				and phone = #{admin.phone}
+			</if>
+			<if test="admin.adminAccount != null and admin.adminAccount != ''">
+				and admin_account like concat ('%',#{admin.adminAccount},'%')
+			</if>
+		</if>
+		<if test="page != null and limit != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+	<select id="selectAdminCount" resultType="INT">
+		select count(1) from admin where 1=1
+		<if test="admin != null">
+			<if test="admin.adminName != null and admin.adminName != ''">
+				and admin_name like concat ('%',#{admin.adminName},'%')
+			</if>
+			<if test="admin.isEffect != null">
+				and is_effect = #{admin.isEffect}
+			</if>
+			<if test="admin.phone != null and admin.phone != ''">
+				and phone = #{admin.phone}
+			</if>
+			<if test="admin.adminAccount != null and admin.adminAccount != ''">
+				and admin_account like concat ('%',#{admin.adminAccount},'%')
+			</if>
+		</if>
+	</select>
+	<update id="updateAdmin" parameterType="com.sjy.entity.Admin">
+		update admin 
+		<set>
+			<if test="adminName != null and adminName != ''">
+				admin_name = #{adminName},
+			</if>
+			<if test="adminAccount != null and adminAccount != ''">
+				admin_account = #{adminAccount},
+			</if>
+			<if test="password != null and password != ''">
+				password = #{password},
+			</if>
+			<if test="phone != null and phone != ''">
+				phone = #{phone},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId},
+			</if>
+			<if test="adminLevel != null">
+				admin_level = #{adminLevel},
+			</if>
+			<if test="isEffect != null">
+				is_effect = #{isEffect},
+			</if>
+			<if test="lastLoginTime != null">
+				last_login_time = #{lastLoginTime},
+			</if>
+		</set>
+		where admin_id = #{adminId}
+	</update>
+	<select id="getAdminById" resultMap="BaseResultMap">
+		select admin_id,admin_name,admin_account,password,phone,is_effect,parent_id,admin_level,last_login_time,create_time
+		from admin where 1=1
+		<if test="adminId != null">
+			and admin_id = #{adminId}
+		</if>
+		<if test="adminAccount != null and adminAccount != ''">
+			and admin_account = #{adminAccount}
+		</if>
+		<if test="password != null and password != ''">
+			and password = #{password}
+		</if>
+	</select>
+	<select id="selectAdminCountByAccount" resultType="INT">
+		select count(1) from admin where 1=1 
+		<if test="adminAccount != null and adminAccount != ''">
+			and admin_account = #{adminAccount}			
+		</if>
+		<if test="isEffect != null">
+			and is_effect = #{isEffect}
+		</if>
+	</select>
+	<select id="checkIsAlreadyCount" resultType="INT">
+		select count(1) from admin where 1=1
+		<if test="adminId != null">
+			and admin_id &lt;&gt;#{adminId}
+		</if>
+		<if test="adminAccount != null and adminAccount != ''">
+			and admin_account = #{adminAccount}
+		</if>
+	</select>
+	<select id="findAdminByAccount" resultMap="PoweMap">
+		SELECT a.*,r.*,p.* FROM admin a inner join admin_role ar on ar.admin_id=a.admin_id
+        inner join role r on r.role_id=ar.role_id
+        inner join role_power pr on pr.role_id=r.role_id 
+        inner join power p on pr.power_id=p.power_id
+        WHERE admin_account=#{adminAccount}
+	</select>
+
+	<sql id="admin">
+		admin_id,admin_name,admin_account,password,phone,is_effect,parent_id,admin_level,last_login_time,create_time
+	</sql>
+
+<!-- 管理员 -->
+	<select id="findAgency" resultMap="BaseResultMap">
+		SELECT a.admin_name,a.admin_account,u.user_name,u.inviter_id,b.role_id FROM admin a
+		left JOIN admin_role b on a.parent_id = b.admin_id
+		left JOIN user u on u.inviter_id = a.admin_id
+	</select>
+
+<!-- 获取管理员代理信息数 -->
+	<select id="selectAgencyCount" resultType="INT">
+		SELECT count(1) FROM admin a
+		left JOIN admin_role b on a.parent_id = b.admin_id
+		left JOIN user u on u.inviter_id = a.admin_id
+	</select>
+
+<!-- 一级代理 -->
+	<select id="findOneAgency" resultMap="BaseResultMap">
+		SELECT u.user_id,a.admin_name,a.admin_account,u.user_name,u.inviter_id,b.role_id FROM admin a
+		left JOIN admin_role b on a.parent_id = b.admin_id
+		left JOIN user u on u.inviter_id = a.admin_id
+		WHERE a.parent_id >=3 or u.user_id = #{userId}
+	</select>
+
+<!-- 获取一级代理信息数 -->
+	<select id="selectOneAgencyCount" resultType="INT">
+		SELECT count(1) FROM admin a
+		left JOIN admin_role b on a.parent_id = b.admin_id
+		left JOIN user u on u.inviter_id = a.admin_id
+		WHERE a.parent_id >=3 or u.user_id = #{userId}
+	</select>
+
+<!-- 二级代理 -->
+	<select id="findTwoAgency" resultMap="BaseResultMap">
+		SELECT a.admin_name,a.admin_account,u.user_name,u.inviter_id,b.role_id FROM admin a
+		left JOIN admin_role b on a.parent_id = b.admin_id
+		left JOIN user u on u.inviter_id = a.admin_id
+		WHERE a.parent_id >=4 or u.user_id = #{userId}
+	</select>
+
+<!-- 获取二级代理信息数 -->
+	<select id="selectTwoAgencyCount" resultType="INT">
+		SELECT count(1) FROM admin a
+		left JOIN admin_role b on a.parent_id = b.admin_id
+		left JOIN user u on u.inviter_id = a.admin_id
+		WHERE a.parent_id >=4 or u.user_id = #{userId}
+	</select>
+
+<!-- 三级代理 -->
+	<select id="findThreeAgency" resultMap="BaseResultMap">
+		SELECT a.admin_name,a.admin_account,u.user_name,u.inviter_id,b.role_id FROM admin a
+		left JOIN admin_role b on a.parent_id = b.admin_id
+		left JOIN user u on u.inviter_id = a.admin_id
+		WHERE u.user_id = #{userId}
+	</select>
+
+<!-- 获取三级代理信息数 -->
+	<select id="selectThreeAgencyCount" resultType="INT">
+		SELECT count(1) FROM admin a
+		left JOIN admin_role b on a.parent_id = b.admin_id
+		left JOIN user u on u.inviter_id = a.admin_id
+		WHERE u.user_id = #{userId}
+	</select>
+
+</mapper>

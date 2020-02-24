@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.ExSmsDao">
+    <resultMap type="com.ylb.entity.ExSms" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="ip" property="ip"/>
+        <result column="user_Id" property="account"/>
+        <result column="phone" property="phone"/>
+        <result column="code" property="code"/>
+        <result column="used" property="used"/>
+        <result column="create_time" property="createTime"/>
+         <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="addExSms" parameterType="com.ylb.entity.ExSms" useGeneratedKeys="true" keyProperty="id">
+		insert into exSms(`ip`,`user_Id`,`phone`,`code`,`used`,`create_time`)
+		values (#{ip},#{account},#{phone},#{code},#{used},#{createTime})
+	</insert>
+	
+    <select id="getExSmsBycode" resultMap="BaseResultMap">
+        select *
+        from exSms where code = #{code}
+    </select> 
+    <update id="updateExSms"
+		parameterType="com.ylb.entity.ExSms">
+		update exSms
+		<set>
+			<if test="used != null">
+			used=#{used}
+			</if>
+		</set>
+		<!-- 这里需要完善，消息可能有相同的 -->
+		where code =#{code}
+	</update>
+</mapper>

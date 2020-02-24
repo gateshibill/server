@@ -1,0 +1,858 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <meta name="renderer" content="ie-stand">
+    <link type="text/css" rel="stylesheet" href="/static/pc/templets/moban/images/Skins/Currently/jbox.css" />
+    <link rel="stylesheet" type="text/css" href="/static/pc/templets/moban/images/style.css" />
+    <link rel="stylesheet" type="text/css" href="/static/pc/templets/moban/images/home.css" />
+    <script src="/static/pc/templets/moban/images/jquery.js"></script>
+    <title>众赢股票</title>
+    <link rel="stylesheet" href="/static/pc/templets/moban/images/animate.css">
+    <link rel="stylesheet" href="/static/pc/templets/moban/images/home.css">
+    <script src="/static/pc/templets/moban/images/jquery.SuperSlide.2.1.1.js"></script>
+
+</head>
+
+<body>
+    <!--头部开始-->
+    <div class="header-top">
+        <div class="wrapper">
+            <div class="tel-num">
+                欢迎来到 <span>明天牛</span>！客服热线： 400-763-8898            </div>
+                <div class="quick-link">
+                </div>
+            </div>
+        </div>
+        <div class="header">
+            <div class="wrapper d_wrapM  clearfix">
+                <div class="logo"><a href=""><p><img style="height: 75px; width: 450px; float: none; margin: 0px;" alt="" src="/static/pc/templets/moban/images/hnjf-web-logo.png" /></p></a></div>
+
+                <div class="nav clearfix" style="float: right;">
+
+
+
+                    <ul class="clearfix navigation-list" id="dw_ul">
+                        <li class="navigation-item ">
+                            <a href="/pc/index/index" class="navigation-item-name">网站首页</a>
+                            <div class="navigation-list-two-con" id="dw_ul2">
+                                <div class="navigation-list-two">
+                                    <ul class="navigation-two-list" id="erji_nav">
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+
+
+                        <li class="navigation-item ">
+                            <a href="/pc/index/antianrongzi" class="navigation-item-name">按天融资</a>
+                            <div class="navigation-list-two-con" id="dw_ul2">
+                                <div class="navigation-list-two">
+                                    <ul class="navigation-two-list" id="erji_nav">
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+
+
+                        <li class="navigation-item ">
+                            <a href="/pc/index/anyuerongzi" class="navigation-item-name">按月融资</a>
+                            <div class="navigation-list-two-con" id="dw_ul2">
+                                <div class="navigation-list-two">
+                                    <ul class="navigation-two-list" id="erji_nav">
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+
+
+                        <li class="navigation-item ">
+                            <a href="/pc/index/mianxirongzi" class="navigation-item-name">免息融资</a>
+                            <div class="navigation-list-two-con" id="dw_ul2">
+                                <div class="navigation-list-two">
+                                    <ul class="navigation-two-list" id="erji_nav">
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+
+
+                        <li class="navigation-item ">
+                            <a href="/pc/index/xinshouzhiyin" class="navigation-item-name">新手引导</a>
+                            <div class="navigation-list-two-con" id="dw_ul2">
+                                <div class="navigation-list-two">
+                                    <ul class="navigation-two-list" id="erji_nav">
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+
+
+                        <li class="navigation-item ">
+                            <a href="/pc/index/woyaotuiguang" class="navigation-item-name">我要推广</a>
+                            <div class="navigation-list-two-con" id="dw_ul2">
+                                <div class="navigation-list-two">
+                                    <ul class="navigation-two-list" id="erji_nav">
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+
+
+                        <li class="navigation-item ">
+                            <a href="/pc/index/ruanjianxiazai" class="navigation-item-name">软件下载                                   </a>
+                            <div class="navigation-list-two-con" id="dw_ul2">
+                                <div class="navigation-list-two">
+                                    <ul class="navigation-two-list" id="erji_nav">
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+
+
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="banner">
+            <div class="banner-slide">
+                <div class="hd">
+                    <ul class="clearfix">
+                        <li> </li><li> </li><li> </li></ul>
+                    </div>
+                    <div class="bd">
+                        <ul>
+                            <li>
+                                <a href="" style="background: url(/static/pc//templets/moban/images/hnjf-web-b-01.jpg) no-repeat center top;"></a>
+                            </li><li>
+                                <a href="" style="background: url(/static/pc//templets/moban/images/hnjf-web-b-02.png) no-repeat center top;"></a>
+                            </li><li>
+                                <a href="" style="background: url(/static/pc//templets/moban/images/20180531171546578.png) no-repeat center top;"></a>
+                </li>                <!-- <li>
+                <a href="" style="background: url(/templets/moban/images/banner.png) no-repeat center top;"></a>
+            </li> -->
+        </ul>
+    </div>
+</div>
+<div class="wrapper clearfix">
+    <div class="popbox">
+        <div class="head">
+            <div class="slogan">
+            </div>
+            <h1>目前免息操盘3天</h1>
+            <p>资金100%双重保障，100%实盘交易</p>
+        </div>
+        <div class="bottom">
+            <div class="register">
+                <a href="/pc/index/antianrongzi" class="btn-block btn-primary">专业融资</a>
+            </div>
+            <div class="tips">
+                <a href="/pc/index/ruanjianxiazai" class="btn-block btn-apply btn-red">赶紧下载吧</a>
+            </div>            </div>
+        </div>
+    </div>
+</div>
+
+<!--数据-->
+<div class="pb01">
+    <ul class="clearfix wrapper">
+        <li>
+            <i class="dw_Cbg fleft"></i>
+            <strong><span>累积融资人数</span></strong>
+            <p>
+                <span class="timer count-title" id="count-number1" data-to="22359" data-speed="100">22359</span>
+                <span id="i-two">人</span>
+            </p>
+
+        </li>
+        <li>
+            <i class="dw_Cbg fleft"></i>
+            <strong><span>累积融资金额</span></strong>
+            <p>
+                <span class="timer count-title" id="count-number2" data-to="70334000" data-speed="1500">70334000</span>
+                <span id="i-two">元</span>
+            </p>
+        </li>
+        <li>
+            <i class="dw_Cbg fleft"></i>
+            <strong><span>累积利润赚取</span></strong>
+            <p>
+                <span class="timer count-title" id="count-number3" data-to="11412200" data-speed="1500">11412200</span>
+                <span id="i-two">元</span>
+            </p>
+        </li>
+        <li>
+            <i class="dw_Cbg fleft"></i>
+            <strong><span>按月融资余额</span></strong>
+            <p>
+                <span class="timer count-title" id="count-number4" data-to="39952000" data-speed="1500">39952000</span>
+                <span id="i-two">元</span>
+            </p>
+        </li>
+        <li>
+            <i class="dw_Cbg fleft"></i>
+            <strong><span>按天融资余额</span></strong>
+            <p>
+                <span class="timer count-title" id="count-number5" data-to="38541000" data-speed="1500">38541000</span>
+                <span id="i-two">元</span>
+            </p>
+
+        </li>
+    </ul>
+</div>
+
+<!--数据 end-->
+<div class="body-container ">
+
+
+    <!--股票融资-->
+
+    <div class="wrapper clearfix">
+        <div class="pb7">
+            <div class="pb7-top">
+                <ul>
+                    <li>
+                        <div class="icon">
+                            <i class="dw_Cbg icon-1"></i>
+                            <h3>注册登录</h3>
+                            <p>0元免费开户</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon">
+                            <i class="dw_Cbg icon-2"></i>
+                            <h3>操盘选择</h3>
+                            <p>门槛低，收入高</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon">
+                            <i class="dw_Cbg icon-3"></i>
+                            <h3>充值</h3>
+                            <p>出入资金安全</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon">
+                            <i class="dw_Cbg icon-4"></i>
+                            <h3>操盘结算</h3>
+                            <p>速度快</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon">
+                            <i class="dw_Cbg icon-5"></i>
+                            <h3>提现/再操盘</h3>
+                            <p>最快3分钟到账</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="conslinks">
+            <div class="conbox">
+                <div class="contone1 content-link content-link1" style="">
+                    <i id="srcs" style="background: url(/static/pc//templets/moban/images/free.png) 50% 50% no-repeat;"></i>
+                    <div class="contfonts">
+                        <p class="ones blue" style="">免息融资</p>
+                        <p class="twos" style="">100%实盘正规交易</p>
+                        <p class="twos" style="">0利息，盈利全归您</p>
+                        <p class="threes" style="">最高<span id="blue" class="blue" style="">50</span>万元 <span id="blue" class="blue" style="">1000</span>元起配</p>
+                        <a class="fours blue" href="/pc/index/mianxirongzi" style="">立即融资</a>
+                    </div>
+                </div>
+
+                <div class="contone2 content-link content-link2 " style="">
+                    <i style="background: url(/static/pc//templets/moban/images/day.png) 50% 50% no-repeat;"></i>
+                    <div class="contfonts">
+                        <p class="ones" id="red" style="">按天融资</p>
+                        <p class="twos" style="">100%实盘正规交易</p>
+                        <p class="twos" style="">资金灵活进出，短线狙击神器</p>
+                        <p class="threes" style="">最高<span id="red" style="" class="yellow">900</span>万元 <span id="red" style="" class="yellow">1000</span>元起配</p>
+                        <a class="fours" id="red" href="antianpeizi.html" style="">立即融资</a>
+                    </div>
+                </div> 
+            <!-- <div class="contone3 content-link content-link3" style="">
+                <i style="background: url(/templets/moban/images/week.png) 50% 50% no-repeat;"></i>
+                <div class="contfonts">
+                    <p class="ones" id="red" style="">按周融资</p>
+                    <p class="twos" style="">100%实盘正规交易</p>
+                    <p class="threes" style="">最高<span id="red" style="" class="yellow">50</span>万元 <span id="red" style="" class="yellow">1000</span>元起配</p>
+                    <a class="fours" id="red" href="stock/weekfinancing" style="">立即融资</a>
+                </div>
+            </div>
+        -->
+
+        <div class="contone4 content-link content-link4" style="">
+            <i style="background: url(/static/pc//templets/moban/images/month.png) 50% 50% no-repeat;"></i>
+            <div class="contfonts">
+                <p class="ones" id="red" style="">按月融资</p>
+                <p class="twos" style="">100%实盘正规交易</p>
+                <p class="twos" style="">中长线，平稳长久的融资方案</p>
+                <p class="threes" style="">月息低至 <span id="red" style="" class="yellow">1.2</span>最高封顶 <span id="red" style="" class="yellow">2</span>分</p>
+                <a class="fours" id="red" href="anyuepeizi.html" style="">立即融资</a>
+            </div>
+        </div>
+    </div>
+</div> 
+
+</div>
+
+<!--股票融资 end-->
+<div class="wrapper">
+    <!--行情中心-->
+    <div class="pb4">
+        <div class="index_mod4">
+            <div class="mod_right">
+                <h3 class="right-tit">行情中心</h3>
+                <div class="s_menu" id="menu_szzs">
+                    <ul>
+                        <li sv="0" class="current"><a>上证指数</a></li>
+                        <li sv="1"><a>深证指数</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mod_left">
+                <div class="hq_con">
+                    <div class="hq_txt" id="a0001_bnt">
+                        <a class="cur" sv="0" href="javascript:;">分时线</a> <a sv="1" href="javascript:;">日K线</a> <a sv="2" href="javascript:;">周K线</a> <a sv="3" href="javascript:;">月K线</a>
+                    </div>
+                    <div class="hq_img">
+                        <img src="/static/pc/templets/moban/images/sh000001.gif" width="505" height="300" id="a0001_img">
+                    </div>
+                </div>
+                <div class="hq_con" style="display:none;">
+                    <div class="hq_txt" id="s0001_bnt">
+                        <a class="cur" sv="0" href="javascript:;">分时线</a> <a sv="1" href="javascript:;">日K线</a> <a sv="2" href="javascript:;">周K线</a> <a sv="3" href="javascript:;">月K线</a>
+                    </div>
+                    <div class="hq_img">
+                        <img src="/static/pc/templets/moban/images/sz399001.gif" width="505" height="300" id="s0001_img">
+                    </div>
+                </div>
+                <div class="hq_sv">
+                    <div class="hq_st">
+                        <div class="hq_a1" id="a0001_v1">
+                            <li class="sv" style="color: rgb(255, 0, 0);">3254.63</li>
+                            <li class="ico"></li>
+                            <li class="icon-right">9.41</li>
+                            <li class="icon-right">0.29%</li>
+                        </div>
+                        <div class="hq_aq1_xq" id="a0001_detail">
+                            <p>
+                                <span> <span class="xq-color">今开：</span>
+                                <font color="#237c02"></font>
+                            </span>
+                            <span><span class="xq-color">成交量：</span>
+                            <font color="#237c02"></font>
+                        </span>
+                        <span><span class="xq-color">振幅：</span>
+                        <font color="#007cc8"></font>
+                    </span>
+                    <span><span class="xq-color">最高：</span>
+                    <font color="#237c02"></font>
+                </span>
+                <span><span class="xq-color">成交额：</span>
+                <font color="#007cc8"></font>
+            </span>
+            <span><span class="xq-color">昨收：</span>
+            <font color="#007cc8"></font>
+        </span>
+        <span><span class="xq-color">总市值：</span>
+        <font color="#007cc8"></font>
+    </span>
+</p>
+</div>
+<div class="gupiao">
+    <table id="gpInfo" width="100%">
+        <colgroup>
+            <col style="width:90px">
+            <col style="width:110px">
+            <col style="width:80px">
+            <col>
+        </colgroup>
+        <tbody>
+            <tr class="title">
+                <td style="color:#ff3646">领涨板块</td>
+                <td></td>
+                <td><a style="color:#237c02">领跌板块</a></td>
+                <td class="text-right"></td>
+            </tr>
+            <tr>
+                <td>
+                    <a>券商</a>
+                </td>
+                <td style="color:#ff3646">
+                    +1.32%
+                </td>
+                <td>
+                    <a>券商</a>
+                </td>
+                <td class="text-right" style="color:#237c02">
+                    -2.36%
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a>环保行业</a>
+                </td>
+                <td style="color:#ff3646">
+                    +0.17%
+                </td>
+                <td>
+                    <a>环保行业</a>
+                </td>
+                <td class="text-right" style="color:#237c02">
+                    -2.28%
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a>次新股</a>
+                </td>
+                <td style="color:#ff3646">
+                    +0.12%
+                </td>
+                <td>
+                    <a>次新股</a>
+                </td>
+                <td class="text-right" style="color:#237c02">
+                    -2.10%
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a>酿酒行业</a>
+                </td>
+                <td style="color:#ff3646">
+                    +0.12%
+                </td>
+                <td>
+                    <a>酿酒行业</a>
+                </td>
+                <td class="text-right" style="color:#237c02">
+                    -2.10%
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!--行情中心 end-->
+
+<div class="pb6 clearfix">
+
+    <div class="down_load">
+        <div class="load_top">
+            <span>交易软件下载</span>
+            <p>新用户注册并实名认证后请下载安装此交易软件</p>
+            <i></i>
+            <a href="zhucexieyi.html">电脑版下载</a>
+        </div>
+    </div>
+
+
+
+    <div class="pb6-r">
+        <div class="gonggaoBox">
+
+            <div id="bd_two" class="bd dd">
+                <p><span>网站公告</span> <a href="/pc/index/wangzhangonggao" target="_blank" class="gg">更多...</a></p>
+
+                <span>
+
+                   <li><span class="date">2019-01-14</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">股票融资应遵循的几个基</a></li>
+                   <li><span class="date">2019-01-14</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">股票融资中关于盘口的专</a></li>
+                   <li><span class="date">2019-01-14</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">有效降低融资炒股风险的</a></li>
+                   <li><span class="date">2019-01-14</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">股票融资中股市三种趋势</a></li>
+                   <li><span class="date">2019-01-14</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">股票融资中什么情况下股</a></li>
+                   <li><span class="date">2019-01-14</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">股票融资为什么避讳满仓</a></li>
+                   <li><span class="date">2019-01-14</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">股票融资是一把双刃剑</a></li>
+                   <li><span class="date">2019-01-14</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">股票融资顺势加仓和逆势</a></li>
+
+
+
+               </span>
+
+           </div>
+           <div id="hd_two" class="hd dd">
+            <p class="dd_line"><span>资讯中心</span> <a href="/pc/index/zixunzhongxin" target="_blank" class="gg">更多...</a></p>
+            <span>
+
+               <li><span class="date">2018-10-24</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">有券商与国资联手成立百</a></li>
+               <li><span class="date">2018-10-24</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">A股最悲观时刻已过 机构掘</a></li>
+               <li><span class="date">2018-10-24</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">重磅！国务院金稳会宣布</a></li>
+               <li><span class="date">2018-10-24</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">A股迎来10大超强利好</a></li>
+               <li><span class="date">2018-10-24</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">1000亿“救市”资管要来了</a></li>
+               <li><span class="date">2018-10-24</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">时隔四年券商板块再现“</a></li>
+               <li><span class="date">2018-10-24</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">多地政策支持 千亿元资金</a></li>
+               <li><span class="date">2018-10-24</span><a id="bd_colors" href="/pc/index/zixunxiangqing" target="_blank">A股又掉链子！节后外资出</a></li>
+
+           </span>
+
+       </div>
+
+
+   </div>
+   <!--切换 end-->
+</div>
+</div>
+
+<div class="pb1 wrapper">
+    <ul class="clearfix">
+        <li>
+            <i class="dw_Cbg s1 fleft"></i>
+            <span>资金保障</span>
+            <strong><span>资金第三方托管，专款专用</span></strong>
+        </li>
+        <li>
+            <i class="dw_Cbg s2 fleft"></i>
+            <span>真实交易</span>
+            <strong><span>100%实盘，level2可查委托</span></strong>
+        </li>
+        <li>
+            <i class="dw_Cbg s3 fleft"></i>
+            <span>快捷提现</span>
+            <strong><span>闪电提现，三十分钟到账</span></strong>
+        </li>
+        <li>
+            <i class="dw_Cbg s4 fleft"></i>
+            <span>专业服务</span>
+            <strong><span>客户体验至上为宗旨</span></strong>
+        </li>
+    </ul>
+</div>
+</div>
+</div>
+
+
+<!-- 
+<div class="hcp-mask-warp" id="mask-hcp" style="display: block;">
+<div class="hcp-mask"></div>
+<div class="hcp-mask-img" style="top:50%;left:50%;width: 620px;height: 550px;margin-left: -310px;margin-top: -275px;">
+    <a href="javascript:;">
+        广告未上传或已过期        </a>
+    <i class="closed-mask">&nbsp;</i>
+</div>
+</div> -->
+
+
+
+<script>
+    $(function() {
+// banner
+$(".banner-slide").slide({
+    mainCell: ".bd ul",
+    autoPlay: true
+});
+//公司公告
+//    jQuery(".gonggaoBox").slide({
+//        trigger: "click"
+//    });
+// 
+$(".advantage").on("mouseenter", ".item img", function() {
+    $(this).removeClass("fadeInDown").addClass("rotateIn");
+}).on("mouseleave", ".item img", function() {
+    $(this).removeClass("rotateIn");
+})
+
+// 
+var temsrc;
+$(".step").hover(function() {
+    $(this).addClass("yellow");
+    temsrc = $(this).find(".icon img").attr("src")
+    $(this).find(".icon img").attr("src", temsrc.slice(0, -4) + '-active.png');
+}, function() {
+    $(this).removeClass("yellow");
+    temsrc = $(this).find(".icon img").attr("src")
+    $(this).find(".icon img").attr("src", temsrc.slice(0, -11) + '.png');
+})
+
+
+$(".closed-mask").on('click', function(){
+    $("#mask-hcp").hide();
+});
+
+})
+
+    function hq_code(s) {
+        var zqcode = "sh000001";
+        if (s == '0') $("#a0001_img").attr('src', 'http://image.sinajs.cn/newchart/min/n/' + zqcode + '.gif');
+        if (s == '1') $("#a0001_img").attr('src', 'http://image.sinajs.cn/newchart/daily/n/' + zqcode + '.gif');
+        if (s == '2') $("#a0001_img").attr('src', 'http://image.sinajs.cn/newchart/weekly/n/' + zqcode + '.gif');
+        if (s == '3') $("#a0001_img").attr('src', 'http://image.sinajs.cn/newchart/monthly/n/' + zqcode + '.gif');
+    }
+
+    function hq_code1(s) {
+        var zqcode = "sz399001";
+        if (s == '0') $("#s0001_img").attr('src', 'http://image.sinajs.cn/newchart/min/n/' + zqcode + '.gif');
+        if (s == '1') $("#s0001_img").attr('src', 'http://image.sinajs.cn/newchart/daily/n/' + zqcode + '.gif');
+        if (s == '2') $("#s0001_img").attr('src', 'http://image.sinajs.cn/newchart/weekly/n/' + zqcode + '.gif');
+        if (s == '3') $("#s0001_img").attr('src', 'http://image.sinajs.cn/newchart/monthly/n/' + zqcode + '.gif');
+    }
+    $("#a0001_bnt a").click(function() {
+        hq_code($(this).attr('sv'));
+        $("#a0001_bnt a").removeClass('cur');
+        $(this).addClass('cur');
+    })
+    $("#s0001_bnt a").click(function() {
+        hq_code1($(this).attr('sv'));
+        $("#s0001_bnt a").removeClass('cur');
+        $(this).addClass('cur');
+    })
+    $("#menu_szzs li").click(function() {
+        $("#menu_szzs li").removeClass("current");
+        $(this).addClass("current");
+        $(".hq_con").hide();
+        $(".hq_con").eq($(this).attr("sv")).show();
+        if ($(this).attr("sv") == '0') {
+            hq_show(0);
+        } else {
+            hq_show(1);
+        }
+    })
+//当前股票价
+function hq_show(type) {
+    if (type == 0) {
+        var elements = hq_str_sh000001.split(",");
+        var elements_bl = hq_str_s_sh000001.split(",");
+    } else {
+        var elements = hq_str_sz399001.split(",");
+        var elements_bl = hq_str_s_sz399001.split(",");
+    }
+
+    var a0001_k_pr = parseFloat(elements[1]);
+    var a0001_z_pr = parseFloat(elements[2]);
+    var a0001_t_pr = parseFloat(elements[3]);
+
+    $("#a0001_v1 li").eq(0).text(a0001_t_pr.toFixed(2))
+    $("#a0001_v1 li").eq(2).text(parseFloat(elements_bl[2]).toFixed(2))
+    $("#a0001_v1 li").eq(3).text(parseFloat(elements_bl[3]).toFixed(2))
+    $("#a0001_v1 li").eq(3).text($("#a0001_v1 li").eq(3).text() + '%');
+
+//股票明细
+var a0001_cj_pr = parseFloat(elements[8]);
+var a0001_cjm_pr = parseFloat(elements[9]);
+
+$("#a0001_detail font").eq(0).text(a0001_k_pr.toFixed(2));
+$("#a0001_detail font").eq(1).text((pr_style(parseFloat(elements_bl[4]) * 100)) + '手');
+$("#a0001_detail font").eq(2).text($("#a0001_v1 li").eq(3).html());
+$("#a0001_detail font").eq(3).text(parseFloat(elements[4]).toFixed(2));
+$("#a0001_detail font").eq(4).text(parseFloat(elements[5]).toFixed(2));
+$("#a0001_detail font").eq(5).text(pr_style(parseFloat(elements_bl[5]) * 10000));
+$("#a0001_detail font").eq(6).text(parseFloat(elements[2]).toFixed(2));
+$("#a0001_detail font").eq(7).text(pr_style((parseFloat(elements_bl[4]) * 100) * parseFloat(a0001_k_pr.toFixed(2))));
+
+
+
+if (parseFloat(elements_bl[2]) < 0) {
+    $("#a0001_v1 li").eq(0).css("color", "#009900");
+    $("#a0001_v1 li").eq(1).removeClass('ico').addClass('dw');
+} else {
+    $("#a0001_v1 li").eq(0).css("color", "#FF0000");
+    $("#a0001_v1 li").eq(1).removeClass('dw').addClass('ico');
+}
+}
+hq_show(0)
+
+function pr_style(s) {
+    var re_pr = 0;
+    var re_str = "";
+    if (s > 10000 && s < 10000000) {
+        re_pr = s / 10000;
+        re_str = '万';
+    } else if (s > 10000000 && s < 100000000) {
+        re_pr = s / 10000000;
+        re_str = '千万';
+    } else if (s >= 100000000) {
+        re_pr = s / 100000000;
+        re_str = '亿';
+    } else if (s < 10000) {
+        re_pr = s;
+    }
+    if (s < 10000) {
+        re_pr = re_pr;
+    } else {
+        re_pr = re_pr.toFixed(2);
+    }
+    return (re_pr + re_str);
+}
+//alert(elements[3]);
+</script>
+<script type="text/javascript">
+    $(".contone1").mouseover(function(){
+        $(".content-link1 i").css("background","url(/static/pc//templets/moban/images/frees.png) no-repeat center")
+        $(".content-link1").css("background-color","#3EB3F8");
+        $(".content-link1 p").css("color","#fff");
+        $(".content-link1 p span").css("color","#fff");
+        $(".content-link1 a").css("color","#fff");
+        $(".contone1").mouseout(function(){
+            $(".content-link1 i").css("background","url(/static/pc//templets/moban/images/free.png) no-repeat center")
+            $(".content-link1").css("background-color","");
+            $(".content-link1 p").css("color","");
+            $(".content-link1 p span").css("color","");
+            $(".content-link1 a").css("color","");
+        });
+    });
+
+    $(".contone2").mouseover(function(){
+        $(".content-link2 i").css("background","url(/static/pc//templets/moban/images/days.png) no-repeat center")
+        $(".content-link2").css("background-color","#f67c33");
+        $(".content-link2 p").css("color","#fff");
+        $(".content-link2 p span").css("color","#fff");
+        $(".content-link2 a").css("color","#fff");
+        $(".contone2").mouseout(function(){
+            $(".content-link2 i").css("background","url(/static/pc//templets/moban/images/day.png) no-repeat center")
+            $(".content-link2").css("background-color","");
+            $(".content-link2 p").css("color","");
+            $(".content-link2 p span").css("color","");
+            $(".content-link2 a").css("color","");
+        });
+    });
+
+    $(".contone3").mouseover(function(){
+        $(".content-link3 i").css("background","url(/static/pc//templets/moban/images/weeks.png) no-repeat center")
+        $(".content-link3").css("background-color","#f67c33");
+        $(".content-link3 p").css("color","#fff");
+        $(".content-link3 p span").css("color","#fff");
+        $(".content-link3 a").css("color","#fff");
+        $(".contone3").mouseout(function(){
+            $(".content-link3 i").css("background","url(/templets/moban/images/week.png) no-repeat center")
+            $(".content-link3").css("background-color","");
+            $(".content-link3 p").css("color","");
+            $(".content-link3 p span").css("color","");
+            $(".content-link3 a").css("color","");
+        });
+    });
+
+    $(".contone4").mouseover(function(){
+        $(".content-link4 i").css("background","url(/static/pc//templets/moban/images/months.png) no-repeat center")
+        $(".content-link4").css("background-color","#f67c33");
+        $(".content-link4 p").css("color","#fff");
+        $(".content-link4 p span").css("color","#fff");
+        $(".content-link4 a").css("color","#fff");
+        $(".contone4").mouseout(function(){
+            $(".content-link4 i").css("background","url(/static/pc//templets/moban/images/month.png) no-repeat center")
+            $(".content-link4").css("background-color","");
+            $(".content-link4 p").css("color","");
+            $(".content-link4 p span").css("color","");
+            $(".content-link4 a").css("color","");
+        });
+    });
+</script>
+<!-- <script src="/static/pc/templets/moban/images/countTo-default.js"></script> -->
+
+
+<footer>
+    <div class="footer-mi">
+        <div class="container wrapper clearfix">
+
+
+
+            <div class="footer-cen-mi fl">
+                <p class="footer-menu-mi">
+                    <span><a target="_blank" class="footer-menu-lnone-mi" href="/pc/index/gongsijianjie">关于我们</a></span>
+                    <span>|</span>
+                    <span><a target="_blank" href="lianxiwomen.html">联系我们</a></span>
+                </p>
+                <p class="footer-logo-mi">
+                    <img width="177" height="62" class="lazy" src="/static/pc/templets/moban/images/hnjf-logo_bg.png">
+                </p>
+                <p class="footer-copy-mi"> 版权所有 © 明天牛    </p>
+                <p class="footer-copy-mi"><a target="_blank" href="http://www.miitbeian.gov.cn">沪ICP备19007906号</a></p>
+            </div>
+            <div class="footer-right-mi fl">
+                <p class="footer-menu-mi">
+                    <span><a rel="nofollow" class="footer-menu-lnone-mi" target="_blank" href="/pc/index/xinshouzhiyin" id="kefu1">股票融资新手帮助指引</a></span>
+                    <span>|</span>
+                    <a rel="nofollow" href="tencent://Message/?Uin=&amp;websiteName在线客服&amp;Menu=ye"  >在线客服</a>
+                </p>
+                <p class="footer-phone-mi">
+                    <i class="footer-icon-phone-mi"></i>
+                    全国服务热线
+                </p>
+                <p class="footer-num-mi">400-763-8898</p>
+                <p class="footer-serv-mi">
+                    服务时间 (8:30-17:30)
+                </p>
+            </div>
+            <!--右边二维码 开始-->
+            <div class="public">
+                <div class="public-pao">
+                    <p> APP下载 </p>
+                </div>
+                <div class="public-ewm">
+                    <p>
+                      <p><img style="height: 130px; width: 130px; float: none; margin: 0px;" alt="" src="/static/pc/templets/moban/images/hnjf-app-down-344.jpg" /></p>                    </p>
+                  </div>
+                  <div class="public-pao">
+                    <span>扫描下载</span>
+                </div>
+            </div>
+            <!--右边二维码 结束-->
+        </div>
+        <div class="container wrapper clearfix ">
+
+            <div class="Friendship">
+                <div class="link-href">
+                    <ul>
+                        <li>友情链接：</li>
+                        <li></li>                            </ul>
+
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+
+    <div class="floating_ck">
+        <dl>
+            <dt></dt>
+            <dd class="kefu">
+                <span title="在线客服"><a href="#"  target="_blank"></a></span>
+                <div class="floating_left floating_ation">
+                    <div class="tit">明天牛在线客服</div>
+
+                    <div class="dianhua">400-763-8898</div>
+                </div>
+            </dd>
+            <dd class="qrcord">
+                <span title="扫一扫"></span>
+                <div class="floating_left floating_ewm">
+                    <p><img style="height: 130px; width: 130px; float: none; margin: 0px;" alt="" src="/static/pc/templets/moban/images/hnjf-app-down-344.jpg" /></p>            </div>
+                </dd>
+                <dd class="return">
+                    <span onClick="gotoTop();return false;" title="返回顶部"></span>
+                </dd>
+            </dl>
+        </div>
+        <script>
+            function gotoTop(){
+                var n = $(window).scrollTop();
+                for (I = n; I >= 1; I--) {
+                    window.scrollBy(0, -1);
+                }
+            }
+        </script>
+    </body>
+
+    </html>

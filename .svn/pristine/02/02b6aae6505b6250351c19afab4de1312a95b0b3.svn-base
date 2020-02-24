@@ -1,0 +1,51 @@
+package com.sjy.api;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.sjy.entity.Notice;
+import com.sjy.service.NoticeService;
+/**
+ * 公告类api
+ * @author wxh
+ *
+ */
+@RestController
+@CrossOrigin
+@RequestMapping("/api/notice")
+public class NoticeApiController {
+	@Autowired
+	private NoticeService noticeService;
+	/**
+	 * 获取最新一条公告
+	 * @return
+	 */
+	@RequestMapping(value="/getNewNotice",method=RequestMethod.POST)
+	public String getNewNotice() {
+		return noticeService.getNewNotice();
+	}
+	/**
+	 * 获取公告列表
+	 * @param notice
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@RequestMapping(value="/getNoticeList",method=RequestMethod.POST)
+	public String getNoticeList(Notice notice,Integer page,Integer limit) {
+		String result = noticeService.getNoticeList(notice, page, limit);
+		return result;
+	}
+	/**
+	 * 公告详情
+	 * @param noticeId
+	 * @return
+	 */
+	@RequestMapping(value="/getNoticeById",method=RequestMethod.POST)
+	public String getNoticeById(Integer noticeId) {
+		return noticeService.getNoticeById(noticeId);
+	}
+}

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.UserOptionsDao">
+	<resultMap id="BaseResultMap" type="com.sjy.entity.UserOptions">
+		<id column="user_options_id" property="userOptionsId" />
+		<result column="user_id" property="userId" />
+		<result column="stock_code" property="stockCode" />
+		<result column="stock_new_money" property="stockNewMoney" />
+		<result column="stock_name" property="stockName" />
+		<result column="stock_change" property="stockChange" />
+		<result column="stock_applies" property="stockApplies" />
+		<result column="create_time" property="createTime" />
+		<result column="market" property="market" />
+	</resultMap>
+	<sql id="userOptionsField">
+		user_options_id,
+		user_id,
+		stock_code,
+		stock_new_money,
+		stock_name,
+		stock_change,
+		stock_applies,
+		create_time,
+		market
+	</sql>
+	<!-- 新增自选 -->
+	<insert id="addUserOptions" parameterType="com.sjy.entity.UserOptions" useGeneratedKeys="true" keyProperty="userOptionsId">
+		insert into user_options(user_id,stock_code,stock_new_money,stock_name,stock_change,stock_applies,create_time,market) 
+		values(#{userId},#{stockCode},#{stockNewMoney},#{stockName},#{stockChange},#{stockApplies},#{createTime},#{market})
+	</insert>
+	<!-- 批量删除自选 -->
+	<delete id="delUserOptions" parameterType="com.sjy.entity.UserOptions">
+		delete from user_options where user_id = #{userId} and stock_code in 
+		<foreach collection="codes" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	<!--<select id="getUserOptionsCount" resultType="INT">
+		select count(1) from user_options where 1=1
+		<if test="option != null">
+			<if test="option.userId != null">
+				and user_id = #{option.userId}
+			</if>
+			<if test="option.stockCode != null and option.stockCode != ''">
+				and stock_code = #{option.stockCode}
+			</if>
+			<if test="option.stockName != null and option.stockName != ''">
+				and stock_name like concat('%',#{option.stockName},'%')
+			</if>
+		</if>
+	</select>-->
+	<select id="getUserOptionsCount" resultType="INT">
+		select count(1) from user_options where 1=1
+			<if test="userId != null">
+				and user_id = #{userId}
+			</if>
+	</select>
+	<select id="getUserOptionsList" resultMap="BaseResultMap">
+		select <include refid="userOptionsField"></include> from user_options where 1=1
+		<if test="option != null">
+			<if test="option.userId != null">
+				and user_id = #{option.userId}
+			</if>
+			<if test="option.stockCode != null and option.stockCode != ''">
+				and stock_code = #{option.stockCode}
+			</if>
+			<if test="option.stockName != null and option.stockName != ''">
+				and stock_name like concat('%',#{option.stockName},'%')
+			</if>
+		</if>
+		order by create_time desc
+		<if test="page != null and limit != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+	<select id="checkIsAlready" resultType="INT">
+		select count(1) from user_options where 1=1
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="stockCode != null and stockCode != ''">
+			and stock_code = #{stockCode}
+		</if>
+	</select>
+
+	<select id="getUserAllStock" resultMap="BaseResultMap">
+		select <include refid="userOptionsField"></include> from user_options
+        where 1=1
+		<if test="userId != null  and userId != ''">
+			and user_id = #{userId}
+		</if>
+		<if test="page != null and limit != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+
+
+	<select id="getUserOptions" resultType="com.sjy.entity.UserOptions">
+		select <include refid="userOptionsField"></include> from user_options
+        where 1=1
+        and   user_id = #{userId}
+        and   stock_code = #{stockCode}
+	</select>
+
+</mapper>

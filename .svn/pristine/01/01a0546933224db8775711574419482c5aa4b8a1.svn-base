@@ -1,0 +1,18 @@
+package com.sjy.dao;
+
+import com.sjy.entity.SimulationTransaction;
+import com.sjy.entity.UserOrder;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2019/5/17.
+ */
+@Mapper
+public interface EntrustSimulationTransactionDao {
+    int selectEntrustSimulationTransactionCount(SimulationTransaction simulationTransaction);
+
+    List<UserOrder> selectEntrustSimulationTransactionList(@Param("simulationTransaction") SimulationTransaction simulationTransaction,@Param("page") Integer page,@Param("limit") Integer limit);
+}

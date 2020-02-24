@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.AdminRoleDao">
+	<resultMap type="com.ylb.entity.AdminRole" id="BaseResultMap">
+		<result column="admin_id" property="adminId" jdbcType="INTEGER"/>
+		<result column="role_id" property="roleId" jdbcType="INTEGER"/>
+	</resultMap>
+	<select id="getAdminRoleByAdminId" resultMap="BaseResultMap">
+		select admin_id,role_id from admin_role where admin_id = #{adminId}
+	</select>
+	<delete id="delAdminRole" parameterType="com.ylb.entity.AdminRole">
+		delete from admin_role where admin_id = #{adminId}
+	</delete>
+	<insert id="addAdminRole" parameterType="com.ylb.entity.AdminRole">
+		insert into admin_role(admin_id,role_id) values(#{adminId},#{roleId})
+	</insert>
+	<update id="updateAdminRole" parameterType="com.ylb.entity.AdminRole">
+		update admin_role set role_id = #{roleId} where admin_id = #{adminId}
+	</update>
+</mapper>

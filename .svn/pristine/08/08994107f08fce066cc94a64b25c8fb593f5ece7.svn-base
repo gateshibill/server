@@ -1,0 +1,629 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <meta name="renderer" content="ie-stand">
+    <link type="text/css" rel="stylesheet" href="/static/pc/templets/moban/images/Skins/Currently/jbox.css" />
+    <link rel="stylesheet" type="text/css" href="/static/pc/templets/moban/images/style.css" />
+    <link rel="stylesheet" type="text/css" href="/static/pc/templets/moban/images/home.css" />
+    <script src="/static/pc/templets/moban/images/jquery.js"></script>
+    
+    
+
+<title>新手引导 > 新手指引-千吉时</title>
+<link rel="stylesheet" href="/static/pc/templets/moban/images/news.css">
+
+
+<script>
+    function IFrameReSize(iframename) {
+        var pTar = document.getElementById(iframename);
+        if (pTar) { //ff
+            if (pTar.contentDocument && pTar.contentDocument.body.offsetHeight && !window.ActiveXObject) {
+                pTar.height = pTar.contentDocument.body.offsetHeight + 100;
+            } //ie
+            else if (pTar.Document && pTar.Document.body.scrollHeight) {
+                pTar.height = pTar.Document.body.scrollHeight + 100;
+            }
+        }
+    }
+
+    function IFrameReSizeWidth(iframename) {
+        var pTar = document.getElementById(iframename);
+        if (pTar) {
+            if (pTar.contentDocument && pTar.contentDocument.body.offsetWidth) {
+                pTar.width = pTar.contentDocument.body.offsetWidth;
+            }
+            else if (pTar.Document && pTar.Document.body.scrollWidth) {
+                pTar.width = pTar.Document.body.scrollWidth;
+            }
+        }
+    }
+</script>
+
+</head>
+
+<body>
+    <!--头部开始-->
+    <div class="header-top">
+        <div class="wrapper">
+            <div class="tel-num">
+                欢迎来到 <span>千吉时</span>！客服热线： 400-763-8898            </div>
+            <div class="quick-link">
+                                              </div>
+        </div>
+    </div>
+    <div class="header">
+        <div class="wrapper d_wrapM  clearfix">
+            <div class="logo"><a href="index.html"><p><img style="height: 75px; width: 450px; float: none; margin: 0px;" alt="" src="/static/pc/templets/moban/images/hnjf-web-logo.png" /></p></a></div>
+          
+            <div class="nav clearfix" style="float: right;">
+        
+
+
+            <ul class="clearfix navigation-list" id="dw_ul">
+                        <li class="navigation-item ">
+                <a href="/pc/index/index" class="navigation-item-name">网站首页                                    </a>
+                <div class="navigation-list-two-con" id="dw_ul2">
+                    <div class="navigation-list-two">
+                                                <ul class="navigation-two-list" id="erji_nav">
+                                                    </ul>
+                    </div>
+                </div>
+            </li>
+			
+			
+			
+                        <li class="navigation-item ">
+                <a href="/pc/index/antianrongzi" class="navigation-item-name">按天融资                                   </a>
+                <div class="navigation-list-two-con" id="dw_ul2">
+                    <div class="navigation-list-two">
+                                                <ul class="navigation-two-list" id="erji_nav">
+                                                    </ul>
+                    </div>
+                </div>
+            </li>
+                       
+				
+			
+                        <li class="navigation-item ">
+                <a href="/pc/index/anyuerongzi" class="navigation-item-name">按月融资                                   </a>
+                <div class="navigation-list-two-con" id="dw_ul2">
+                    <div class="navigation-list-two">
+                                                <ul class="navigation-two-list" id="erji_nav">
+                                                    </ul>
+                    </div>
+                </div>
+            </li>
+                       
+				
+			
+                        <li class="navigation-item ">
+                <a href="/pc/index/mianxirongzi" class="navigation-item-name">免息融资                                   </a>
+                <div class="navigation-list-two-con" id="dw_ul2">
+                    <div class="navigation-list-two">
+                                                <ul class="navigation-two-list" id="erji_nav">
+                                                    </ul>
+                    </div>
+                </div>
+            </li>
+                       
+				
+			
+                        <li class="navigation-item ">
+                <a href="/pc/index/gongsijianjie" class="navigation-item-name">新手引导                                   </a>
+                <div class="navigation-list-two-con" id="dw_ul2">
+                    <div class="navigation-list-two">
+                                                <ul class="navigation-two-list" id="erji_nav">
+                                                    </ul>
+                    </div>
+                </div>
+            </li>
+                       
+				
+			
+                        <li class="navigation-item ">
+                <a href="/pc/index/woyaotuiguang" class="navigation-item-name">我要推广                                   </a>
+                <div class="navigation-list-two-con" id="dw_ul2">
+                    <div class="navigation-list-two">
+                                                <ul class="navigation-two-list" id="erji_nav">
+                                                    </ul>
+                    </div>
+                </div>
+            </li>
+                       
+				
+			
+                        <li class="navigation-item ">
+                <a href="/pc/index/ruanjianxiazai" class="navigation-item-name">软件下载                                   </a>
+                <div class="navigation-list-two-con" id="dw_ul2">
+                    <div class="navigation-list-two">
+                                                <ul class="navigation-two-list" id="erji_nav">
+                                                    </ul>
+                    </div>
+                </div>
+            </li>
+                       
+					   
+					   
+					   
+                    </ul>
+            </div>
+        </div>
+    </div>
+
+
+<div class="wrapper2">
+    <div class="cms_frame cf">
+        
+<div class="cms_nav">
+  <ul class="cn-nav-1-1ist">
+    
+	
+	
+				
+				<li class="cn1l-item "> <a href="/pc/index/gongsijianjie"  class="cn1l-item-name">公司简介</a> </li>
+      	      	
+				
+				
+	
+				
+				<li class="cn1l-item "> <a href="/pc/index/xinshouzhiyin"  class="cn1l-item-name">新手指引</a> </li>
+      	      	
+				
+				
+	
+				
+				<li class="cn1l-item "> <a href="/pc/index/anquanbaozhang"  class="cn1l-item-name">安全保障</a> </li>
+      	      	
+				
+				
+	
+				
+				<li class="cn1l-item "> <a href="bangonghuanjing.html"  class="cn1l-item-name">办公环境</a> </li>
+      	      	
+				
+				
+	
+				
+				<li class="cn1l-item "> <a href="/pc/index/zhucexieyi"  class="cn1l-item-name">注册协议</a> </li>
+      	      	
+				
+				
+	
+				
+				<li class="cn1l-item "> <a href="/pc/index/lianxiwomen"  class="cn1l-item-name">联系我们</a> </li>
+      	      	
+				
+				
+				
+				</ul>
+</div>
+
+        <div class="cms_content">
+            <div class="cms-title-1">
+                <div class="pleft30 ptop10 h30 right" style="width:212px;">
+                    <div class="bdsharebuttonbox" style="width:212px;">
+                        <a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="" style=" background:none; padding-left:0;">分享到：</a>
+                        <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+                        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                        <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+                        <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+                        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                    </div>
+                  
+                </div>
+                <h2>新手指引</h2>
+            </div>
+            <div class="cms-details">
+                <div class="article-list-wrap mgt">
+                   <p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: medium; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+	&nbsp;</p>
+<h4 class="h4bg-green" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -97px no-repeat scroll;">
+	<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(170, 188, 100);">什么是股票配资？</span></h4>
+<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+	<li>
+		<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+			股票配资是一种创新的股票投资工具，通过股票配资，能有效的提高投资收益，堪称炒股利器。在系统性或确定性机会出现时，投资者运用配资工具，可以在千吉时获得自有资金2&mdash;8倍的资金，能够将收益水平放大到几倍。投资者需要注意，配资工具在放大收益也会放大风险，投资者应在投资机会比较确定并管理好风险的前提下使用，宜投资想对稳健的品种。</p>
+	</li>
+</ul>
+<h4 class="h4bg-yellow" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -186px no-repeat scroll;">
+	<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(255, 196, 0);">配资后如何进行股票交易？</span></h4>
+<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+	<li>
+		<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+			配资成功后，网站客服会为客户在合作券商开立股票交易账户，在第二个交易日9:15以前将以站内信方式将交易账号和密码发送给客户，客户在千吉时&ldquo;软件下载&rdquo;页面下载恒生电子（600570）的Homs客户端就可以开始交易了，该软件完全符合日常的操作习惯。</p>
+	</li>
+</ul>
+<h4 class="h4bg-bule" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% 0px no-repeat scroll;">
+	<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(27, 184, 226);">千吉时如何进行股票配资的风险管理？</span></h4>
+<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+	<li>
+		<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+			股票配资完成后，您会收到一个证券公司的股票交易账户，然后就可以开始交易了。为了保护配资资金安全，同时帮您养成良好的投资习惯，交易账户会设置警戒线和平仓线。亏损警告线：当总操盘资金低于警戒线以下时，只能平仓不能建仓，千吉时将有权把您的股票减至半仓。亏损平仓线：当总操盘资金低于平仓线以下时，千吉时将有权把您的股票进行平仓，为避免平仓发生，请时刻关注本金是否充足。</p>
+	</li>
+</ul>
+<h4 class="h4bg-green" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -97px no-repeat scroll;">
+	<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(170, 188, 100);">股票配资限制购买的股票有哪些？</span></h4>
+<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+	<li>
+		<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+			1、不得购买权证类可以T+0交易的证券；&nbsp;<br />
+			2、不得购买首日上市新股（或复牌首日股票）等当日不设涨跌停板限制的股票；&nbsp;<br />
+			3、不得进行坐庄、对敲、接盘、大宗交易、内幕信息等违反股票交易法律法规及证券公司规定的交易。</p>
+	</li>
+</ul>
+<h4 class="h4bg-yellow" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -186px no-repeat scroll;">
+	<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(255, 196, 0);">股票配资的注意事项有哪些？</span></h4>
+<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+	<li>
+		<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+			操盘前必读&nbsp;<br />
+			1、请尽量保持总操盘资金高于亏损警戒线，及时添加风险保证金，以免到达亏损平仓线被强制平仓；&nbsp;<br />
+			2、总操盘资金到达亏损平仓线后，如不想添加风险保证金，请及时卖出股票，以免出现超额亏损。&nbsp;<br />
+			股票停牌处理&nbsp;<br />
+			如果您买的股票遇到停牌，需按停牌股票市值追加30%停牌准备金，直到股票复牌；&nbsp;<br />
+			股票复牌后，如股票上涨退还全部停牌保证金，下跌在停牌保证金里扣除下跌部分金额（剩余退还）。&nbsp;<br />
+			交易手续费&nbsp;<br />
+			手续费包含印花税、过户费和交易佣金，印花税和过户费按财政部和交易所规定收取，交易佣金0.02%（万2）由券商收取。&nbsp;<br />
+			其他注意事项&nbsp;<br />
+			1、投资盈利部分可在收盘后随时提取，最快可在30分钟内到您账户，如您申请提款到银行卡，同样最快可在30分钟内到您银行卡；&nbsp;<br />
+			2、每月月初支付利息，如1月8日配资，1月8日支付第1个月利息，2月8日支付第2个月利息，以此类推；&nbsp;<br />
+			3、配资到期前一个交易日，应将账户内所有股票卖掉，变成可用资金，借款期满当日，51滚雪球将账户内资产进行清算。&nbsp;<br />
+			4、配资如需提前完结，且还有未支付利息的剩余月份，需要罚息一个月。如配资6个月，做了2个月提前完结，罚息一个月。</p>
+	</li>
+</ul>
+<h4 class="h4bg-cyanblue" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -281px no-repeat scroll;">
+	<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(76, 164, 153);">配资与融资融券业务的区别是什么？</span></h4>
+<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+	<li>
+		<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+			股票配资业务与融资融券业务从本质上讲都是增加投资者的操盘资金，但两者又有着很大的差别。<br />
+			股票配资是股民在一定本金的情况下，提供放大资金比例操盘，然后支付一定的利息；融资融券则是投资者向具有上海证券交易所或深圳证券交易所会员资格的证券公司提供担保物，借入资金买入本所上市证券或借入本所上市证券并卖出的行为。但是在融资融券实际操作中存在着诸多的限制，以下对两项业务做个对比：</p>
+		<table cellpadding="0" cellspacing="0" style="border-collapse: collapse; border-spacing: 0px;">
+			<tbody>
+				<tr class="firstRow" style="border: 1px solid rgb(91, 96, 102);">
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							融资融券</p>
+					</td>
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							股票配资</p>
+					</td>
+				</tr>
+				<tr style="border: 1px solid rgb(91, 96, 102);">
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							开户必须满6个月</p>
+					</td>
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							无限制</p>
+					</td>
+				</tr>
+				<tr style="border: 1px solid rgb(91, 96, 102);">
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							资金要求最低10万</p>
+					</td>
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle; word-break: break-all;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							1000元起</p>
+					</td>
+				</tr>
+				<tr style="border: 1px solid rgb(91, 96, 102);">
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							标地股少（可交易的股票少）</p>
+					</td>
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							可交易的股票多</p>
+					</td>
+				</tr>
+				<tr style="border: 1px solid rgb(91, 96, 102);">
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							融资额度低（一般50%）</p>
+					</td>
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle; word-break: break-all;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							配资额度高（一般800%）</p>
+					</td>
+				</tr>
+				<tr style="border: 1px solid rgb(91, 96, 102);">
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							交易佣金高（通常在千分之1以上）</p>
+					</td>
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle; word-break: break-all;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							交易佣金低（万分之2以下）</p>
+					</td>
+				</tr>
+				<tr style="border: 1px solid rgb(91, 96, 102);">
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							融资最长期限6个月</p>
+					</td>
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							配资期限无限制</p>
+					</td>
+				</tr>
+				<tr style="border: 1px solid rgb(91, 96, 102);">
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							需要足额的担保物</p>
+					</td>
+					<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+						<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+							不需</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</li>
+</ul>
+<div>
+	<h4 class="h4bg-green" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -97px no-repeat scroll;">
+		<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(170, 188, 100);">什么是股票配资？</span></h4>
+	<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+		<li>
+			<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+				股票配资是一种创新的股票投资工具，通过股票配资，能有效的提高投资收益，堪称炒股利器。在系统性或确定性机会出现时，投资者运用配资工具，可以在千吉时获得自有资金2&mdash;8倍的资金，能够将收益水平放大到几倍。投资者需要注意，配资工具在放大收益也会放大风险，投资者应在投资机会比较确定并管理好风险的前提下使用，宜投资想对稳健的品种。</p>
+		</li>
+	</ul>
+	<h4 class="h4bg-yellow" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -186px no-repeat scroll;">
+		<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(255, 196, 0);">配资后如何进行股票交易？</span></h4>
+	<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+		<li>
+			<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+				配资成功后，网站客服会为客户在合作券商开立股票交易账户，在第二个交易日9:15以前将以站内信方式将交易账号和密码发送给客户，客户在千吉时&ldquo;软件下载&rdquo;页面下载恒生电子（600570）的Homs客户端就可以开始交易了，该软件完全符合日常的操作习惯。</p>
+		</li>
+	</ul>
+	<h4 class="h4bg-bule" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% 0px no-repeat scroll;">
+		<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(27, 184, 226);">千吉时如何进行股票配资的风险管理？</span></h4>
+	<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+		<li>
+			<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+				股票配资完成后，您会收到一个证券公司的股票交易账户，然后就可以开始交易了。为了保护配资资金安全，同时帮您养成良好的投资习惯，交易账户会设置警戒线和平仓线。亏损警告线：当总操盘资金低于警戒线以下时，只能平仓不能建仓，千吉时将有权把您的股票减至半仓。亏损平仓线：当总操盘资金低于平仓线以下时，千吉时将有权把您的股票进行平仓，为避免平仓发生，请时刻关注本金是否充足。</p>
+		</li>
+	</ul>
+	<h4 class="h4bg-green" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -97px no-repeat scroll;">
+		<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(170, 188, 100);">股票配资限制购买的股票有哪些？</span></h4>
+	<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+		<li>
+			<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+				1、不得购买权证类可以T+0交易的证券；&nbsp;<br />
+				2、不得购买首日上市新股（或复牌首日股票）等当日不设涨跌停板限制的股票；&nbsp;<br />
+				3、不得进行坐庄、对敲、接盘、大宗交易、内幕信息等违反股票交易法律法规及证券公司规定的交易。</p>
+		</li>
+	</ul>
+	<h4 class="h4bg-yellow" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -186px no-repeat scroll;">
+		<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(255, 196, 0);">股票配资的注意事项有哪些？</span></h4>
+	<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+		<li>
+			<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+				操盘前必读&nbsp;</p>
+		</li>
+		<li>
+			<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+				1、请尽量保持总操盘资金高于亏损警戒线，及时添加风险保证金，以免到达亏损平仓线被强制平仓；&nbsp;<br />
+				2、总操盘资金到达亏损平仓线后，如不想添加风险保证金，请及时卖出股票，以免出现超额亏损。&nbsp;<br />
+				股票停牌处理&nbsp;<br />
+				如果您买的股票遇到停牌，需按停牌股票市值追加30%停牌准备金，直到股票复牌；&nbsp;<br />
+				股票复牌后，如股票上涨退还全部停牌保证金，下跌在停牌保证金里扣除下跌部分金额（剩余退还）。&nbsp;<br />
+				交易手续费&nbsp;<br />
+				手续费包含印花税、过户费和交易佣金，印花税和过户费按财政部和交易所规定收取，交易佣金0.02%（万2）由券商收取。&nbsp;<br />
+				其他注意事项&nbsp;<br />
+				1、投资盈利部分可在收盘后随时提取，最快可在30分钟内到您账户，如您申请提款到银行卡，同样最快可在30分钟内到您银行卡；&nbsp;<br />
+				2、每月月初支付利息，如1月8日配资，1月8日支付第1个月利息，2月8日支付第2个月利息，以此类推；&nbsp;<br />
+				3、配资到期前一个交易日，应将账户内所有股票卖掉，变成可用资金，借款期满当日，51滚雪球将账户内资产进行清算。&nbsp;<br />
+				4、配资如需提前完结，且还有未支付利息的剩余月份，需要罚息一个月。如配资6个月，做了2个月提前完结，罚息一个月。</p>
+		</li>
+	</ul>
+	<h4 class="h4bg-cyanblue" style="font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px; padding: 0px; vertical-align: middle; height: 70px; left: -16px; position: relative; z-index: 2; color: rgb(255, 255, 255); background: url(&quot;http://www.51gxq.com/tpl/Home/default/Res/img/guide-titlebg.png&quot;) 0% -281px no-repeat scroll;">
+		<span style="display: inline-block; min-width: 145px; padding: 0px 44px 0px 16px; line-height: 50px; background: rgb(76, 164, 153);">配资与融资融券业务的区别是什么？</span></h4>
+	<ul class="list-paddingleft-2" style="color: rgb(91, 96, 102); font-family: &quot;Microsoft YaHei&quot;; font-size: medium; border: medium none; margin: 0px 0px 10px; padding-right: 0px; padding-left: 0px; vertical-align: middle;">
+		<li>
+			<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+				股票配资业务与融资融券业务从本质上讲都是增加投资者的操盘资金，但两者又有着很大的差别。</p>
+		</li>
+		<li>
+			<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102);">
+				股票配资是股民在一定本金的情况下，提供放大资金比例操盘，然后支付一定的利息；融资融券则是投资者向具有上海证券交易所或深圳证券交易所会员资格的证券公司提供担保物，借入资金买入本所上市证券或借入本所上市证券并卖出的行为。但是在融资融券实际操作中存在着诸多的限制，以下对两项业务做个对比：</p>
+			<table cellpadding="0" cellspacing="0" style="border-collapse: collapse; border-spacing: 0px;">
+				<tbody>
+					<tr class="firstRow" style="border: 1px solid rgb(91, 96, 102);">
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								融资融券</p>
+						</td>
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								股票配资</p>
+						</td>
+					</tr>
+					<tr style="border: 1px solid rgb(91, 96, 102);">
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								开户必须满6个月</p>
+						</td>
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								无限制</p>
+						</td>
+					</tr>
+					<tr style="border: 1px solid rgb(91, 96, 102);">
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								资金要求最低10万</p>
+						</td>
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle; word-break: break-all;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								1000元起</p>
+						</td>
+					</tr>
+					<tr style="border: 1px solid rgb(91, 96, 102);">
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								标地股少（可交易的股票少）</p>
+						</td>
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								可交易的股票多</p>
+						</td>
+					</tr>
+					<tr style="border: 1px solid rgb(91, 96, 102);">
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								融资额度低（一般50%）</p>
+						</td>
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle; word-break: break-all;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								配资额度高（一般800%）</p>
+						</td>
+					</tr>
+					<tr style="border: 1px solid rgb(91, 96, 102);">
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								交易佣金高（通常在千分之1以上）</p>
+						</td>
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle; word-break: break-all;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								交易佣金低（万分之2以下）</p>
+						</td>
+					</tr>
+					<tr style="border: 1px solid rgb(91, 96, 102);">
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								融资最长期限6个月</p>
+						</td>
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								配资期限无限制</p>
+						</td>
+					</tr>
+					<tr style="border: 1px solid rgb(91, 96, 102);">
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								需要足额的担保物</p>
+						</td>
+						<td style="border: medium none; margin: 0px; padding: 0px; vertical-align: middle;">
+							<p style="overflow: hidden; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 16px; line-height: 30px; font-family: &quot;Microsoft Yahei&quot;; float: none; color: rgb(102, 102, 102); border: medium none; vertical-align: middle;">
+								不需要</p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</li>
+	</ul>
+</div>
+<br />
+
+                </div>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</div>
+
+<!--客服-->
+
+<footer>
+    <div class="footer-mi">
+        <div class="container wrapper clearfix">
+
+      
+
+            <div class="footer-cen-mi fl">
+                <p class="footer-menu-mi">
+                    <span><a target="_blank" class="footer-menu-lnone-mi" href="/pc/index/gongsijianjie">关于我们</a></span>
+                    <span>|</span>
+                    <span><a target="_blank" href="/pc/index/lianxiwomen">联系我们</a></span>
+                </p>
+                <p class="footer-logo-mi">
+                    <img width="177" height="62" class="lazy" src="templets/moban/images/hnjf-logo_bg.png">
+                </p>
+                <p class="footer-copy-mi"> 版权所有 © 千吉时    </p>
+                <p class="footer-copy-mi"><a target="_blank" href="http://www.miitbeian.gov.cn">沪ICP备19007906号</a></p>
+            </div>
+            <div class="footer-right-mi fl">
+                <p class="footer-menu-mi">
+                    <span><a rel="nofollow" class="footer-menu-lnone-mi" target="_blank" href="/pc/index/xinshouzhiyin" id="kefu1">股票融资新手帮助指引</a></span>
+                    <span>|</span>
+                    <a rel="nofollow" href="tencent://Message/?Uin=&amp;websiteName在线客服&amp;Menu=ye"  >在线客服</a>
+                </p>
+                <p class="footer-phone-mi">
+                    <i class="footer-icon-phone-mi"></i>
+                    全国服务热线
+                </p>
+                <p class="footer-num-mi">400-763-8898</p>
+                <p class="footer-serv-mi">
+                    服务时间 (8:30-17:30)
+                </p>
+            </div>
+            <!--右边二维码 开始-->
+            <div class="public">
+                <div class="public-pao">
+                    <p> APP下载 </p>
+                </div>
+                <div class="public-ewm">
+                    <p>
+                  <p><img style="height: 130px; width: 130px; float: none; margin: 0px;" alt="" src="/static/pc/templets/moban/images/hnjf-app-down-344.jpg" /></p>                    </p>
+                </div>
+                <div class="public-pao">
+                    <span>扫描下载</span>
+                </div>
+            </div>
+            <!--右边二维码 结束-->
+        </div>
+        <div class="container wrapper clearfix ">
+                
+            <div class="Friendship">
+                    <div class="link-href">
+                            <ul>
+                                <li>友情链接：</li>
+                                <li></li>                            </ul>
+             
+                    </div> 
+            </div>
+            </div>
+    </div>
+</footer>
+
+<div class="floating_ck">
+    <dl>
+        <dt></dt>
+        <dd class="kefu">
+            <span title="在线客服"><a href="#"  target="_blank"></a></span>
+            <div class="floating_left floating_ation">
+                <div class="tit">千吉时在线客服</div>
+                
+                <div class="dianhua">400-763-8898</div>
+            </div>
+        </dd>
+        <dd class="qrcord">
+            <span title="扫一扫"></span>
+            <div class="floating_left floating_ewm">
+                <p><img style="height: 130px; width: 130px; float: none; margin: 0px;" alt="" src="/static/pc/templets/moban/images/hnjf-app-down-344.jpg" /></p>            </div>
+        </dd>
+        <dd class="return">
+            <span onClick="gotoTop();return false;" title="返回顶部"></span>
+        </dd>
+    </dl>
+</div>
+<script>
+    function gotoTop(){
+        var n = $(window).scrollTop();
+        for (I = n; I >= 1; I--) {
+            window.scrollBy(0, -1);
+        }
+    }
+</script>
+</body>
+
+</html>

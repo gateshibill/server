@@ -1,0 +1,57 @@
+package com.sjy.service.impl;
+
+import com.sjy.dao.PositionSimulationTransactionDao;
+import com.sjy.entity.SimulationTransaction;
+import com.sjy.entity.UserOrder;
+import com.sjy.service.PositionSimulationTransactionService;
+import com.sjy.util.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2019/5/17.
+ */
+@Service
+public class PositionSimulationTransactionServiceImpl implements PositionSimulationTransactionService{
+
+    @Autowired
+    private PositionSimulationTransactionDao positionSimulationTransactionDao;
+
+    /**
+     * 查询持仓模拟交易列表
+     * @param simulationTransaction
+     * @param page
+     * @param limit
+     * @return
+     */
+    @Override
+    public String selectPositionSimulationTransactionList(SimulationTransaction simulationTransaction, Integer page, Integer limit) {
+        if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = positionSimulationTransactionDao.selectPositionSimulationTransactionCount(simulationTransaction);
+        List<UserOrder> lists = positionSimulationTransactionDao.selectPositionSimulationTransactionList(simulationTransaction, (page - 1) * limit, limit);
+
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+
+	@Override
+	public String getPositionSimulationTransactionList(SimulationTransaction simulationTransaction, Integer page,
+			Integer limit, Integer adminId, Integer parentId) {
+		if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = positionSimulationTransactionDao.getPositionSimulationTransactionCount(simulationTransaction,adminId,parentId);
+        List<UserOrder> lists = positionSimulationTransactionDao.getPositionSimulationTransactionList(simulationTransaction, (page - 1) * limit, limit,adminId,parentId);
+
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+	}
+}

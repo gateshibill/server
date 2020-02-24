@@ -1,0 +1,30 @@
+package com.sjy.service;
+
+
+import com.sjy.entity.FlowRecord;
+import com.sjy.entity.FlowRecordVO;
+
+import java.text.ParseException;
+
+public interface FlowRecordService {
+    //api专用
+    public String getFlowRecordList(FlowRecord record, Integer page, Integer limit);
+
+    public String selectAllFlowRecord(FlowRecordVO flowRecordVO,String sTime,String eTime, Integer page, Integer limit)throws ParseException;
+
+    public String getAllFlowRecord(FlowRecordVO flowRecordVO,String sTime,String eTime, Integer page, Integer limit,Integer adminId, Integer parentId)throws ParseException;
+
+    String getCapitalStatistics(FlowRecord flowRecord, Integer page, Integer limit);
+
+    public String selectUserIncome(FlowRecordVO flowRecordVO, Integer page, Integer limit);
+
+    public String selectUserSpending(FlowRecordVO flowRecordVO, Integer page, Integer limit);
+
+    public String getUserIncome(FlowRecordVO flowRecordVO, Integer page, Integer limit,Integer adminId, Integer parentId)throws ParseException;
+
+    public String getUserSpending(FlowRecordVO flowRecordVO, Integer page, Integer limit,Integer adminId, Integer parentId)throws ParseException;
+
+    //public String selectCapital(FlowRecordVO flowRecordVO, Integer page, Integer limit);
+
+    void addFlowRecord(FlowRecord flowRecord);
+}

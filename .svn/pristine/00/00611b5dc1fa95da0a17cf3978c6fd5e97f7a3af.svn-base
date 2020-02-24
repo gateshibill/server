@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.FlowRecordDao">
+    <resultMap type="com.sjy.entity.FlowRecord" id="BaseResultMap">
+        <id column="flow_id" property="flowId"/>
+        <result column="flow_number" property="flowNumber"/>
+        <result column="flow_way" property="flowWay"/>
+        <result column="flow_type" property="flowType"/>
+        <result column="user_id" property="userId"/>
+        <result column="after_money" property="afterMoney"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		flow_id,flow_number,flow_way,flow_type,user_id,after_money,create_time
+	</sql>
+
+    <resultMap type="com.sjy.entity.FlowRecordVO" id="Join_Result_Column" extends="BaseResultMap">
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+    </resultMap>
+
+    <!-- 获取资金明细表数据 -->
+    <select id="selectAllFlowRecord" parameterType="com.sjy.entity.FlowRecord" resultMap="Join_Result_Column">
+        select f.flow_id,f.flow_number,f.flow_way,f.flow_type,f.user_id,f.after_money,f.create_time,
+        u.user_name as userName
+        from flow_record f
+        left join user u on u.user_id = f.user_id
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+    <select id="selectFlowRecordList" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"></include> from flow_record where 1=1
+        <if test="record != null">
+            <if test="record.userId !=null">
+                and user_id = #{record.userId}
+            </if>
+            <if test="record.flowWay != null">
+                and flow_way = #{record.flowWay}
+            </if>
+            <if test="record.flowType!= null">
+                and flow_type = #{record.flowType}
+            </if>
+        </if>
+        order by create_time desc
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+    <select id="selectFlowRecordCount" resultType="INT">
+        select count(1) from flow_record where 1=1
+        <if test="FlowRecord != null">
+            <if test="FlowRecord.userId !=null">
+                and user_id = #{FlowRecord.userId}
+            </if>
+            <if test="FlowRecord.flowWay != null">
+                and flow_way = #{FlowRecord.flowWay}
+            </if>
+            <if test="FlowRecord.flowType!= null">
+                and flow_type = #{FlowRecord.flowType}
+            </if>
+        </if>
+    </select>
+    <!--获取资金统计个数-->
+    <select id="selectCapitalStatisticsCount" resultType="INT">
+        select count(1) from flow_recrd where 1=1
+        <if test="flowRecord != null">
+            <if test="flowRecord.flowId != null">
+                and flow_id = #{flowRecord.flowId}
+            </if>
+            <if test="flowRecord.userId != null">
+                and user_id = #{flowRecord.userId}
+            </if>
+            <if test="flowRecord.flowNumber != null">
+                and flow_number = #{flowRecord.flowNumber}
+            </if>
+            <if test="flowRecord.flowWay != null">
+                and flow_way = #{flowRecord.flowWay}
+            </if>
+            <if test="flowRecord.flowType != null">
+                and flow_type = #{flowRecord.flowType}
+            </if>
+            <if test="flowRecord.afterMoney != null">
+                and after_money = #{flowRecord.afterMoney}
+            </if>
+            <if test="flowRecord.createTime != null and flowRecord.createTime != ''">
+                and create_time like concat ('%',#{flowRecord.orderType},'%')
+            </if>
+        </if>
+    </select>
+    <!--获取资金统计数据-->
+    <select id="selectCapitalStatisticsList" resultMap="BaseResultMap">
+        SELECT fr.flow_id,u.user_name,fr.flow_number,fr.flow_way,flow_type,fr.after_money,fr.create_time
+        from flow_record as fr LEFT JOIN `user` as u
+        on fr.user_id = u.user_id where 1=1
+        <if test="flowRecord != null">
+            <if test="flowRecord.flowId != null">
+                and fr.flow_id = #{flowRecord.flowId}
+            </if>
+            <if test="flowRecord.userName != null and flowRecord.userName != ''">
+                and u.user_name like concat ('%',#{flowRecord.userName},'%')
+            </if>
+            <if test="flowRecord.flowNumber != null">
+                and fr.flow_number = #{flowRecord.flowNumber}
+            </if>
+            <if test="flowRecord.flowWay != null">
+                and fr.flow_way = #{flowRecord.flowWay}
+            </if>
+            <if test="flowRecord.flowType != null">
+                and fr.flow_type = #{flowRecord.flowType}
+            </if>
+            <if test="flowRecord.afterMoney != null">
+                and fr.after_money = #{flowRecord.afterMoney}
+            </if>
+            ORDER BY fr.create_time
+        </if>
+    </select>
+</mapper>

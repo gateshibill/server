@@ -1,0 +1,255 @@
+package com.sjy.service.impl;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.gta.qts.c2j.adaptee.IGTAQTSApi;
+import com.gta.qts.c2j.adaptee.IGTAQTSCallbackBase;
+import com.gta.qts.c2j.adaptee.impl.GTAQTSApiBaseImpl;
+import com.gta.qts.c2j.adaptee.structure.QTSDataType;
+import com.gta.qts.c2j.adaptee.structure.SSEL1_Static;
+import com.gta.qts.c2j.adaptee.structure.SZSEL1_Static;
+import com.sjy.util.GTACallbackBase;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.sjy.dao.StockCodeDao;
+import com.sjy.entity.StockCode;
+import com.sjy.service.StockCodeService;
+import com.sjy.util.JsonUtil;
+
+import javax.annotation.Resource;
+
+@Service
+public class StockCodeServiceImpl implements StockCodeService{
+
+	@Value("${register.ip1}")
+	private String ip1;
+	@Value("${register.ip2}")
+	private String ip2;
+	@Value("${register.ip3}")
+	private String ip3;
+	@Value("${register.ip4}")
+	private String ip4;
+	@Value("${register.port1}")
+	private short port1;
+	@Value("${register.port2}")
+	private short port2;
+	@Value("${register.username}")
+	private String username;
+	@Value("${register.password}")
+	private String password;
+	@Value("${register.nettype}")
+	private String nettype;
+
+	@Resource
+	private StockCodeDao stockCodeDao;
+	@Override
+	public String selectStockCodeList(StockCode stock, Integer page, Integer limit) {
+		if(page == null) {
+			page =1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		int totalCount = stockCodeDao.selectStockCodeCount(stock);
+		List<StockCode> lists = stockCodeDao.selectStockCodeList(stock, (page-1) * limit, limit);
+		return JsonUtil.buildJsonByTotalCount(lists, totalCount);
+	}
+
+	@Override
+	public void addStockCode(StockCode stockCode) {
+		stockCodeDao.addStockCode(stockCode);
+	}
+
+	@Override
+	public void addALLStockCode() throws UnsupportedEncodingException {
+
+		List<StockCode> stockCodeList =new ArrayList<StockCode>();
+
+		// 创建消息回调对象，用于接收实时数据
+		IGTAQTSCallbackBase callback = new GTACallbackBase();
+		//创建API对象，与服务端交互使用
+		IGTAQTSApi baseService = GTAQTSApiBaseImpl.getInstance().CreateInstance(callback);
+		//基础API环境初始化，在开始使用API操作函数前，只调用一次
+		baseService.BaseInit();
+		//设置超时时间
+		baseService.BaseSetTimeout(30);
+
+		//注册FENS地址
+		//***** 警告：实际生产环境使用时，从国泰安公司获取到的FENS地址，此处需要全部通过“RegisterService”函数接口注册，
+		//*****       否则，在数据高可用方面，会大打折扣。
+		//***** 如有4个FENS ip地址，需要如下调用：
+		baseService.BaseRegisterService(ip1, port1);
+		baseService.BaseRegisterService(ip2, port1);
+		baseService.BaseRegisterService(ip3, port2);
+		baseService.BaseRegisterService(ip4, port2);
+
+		do{
+			//通过用户名与密码向服务器登陆   NetType : 0 表示公网(默认值)，1 表示特殊网络（内网、专线等）
+			int ret = baseService.BaseLoginX(username, password,nettype);
+			//判断是否登录成功
+			if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+				System.out.println("Login error:" + ret);
+				break;
+			}
+
+			// 订阅获取数据 SZSEL1_Static 和 SSEL1_Static
+			int msgTypeSZSEL1 = QTSDataType.MsgType.SZSEL1_Static.code;
+			int ret2 = baseService.BaseSubscribe(msgTypeSZSEL1, null);
+			if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret2) ){
+				System.out.println("SubscribeData error:" + ret2);
+				break;
+			}
+			int msgTypeSSEL = QTSDataType.MsgType.SSEL1_Static.code;
+			int ret3 = baseService.BaseSubscribe(msgTypeSSEL, null);
+			if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret3) ){
+				System.out.println("SubscribeData error:" + ret3);
+				break;
+			}
+
+
+			//快照数据集合  SZSEL1_Quotation：查询深交所 L1 静态数据
+			List<SZSEL1_Static> snapList = new ArrayList<SZSEL1_Static>();
+			//快照数据集合  SSEL1_Quotation：查询上交所 L1 静态数据
+			List<SSEL1_Static> sseList = new ArrayList<SSEL1_Static>();
+
+			ret = baseService.QuerySnap_SZSEL1_Static(null, snapList);
+			if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+				System.out.println("QuerySnap_SZSEL1_Static error:" + ret);
+				break;
+			}
+			ret = baseService.QuerySnap_SSEL1_Static(null, sseList);
+			if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+				System.out.println("QuerySnap_SSEL1_Static error:" + ret);
+				break;
+			}
+
+			//深交所
+			for (int idx = 0; idx < snapList.size(); idx++) {
+				byte[] symbol = snapList.get(idx).Symbol;
+				byte[] securityName = snapList.get(idx).SecurityName;
+				String type ="深交所";
+				addStockCodeObject(symbol,securityName,stockCodeList,type);
+			}
+
+			//上交所
+			for (int idx = 0; idx < sseList.size(); idx++) {
+				byte[] symbol = sseList.get(idx).Symbol;
+				byte[] securityName = sseList.get(idx).SecurityName;
+				String type ="上交所";
+				addStockCodeObject(symbol,securityName,stockCodeList,type);
+			}
+			stockCodeDao.addStockCodeList(stockCodeList);
+		}while(false);
+
+		//基础API环境反初始化
+		baseService.BaseUninit();
+
+	}
+
+    @Override
+    public Double getStockCodeInfor(String symbolCode) throws UnsupportedEncodingException {
+		double yesterdayClosingPrice=0 ;
+		double szSymbol =0 ;
+		double shSymbol =0 ;
+
+        // 创建消息回调对象，用于接收实时数据
+        IGTAQTSCallbackBase callback = new GTACallbackBase();
+        //创建API对象，与服务端交互使用
+        IGTAQTSApi baseService = GTAQTSApiBaseImpl.getInstance().CreateInstance(callback);
+        //基础API环境初始化，在开始使用API操作函数前，只调用一次
+        baseService.BaseInit();
+        //设置超时时间
+        baseService.BaseSetTimeout(30);
+
+        //注册FENS地址
+        //***** 警告：实际生产环境使用时，从国泰安公司获取到的FENS地址，此处需要全部通过“RegisterService”函数接口注册，
+        //*****       否则，在数据高可用方面，会大打折扣。
+        //***** 如有4个FENS ip地址，需要如下调用：
+        baseService.BaseRegisterService(ip1, port1);
+        baseService.BaseRegisterService(ip2, port1);
+        baseService.BaseRegisterService(ip3, port2);
+        baseService.BaseRegisterService(ip4, port2);
+
+        do{
+            //通过用户名与密码向服务器登陆   NetType : 0 表示公网(默认值)，1 表示特殊网络（内网、专线等）
+            int ret = baseService.BaseLoginX(username, password,nettype);
+            //判断是否登录成功
+            if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+                System.out.println("Login error:" + ret);
+                break;
+            }
+            //快照数据集合  SZSEL1_Quotation：查询深交所 L1 静态数据
+            List<SZSEL1_Static> snapList = new ArrayList<SZSEL1_Static>();
+            //快照数据集合  SSEL1_Quotation：查询上交所 L1 静态数据
+            List<SSEL1_Static> sseList = new ArrayList<SSEL1_Static>();
+
+            ret = baseService.QuerySnap_SZSEL1_Static(symbolCode, snapList);
+            if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+                System.out.println("QuerySnap_SZSEL1_Static error:" + ret);
+                break;
+            }
+            ret = baseService.QuerySnap_SSEL1_Static(symbolCode, sseList);
+            if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+                System.out.println("QuerySnap_SSEL1_Static error:" + ret);
+                break;
+            }
+
+            //深交所
+            for (int idx = 0; idx < snapList.size(); idx++) {
+                byte[] symbol = snapList.get(idx).Symbol;
+                byte[] securityName = snapList.get(idx).SecurityName;
+				String strSymbol = new String(symbol,0,symbol.length,"UTF-8").trim();
+				String strSecurityName = new String(securityName,0,securityName.length,"UTF-8").trim();
+				szSymbol =snapList.get(idx).PreClosePrice;
+            }
+
+            //上交所
+            for (int idx = 0; idx < sseList.size(); idx++) {
+                byte[] symbol = sseList.get(idx).Symbol;
+                byte[] securityName = sseList.get(idx).SecurityName;
+				String strSymbol = new String(symbol,0,symbol.length,"UTF-8").trim();
+				String strSecurityName = new String(securityName,0,securityName.length,"UTF-8").trim();
+				shSymbol =sseList.get(idx).PreClosePrice;
+            }
+        }while(false);
+
+        //基础API环境反初始化
+        baseService.BaseUninit();
+
+		if(szSymbol ==0){
+			yesterdayClosingPrice =shSymbol;
+		}else if(shSymbol ==0){
+			yesterdayClosingPrice =szSymbol;
+		}
+        return yesterdayClosingPrice;
+    }
+
+    private void addStockCodeObject(byte[] symbol, byte[] securityName, List<StockCode> stockCodeList,String type ) throws UnsupportedEncodingException {
+		String strSymbol = new String(symbol,0,symbol.length,"UTF-8").trim();
+		String strSecurityName = new String(securityName,0,securityName.length,"UTF-8").trim();
+		if(strSymbol.substring(0,3).equals("000") || strSymbol.substring(0,3).equals("002") || strSymbol.substring(0,3).equals("300")||
+				strSymbol.substring(0,3).equals("600") || strSymbol.substring(0,3).equals("601") || strSymbol.substring(0,3).equals("603")){
+			StockCode stockCode = new StockCode();
+			stockCode.setThscode(strSymbol);
+			stockCode.setSecurityName(strSecurityName);
+			if(type.equals("深交所")){
+				stockCode.setMarket("SZSE");
+			}else if(type.equals("上交所")){
+				stockCode.setMarket("SSE");
+			}else{
+				stockCode.setMarket(null);
+			}
+			stockCode.setDate(new Date());
+			stockCode.setIsHot(1);
+			stockCode.setIsIndex(1);
+			stockCode.setBonedWarehouse((double) 49);
+			stockCodeList.add(stockCode);
+		}
+	}
+
+
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org"
+	xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<meta charset="utf-8">
+	<title>编辑代理</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="/static/admin/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/static/admin/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form" style="width:80%;">
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">真实姓名</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input adminName" name="adminName" lay-verify="required" placeholder="请输入代理真实姓名">
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">账号</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input adminAccount" name="adminAccount" lay-verify="required" placeholder="请输入代理账号">
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">编号</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input adminCoding" name="adminCoding" lay-verify="adminCoding" placeholder="请输入代理编号">
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">联系方式</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input phone" name="phone" lay-verify="phone" placeholder="请输入联系方式">
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">手续费(%)</label>
+		<div class="layui-input-block">
+			<input type="number" class="layui-input handInto" name="handInto"  placeholder="请输入手续费分成:如60">
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">服务费(%)</label>
+		<div class="layui-input-block">
+			<input type="number" class="layui-input serviceInto" name="serviceInto"  placeholder="请输入利息分成:如60">
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12" >
+		<div class="magb15 layui-col-xs12">
+			<label class="layui-form-label">状态</label>
+			<div class="layui-input-block">
+				<select name="isEffect" class="isEffect" lay-filter="required">
+					<option value="1" selected="selected">正常使用</option>
+					<option value="0">限制使用</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12">
+	<input type="hidden" name="adminId" class="adminId">
+		<div class="layui-input-block">
+			<button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="updateAdmin">确认编辑</button>
+		</div>
+	</div>
+</form>
+<script type="text/javascript" src="/static/admin/layui/layui.js"></script>
+<script type="text/javascript" src="/static/admin/datajs/admin/adminUpdate.js"></script>
+</body>
+</html>

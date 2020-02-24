@@ -1,0 +1,994 @@
+package com.sjy.service.impl;
+
+import com.sjy.dao.*;
+import com.sjy.data.StockData;
+import com.sjy.data.StockObj;
+import com.sjy.entity.*;
+import com.sjy.service.UserOrderService;
+import com.sjy.util.DataUtil;
+import com.sjy.util.DateUtil;
+import com.sjy.util.JsonUtil;
+import com.sjy.util.MathUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+/**
+ * Created by Administrator on 2019/5/14.
+ */
+@Service
+public class UserOrderServiceImpl implements UserOrderService {
+
+	@Autowired
+	private UserOrderDao userOrderDao; // 明细
+	@Autowired
+	private UserOrderMainDao userOrderMainDao; // 主表
+
+	@Autowired
+	private UserDao userDao;
+
+	@Autowired
+	private StockCodeDao stockCodeDao;
+
+	@Autowired
+	private MessageDao messageDao; // 通知信息
+	@Autowired
+	private FlowRecordDao flowRecordDao; // 资金明细
+	@Autowired
+	private PoundageDao poundageDao; // 手续费
+	@Autowired
+	private AdminDao adminDao;//代理表
+	private static Logger log = LoggerFactory.getLogger(UserOrderServiceImpl.class);// 输出日志
+
+	/**
+	 * 获取订单商品列表
+	 */
+	@Override
+	public String selectUserOrder(UserOrder userOrder, String sTime, String eTime, Integer page, Integer limit)
+			throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		String startTime = null;
+		String endTime = null;
+		if (sTime != null && !sTime.equals("")) {
+			startTime = startSdf.format(sdf.parse(sTime));
+		}
+		if (eTime != null && !eTime.equals("")) {
+			endTime = endSdf.format(sdf.parse(eTime));
+		}
+		if (page == null) {
+			page = 1;
+		}
+		if (limit == null) {
+			limit = 10;
+		}
+		int count = userOrderDao.selectUserOrderCount(userOrder, startTime, endTime);
+		List<UserOrder> lists = userOrderDao.selectUserOrderList(userOrder, startTime, endTime, (page - 1) * limit,
+				limit);
+		for (UserOrder u : lists) { //获取实时数据,遍历查库可能会慢，后续优化
+			String code = u.getStockCode();// 股票代码
+			StockCode codeInfo = stockCodeDao.getStockByCode(code);
+			Double newPrice = StockData.getPrice(code, codeInfo.getMarket());//最新价
+			u.setCurrentPrice(String.valueOf(newPrice));
+			if (u.getOrderType() == 1) {
+				u.setTurnover(u.getOrderBuyer() * u.getOrderNumber());
+			} else if (u.getOrderType() == 2) {
+				u.setTurnover(-(u.getOrderExitPrice() * u.getOrderNumber()));
+			}
+			if(u.getOrderType() == 2) { //卖出为负数
+				u.setOrderNumber(0-u.getOrderNumber());
+			}
+		}
+		return JsonUtil.buildJsonByTotalCount(lists, count);
+	}
+
+	/**
+	 * 买入
+	 */
+	@Transactional
+	@Override
+	public String addUserOrder(UserOrder userOrder) {
+		int code = 1;
+		String msg = "创建策略失败";
+		try {
+			if (userOrder.getUserId() == null) {
+				log.info("userId is null");
+				msg = "请先登录";
+				return JsonUtil.buildFalseJson(code, msg, "");
+			} else {
+				if (userOrder.getStockCode().equals("") || userOrder.getStockCode() == null) {
+					log.info("stockCode is null");
+					msg = "股票代码不能为空";
+					return JsonUtil.buildFalseJson(code, msg, "");
+				} else {
+					StockCode stockinfo = stockCodeDao.getStockByCode(userOrder.getStockCode());
+					if (stockinfo == null) {
+						log.info("stockinfo is null");
+						msg = "系统不存在该股票";
+						return JsonUtil.buildFalseJson(code, msg, "");
+					} else {
+						if (userOrder.getOrderNumber() == null || userOrder.getOrderNumber() <= 0) {
+							log.info("orderNumber is illegal");
+							msg = "请输入合法的购买股数";
+							return JsonUtil.buildFalseJson(code, msg, "");
+						} else {
+							// 1.判断用户是否合法
+							User user = userDao.getUserInfoById(userOrder.getUserId());
+							if (user == null) {
+								log.info("use is null");
+								msg = "用户不存在";
+								return JsonUtil.buildFalseJson(code, msg, "");
+							} else {
+								if(user.getIsTraders() == 1) {
+									log.info("the user is not operate,is_trades=1");
+									msg = "对不起,你已停止操盘暂不能买入";
+									return JsonUtil.buildFalseJson(code, msg, "");
+								}
+								StockObj obj = StockData.getStockInfo(stockinfo.getThscode(), stockinfo.getMarket());
+								Double cp = obj.getPrice();//获取现价
+								Double PrevClose = obj.getPrevClose();//昨收
+								Double ztPrice = PrevClose * 1.1; //涨停价
+								Double userExpendableFund = user.getUserExpendableFund(); // 获取用户可用资产
+								Double buyTotalFee = 0.00;
+								Double orderBuy = 0.00; //买入价
+								if(userOrder.getOrderBuyer() >= cp) { //当买入价大于现价
+									buyTotalFee = cp * userOrder.getOrderNumber(); // 不算手续费，购买股票总花费
+									orderBuy = cp;
+									userOrder.setOrderBuyer(cp);
+									log.info("orderBuy="+userOrder.getOrderBuyer()+"----nowPrice="+cp);
+								}else {
+									buyTotalFee = userOrder.getOrderBuyer() * userOrder.getOrderNumber(); // 不算手续费，购买股票总花费
+									orderBuy = userOrder.getOrderBuyer();
+								}
+								boolean isServiceRecord = false; // 当为false不扣除手续费,为ture扣除，需要插入记录,
+								Double totalFee = 0.00; // 股票价格+手续费
+								Double shouXu = 0.00;
+								Double gouHu = 0.00;
+								if (userExpendableFund <= 0 || userExpendableFund == null) {
+									log.info(
+											"userExpendableFund is illegal,userExpendableFund = " + userExpendableFund);
+									msg = "暂无可用的资金";
+									return JsonUtil.buildFalseJson(code, msg, "");
+								} else {
+
+									// 买入成功扣除建仓费(手续费 + 过户费)
+									// (买入时: 手续费只算佣金 比例为此单的万分之二 ,佣金不足5.00 用5.00扣除)
+									shouXu = MathUtils.buyPrice1(orderBuy, userOrder.getOrderNumber());
+									// (过户费 股票code以6开头计算过户费)
+									// 判断股票的code是否以数字6开头
+									// String a = userOrder.getStockCode().substring(0, 1);
+									if (stockinfo.getMarket().equals("SH")) { // 上证收取过户费
+										gouHu = MathUtils.transferFee(userOrder.getOrderNumber());
+									} else {
+										gouHu = 0.00;
+									}
+									totalFee = shouXu + gouHu + buyTotalFee;
+									// 2.判断是否在交易时间内
+									boolean isflag = DateUtil.checkIsTradingTime();
+									userOrder.setCreateTime(new Date());
+									userOrder.setOrderType(1);// 买入
+									if (isflag == true) {// 在交易时间内可能存在几种情况： 1.直接持仓：扣手续费 2.委托持仓：不扣手续费
+										
+										if(cp >= ztPrice) { //当现价大于或等于涨停价的时候不给买入；
+											log.info("the stock is not allow buy");
+											msg = "该股暂不能买入";
+											return JsonUtil.buildFalseJson(code, msg, "");
+										}										
+										if (cp == 0.00) { // 如果系统找不到现金，只能委托中
+											if (userExpendableFund >= buyTotalFee) {
+												userOrder.setEntrustTime(new Date());
+												userOrder.setOrderParticipationType(2);// 委托中
+											} else {
+												log.info("userExpendableFund is  is not enough,userExpendableFund="
+														+ userExpendableFund, "buyTotalFee=" + buyTotalFee);
+												msg = "可用资金不足,请充值";
+												return JsonUtil.buildFalseJson(code, msg, "");
+											}
+										} else {
+											Double nowPrice = Double.valueOf(cp);
+											if (orderBuy >= nowPrice) { // 直接持仓 ： 需要扣除手续费
+												if (DataUtil.checkisFee(userExpendableFund, totalFee)) {// 可买
+													userOrder.setOrderBuyer(cp);
+													userOrder.setTradeTime(new Date());
+													userOrder.setOrderParticipationType(1);
+													//这里需扣除手续费
+													user.setUserMoney(user.getUserMoney() - shouXu - gouHu);
+													user.setUserNetAsset(user.getUserNetAsset() - shouXu - gouHu);
+													isServiceRecord = true;
+												} else {
+													log.info("userExpendableFund is  is not enough,userExpendableFund="
+															+ userExpendableFund, "totalFee=" + totalFee);
+													msg = "可用资金不足,请充值";
+													return JsonUtil.buildFalseJson(code, msg, "");
+												}
+											} else {// 委托中
+												userOrder.setEntrustTime(new Date());
+												userOrder.setOrderParticipationType(2);// 委托中
+											}
+										}
+									} else {// 不在交易时间内值存在一种情况：1.委托持仓：不扣手续费
+										if (userExpendableFund >= buyTotalFee) {
+											userOrder.setEntrustTime(new Date());
+											userOrder.setOrderParticipationType(2);// 委托中
+										} else {
+											log.info("userExpendableFund is  is not enough,userExpendableFund="
+													+ userExpendableFund, "buyTotalFee=" + buyTotalFee);
+											msg = "可用资金不足,请充值";
+											return JsonUtil.buildFalseJson(code, msg, "");
+										}
+									}
+								}
+								// 执行操作
+								Integer id = null;
+								UserOrderMain info = userOrderMainDao.getUserOrderMain(userOrder.getUserId(), // 判断主表是否存在数据
+										userOrder.getStockCode());
+								if (info == null) {
+									// 3.插入主表
+									UserOrderMain main = new UserOrderMain();
+									main.setMarket(stockinfo.getMarket());
+									main.setStockCode(userOrder.getStockCode());
+									main.setStockName(userOrder.getStockName());
+									if (isServiceRecord == true) {// 直接持仓
+										main.setStockNumber(userOrder.getOrderNumber().intValue());
+									} else {// 第一次委托为 0
+										main.setStockNumber(0);
+									}
+									main.setAllowSellNumber(0);
+									main.setUserId(userOrder.getUserId());
+									userOrderMainDao.addUserOrderMain(main);
+									id = main.getId();// 获取主表id
+								} else {
+									// 3.更新主表数据
+									if (isServiceRecord == true) {
+										info.setStockNumber(
+												info.getStockNumber() + userOrder.getOrderNumber().intValue());// 更新所持股数
+										userOrderMainDao.updateUserOrderMain(info); // 这里需要说明可卖股数遵循t+1规则
+									}
+									id = info.getId();
+								}
+								// 插入userOrder表
+								userOrder.setCreateTime(new Date());
+								userOrder.setMarket(stockinfo.getMarket());
+								userOrder.setOrderType(1); // 买入
+								userOrder.setId(id); // 主表id
+								userOrder.setOrderCode(DateUtil.getCode(user.getUserId()));
+								userOrderDao.insertUserOrder(userOrder);
+								String messageContent = "";
+								// 更新用户信息：即减少可用资金
+								if (isServiceRecord == true) { // 进去手续费
+									user.setUserExpendableFund(user.getUserExpendableFund() - totalFee);
+									// 建仓费放入资金明细表中
+									FlowRecord flowRecord1 = DataUtil.changeFlowRecord(user.getUserId(), shouXu + gouHu,
+											2, 2, user.getUserMoney());
+									flowRecordDao.addFlowRecord(flowRecord1);
+									// 手续费放入资金明细表中
+									FlowRecord flowRecord2 = DataUtil.changeFlowRecord(user.getUserId(), shouXu + gouHu,
+											6, 2, user.getUserMoney());
+									flowRecordDao.addFlowRecord(flowRecord2);
+									// 8把买入的数据插入手续费统计列表中
+									Poundage poundage = DataUtil.changeBuyPoundage(userOrder, user, gouHu, shouXu);
+									if(user.getInviterId() != null) { //有代理
+										Admin admin = adminDao.getAdminById(user.getInviterId(), null, null);
+										poundage.setAgentHandInto(admin.getHandInto());
+										if(admin.getHandInto() != null) {
+											poundage.setAdminChargePrice((gouHu+shouXu)*(admin.getHandInto()/100));
+										}
+									}
+									poundageDao.addPoundage(poundage);
+									messageContent = "已委托买入成功,当前正在持仓中";
+								} else {// 不减手续费
+									user.setUserExpendableFund(user.getUserExpendableFund() - buyTotalFee);
+									messageContent = "您的订单正在委托中";
+								}
+								userDao.updateUser(user);
+								// 只买股票花费：不算手续费
+//								FlowRecord flowRecord = DataUtil.changeFlowRecord(user.getUserId(),
+//										userOrder.getOrderBuyer() * userOrder.getOrderNumber(), 2, 2,
+//										user.getUserExpendableFund());
+//								flowRecordDao.addFlowRecord(flowRecord);
+								// 7委托买入成功后,把消息推送给用户
+								Message message = DataUtil.changeMessage(userOrder.getUserId(), "系统消息", messageContent,
+										"", 1, 1);
+								messageDao.addMessage(message);
+								log.info("the operate is success");
+								code = 0;
+								msg = "委托买入成功";
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("method is error,the reason is :" + e.getMessage());
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();// 回滚
+			e.printStackTrace();
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	/**
+	 * 当卖出处理委托中的时候： 只改变可用股数，钱也不改变，当真正卖出的时候才改变 数量和钱 ； 当委托卖出成功的时候 数量和可以股数都要改变，钱也要改变
+	 */
+	@Transactional
+	@Override
+	public String addUserSellOrder(UserOrder userOrder) {
+		int code = 1;
+		String msg = "委托卖出失败";
+		try {
+			if (userOrder.getUserId() == null) {
+				log.info("userId is null");
+				msg = "请先登录";
+				return JsonUtil.buildFalseJson(code, msg, "");
+			} else {
+				if (userOrder.getStockCode().equals("") || userOrder.getStockCode() == null) {
+					log.info("stockCode is null");
+					msg = "股票代码不能为空";
+					return JsonUtil.buildFalseJson(code, msg, "");
+				} else {
+					StockCode stockinfo = stockCodeDao.getStockByCode(userOrder.getStockCode());
+					if (stockinfo == null) {
+						log.info("stockinfo is null");
+						msg = "系统不存在该股票";
+						return JsonUtil.buildFalseJson(code, msg, "");
+					} else {
+						if (userOrder.getOrderNumber() == null || userOrder.getOrderNumber() <= 0) {
+							log.info("orderNumer is illegal");
+							msg = "请输入合法的卖出股数";
+							return JsonUtil.buildFalseJson(code, msg, "");
+						} else {
+							// 1.判断用户是否合法
+							User user = userDao.getUserInfoById(userOrder.getUserId());
+							if (user == null) {
+								log.info("use is null");
+								msg = "用户不存在";
+								return JsonUtil.buildFalseJson(code, msg, "");
+							} else {
+								Double userExpendableFund = user.getUserExpendableFund(); // 获取用户可用资产
+								boolean isServiceRecord = false; // 当为false不扣除手续费,为ture扣除，需要插入记录,
+								boolean isflag = DateUtil.checkIsTradingTime();
+								//获取买入时间
+								List<UserOrder> timeList=userOrderDao.getCTime(userOrder.getUserId(), userOrder.getStockCode());
+								for(UserOrder time:timeList) {
+									userOrder.setCreateTime(time.getCreateTime());
+									userOrder.setOrderBuyer(time.getOrderBuyer());
+								}
+								
+								userOrder.setOrderType(2);
+								Double sellPrice = userOrder.getOrderExitPrice();// 卖出价
+								UserOrderMain maininfo = userOrderMainDao.getUserOrderMain(userOrder.getUserId(),
+										userOrder.getStockCode());
+								if (maininfo == null) {
+									log.info("maininfo is null");
+									msg = "该股票你暂无持仓";
+									return JsonUtil.buildFalseJson(code, msg, "");
+								} else {
+									if (maininfo.getAllowSellNumber() < userOrder.getOrderNumber()) {
+										log.info("allowSellNumber is not enough");
+										msg = "卖出股数非法";
+										return JsonUtil.buildFalseJson(code, msg, "");
+									} else {
+										if (isflag == true) { // 在交易时间
+											Double cp = StockData.getPrice(stockinfo.getThscode(), stockinfo.getMarket());//获取现价
+											
+											userOrder.setOrderPrice(cp);
+											if (sellPrice <= cp) { // 直接卖出
+												isServiceRecord = true;
+												userOrder.setOrderParticipationType(4);
+												userOrder.setIsPc(1);
+												userOrder.setOrderExitPrice(cp);
+												userOrder.setTradeTime(new Date());
+											} else {// 委托中
+												userOrder.setEntrustTime(new Date());
+												userOrder.setOrderParticipationType(3);
+											}
+										} else { // 不在交易时间
+											userOrder.setEntrustTime(new Date());
+											userOrder.setOrderParticipationType(3);
+										}
+									}
+								}
+								userOrder.setMarket(stockinfo.getMarket());
+								userOrder.setId(maininfo.getId());
+								userOrder.setOrderCode(DateUtil.getCode(user.getUserId()));
+								userOrderDao.insertUserOrder(userOrder);
+								int sellNumber = userOrder.getOrderNumber().intValue();
+								String messageContent = "";
+								if (isServiceRecord == true) { // 直接卖出
+									maininfo.setAllowSellNumber(maininfo.getAllowSellNumber() - sellNumber);
+									maininfo.setStockNumber(maininfo.getStockNumber() - sellNumber);
+									// 修改钱
+									// 卖出成功扣除(手续费 + 过户费 + 印花税)
+									// (卖出时: 佣金比例为此单的万分之二 ,佣金不足5.00 用5.00扣除 印花税 (卖出金额的千分之一))
+									Double sellPrice1 = MathUtils.sellPrice1(userOrder.getOrderExitPrice(),
+											userOrder.getOrderNumber());
+									Double yh = userOrder.getOrderNumber() * userOrder.getOrderExitPrice() * 0.001;
+									// (过户费 上证收取过户费)
+									Double gouHu = 0.00;
+//									if (stockinfo.getMarket().equals("SSE")) { // 上证收取过户费  : 单项收费
+//										gouHu = MathUtils.transferFee(userOrder.getOrderNumber());
+//									} else {
+//										gouHu = 0.00;
+//									}
+									Double expendableFund = userOrder.getOrderNumber() * userOrder.getOrderExitPrice()
+											- sellPrice1 - gouHu - yh;
+									user.setUserExpendableFund(userExpendableFund + expendableFund);
+									user.setUserMoney(user.getUserMoney() - sellPrice1 - gouHu - yh);
+									user.setUserNetAsset(user.getUserNetAsset() - sellPrice1 - gouHu - yh);
+									// 更新用户可用资金
+									userDao.updateUser(user);
+									messageContent = "委托卖出成功";
+//									FlowRecord flowRecord = DataUtil.changeFlowRecord(user.getUserId(),
+//											userOrder.getOrderExitPrice() * userOrder.getOrderNumber(), 2, 1,
+//											user.getUserExpendableFund());
+//									flowRecordDao.addFlowRecord(flowRecord);
+									// 保证金放入资金明细表中
+									FlowRecord flowRecord1 = DataUtil.changeFlowRecord(user.getUserId(),
+											userOrder.getOrderExitPrice() * userOrder.getOrderNumber(), 1, 2,
+											user.getUserMoney());
+									flowRecordDao.addFlowRecord(flowRecord1);
+									// 手续费放入资金明细表中
+									FlowRecord flowRecord2 = DataUtil.changeFlowRecord(user.getUserId(),
+											sellPrice1 + gouHu, 6, 2, user.getUserMoney());
+									flowRecordDao.addFlowRecord(flowRecord2);
+									// 9把卖出的数据插入手续费统计列表中
+									Poundage poundage = DataUtil.changeSellPoundage(userOrder, user, gouHu, sellPrice1,
+											yh);
+									if(user.getInviterId() != null) { //有代理
+										Admin admin = adminDao.getAdminById(user.getInviterId(), null, null);
+										poundage.setAgentHandInto(admin.getHandInto());
+										if(admin.getHandInto() != null) {
+											poundage.setAdminChargePrice((gouHu+sellPrice1+yh)*(admin.getHandInto()/100));
+										}
+									}
+									poundageDao.addPoundage(poundage);
+								} else { // 委托卖出中
+									maininfo.setAllowSellNumber(maininfo.getAllowSellNumber() - sellNumber);
+									messageContent = "委托成功,订单正处于委托中";
+								}
+								// 更新主表
+								userOrderMainDao.updateUserOrderMain(maininfo);
+								// 8委托卖出成功后,把消息推送给用户
+								Message message = DataUtil.changeMessage(userOrder.getUserId(), "系统消息", messageContent,
+										"", 1, 1);
+								messageDao.addMessage(message);
+								log.info("委托卖出成功");
+								code = 0;
+								msg = "委托卖出成功";
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("method is error,the reason is :" + e.getMessage());
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	/**
+	 * 编辑
+	 *
+	 * @param userOrder
+	 * @return
+	 */
+	@Transactional
+	@Override
+	public String updateUserOrder(UserOrder userOrder) {
+		int code = 1;
+		String msg = "更新策略失败";
+		if (userOrder.getOrderId() == null) {
+			msg = "参数非法";
+		} else {
+			userOrder.setTradeTime(new Date());
+			Integer updateId = userOrderDao.updateUserOrder(userOrder);
+			if (updateId != null) {
+				code = 0;
+				msg = "更新策略成功";
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	/**
+	 * 委托
+	 */
+	@Override
+	public String getEntrustList(UserOrder order, Integer type, Integer page, Integer limit) {
+		if (page == null) {
+			page = 1;
+		}
+		if (limit == null) {
+			limit = 10;
+		}
+		int totalCount = userOrderDao.dayWTCount(order, type);
+		List<UserOrder> lists = userOrderDao.dayWTList(order, type, (page - 1) * limit, limit);
+		return JsonUtil.buildJsonByTotalCount(lists, totalCount);
+	}
+
+	/**
+	 * 交易
+	 */
+	@Override
+	public String getTradeList(UserOrder order, Integer type, Integer page, Integer limit) {
+		if (page == null) {
+			page = 1;
+		}
+		if (limit == null) {
+			limit = 10;
+		}
+		int totalCount = userOrderDao.daySuccessTradeCount(order, type);
+		List<UserOrder> lists = userOrderDao.daySuccessTradeList(order, type, (page - 1) * limit, limit);
+		return JsonUtil.buildJsonByTotalCount(lists, totalCount);
+	}
+
+	/**
+	 * 删除策略
+	 */
+	@Transactional
+	@Override
+	public String delUserOrder(Integer orderId) {
+		int code = 1;
+		String msg = "删除策略失败";
+		if (orderId == null) {
+			msg = "非法参数";
+		} else {
+			try {
+				UserOrder order = userOrderDao.getOrderById(orderId);
+				if (order != null) {
+					Integer delId = userOrderDao.delUserOrder(orderId);
+					if (delId != null) {
+						Double orderCashDeposit = order.getOrderCashDeposit();// 保证金
+						Double orderOpenPosition = order.getOrderOpenPosition();// 建仓费
+						orderCashDeposit = orderCashDeposit + orderOpenPosition;// 保证金+建仓费
+						User user = new User();
+						user.setUserId(order.getUserId());
+						user.setExpendableFund(orderCashDeposit);
+						user.setNetAsset(orderCashDeposit);
+						userDao.updateUserCapital(user);
+						code = 0;
+						msg = "删除策略成功";
+					}
+				}
+
+			} catch (Exception e) {
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	/**
+	 * 搜索
+	 */
+	@Override
+	public String getSellStockSearch(Integer userId, String keyWord) {
+		String str = "";
+		if (userId == null) {
+			str = JsonUtil.buildFalseJson(1, "请先登录", "");
+		} else {
+			int totalCount = userOrderDao.getSellStockSearchCount(userId, keyWord);
+			List<UserOrder> lists = userOrderDao.getSellStockSearch(userId, keyWord);
+			str = JsonUtil.buildJsonByTotalCount(lists, totalCount);
+		}
+
+		return str;
+	}
+
+	/**
+	 * 撤单
+	 */
+	@Transactional
+	@Override
+	public String cancelOrder(Integer orderId) {
+		int code = 1;
+		String msg = "撤单失败";
+		if (orderId == null) {
+			msg = "订单号不存在";
+		} else {
+			try {
+				UserOrder userOrder = userOrderDao.getOrderById(orderId);// 根据订单号查询订单信息
+				if (userOrder.getOrderParticipationType().equals(2)
+						|| userOrder.getOrderParticipationType().equals(3)) {
+					User user = userDao.getUserInfoById(userOrder.getUserId());
+					if (userOrder.getOrderParticipationType() == 2) {
+						Double expendableFund = userOrder.getOrderBuyer() * userOrder.getOrderNumber();
+						user.setUserExpendableFund(user.getUserExpendableFund() + expendableFund);
+						user.setUserId(userOrder.getUserId());
+						userDao.updateUser(user);
+					} else {
+						//Double expendableFundBuy = userOrder.getOrderExitPrice() * userOrder.getOrderNumber();
+						//user.setUserExpendableFund(user.getUserExpendableFund() - expendableFundBuy);
+						UserOrderMain main = userOrderMainDao.getUserOrderMainById(userOrder.getId());
+						if (main != null) {
+							int number = userOrder.getOrderNumber().intValue();
+							main.setAllowSellNumber(main.getAllowSellNumber() + number);
+							userOrderMainDao.updateUserOrderMain(main);
+						}
+					}
+					userOrder.setOrderParticipationType(5);
+					userOrder.setEntrustTime(new Date());
+					userOrderDao.updateUserOrder(userOrder);
+					Message message = DataUtil.changeMessage(user.getUserId(), "系统消息",
+							userOrder.getStockCode() + "撤单成功", "", 1, 1);
+					messageDao.addMessage(message);
+					code = 0;
+					msg = "撤单成功";
+				} else {
+					msg = "该订单不允许撤单";
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String getUserOrderList(UserOrder userOrder, String sTime, String eTime, Integer page, Integer limit,
+			Integer adminId) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		String startTime = null;
+		String endTime = null;
+		if (sTime != null && !sTime.equals("")) {
+			startTime = startSdf.format(sdf.parse(sTime));
+		}
+		if (eTime != null && !eTime.equals("")) {
+			endTime = endSdf.format(sdf.parse(eTime));
+		}
+		if (page == null) {
+			page = 1;
+		}
+		if (limit == null) {
+			limit = 10;
+		}
+		int count = userOrderDao.getUserOrderCount(userOrder, startTime, endTime, adminId);
+		List<UserOrder> lists = userOrderDao.getUserOrderList(userOrder, startTime, endTime, (page - 1) * limit, limit,
+				adminId);
+		for (UserOrder u : lists) { //获取实时数据,遍历查库可能会慢，后续优化
+			String code = u.getStockCode();// 股票代码			
+			if (u.getOrderType() == 1) {
+				u.setTurnover(u.getOrderBuyer() * u.getOrderNumber());
+			} else if (u.getOrderType() == 2) {
+				u.setTurnover(-(u.getOrderExitPrice() * u.getOrderNumber()));
+			}
+			Double nowPrice = StockData.getPrice(code, u.getMarket());
+			u.setCurrentPrice(String.valueOf(nowPrice));
+		}
+		return JsonUtil.buildJsonByTotalCount(lists, count);
+	}
+
+	@Override
+	public UserOrder getUserShareHolding(Integer userId, String stockCode) {
+		return userOrderDao.getUserShareHolding(userId, stockCode);
+	}
+
+	@Override
+	public String selectNewUserOrderList(UserOrder userOrder, String sTime, String eTime, Integer page, Integer limit)
+			throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		String startTime = null;
+		String endTime = null;
+		if (sTime != null && !sTime.equals("")) {
+			startTime = startSdf.format(sdf.parse(sTime));
+		}
+		if (eTime != null && !eTime.equals("")) {
+			endTime = endSdf.format(sdf.parse(eTime));
+		}
+		if (page == null) {
+			page = 1;
+		}
+		if (limit == null) {
+			limit = 10;
+		}
+		int count = userOrderDao.selectUserOrderCount(userOrder, startTime, endTime);
+		List<UserOrder> lists = userOrderDao.selectNewUserOrderList(userOrder, startTime, endTime, (page - 1) * limit,
+				limit);
+		for (UserOrder u : lists) { // 获取实时数据,遍历查库可能会慢，后续优化
+			String code = u.getStockCode();// 股票代码
+			Double nowPrice = StockData.getPrice(code, u.getMarket());
+			u.setCurrentPrice(String.valueOf(nowPrice));
+		}
+		return JsonUtil.buildJsonByTotalCount(lists, count);
+	}
+
+	@Override
+	public List<UserOrder> selectStockCode(Integer userId) {
+		return userOrderDao.selectStockCode(userId);
+	}
+
+	/**
+	 * t+1 自动
+	 */
+	@Transactional
+	@Override
+	public void autoTOne() {
+		try {
+			List<UserOrder> lists = userOrderDao.selectTone();
+			if (lists.size() > 0) {
+				for (UserOrder o : lists) {
+					// 更改main的数据
+					UserOrderMain main = userOrderMainDao.getUserOrderMainById(o.getId());
+					String buyNumber = new DecimalFormat("0").format(o.getOrderNumber());
+					//main.setStockNumber(main.getStockNumber() + Integer.valueOf(buyNumber));  //已经持仓了就不用在增加 ： 数量，只增加可用数量
+					main.setAllowSellNumber(main.getAllowSellNumber() + Integer.valueOf(buyNumber));
+					userOrderMainDao.updateUserOrderMain(main);
+					// 修改user_order表中的is_add
+					o.setIsAdd(1);
+					userOrderDao.updateUserOrder(o);
+				}
+			}
+		} catch (Exception e) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+	}
+
+	@Override
+	public List<UserOrder> selectStockCodeOne(Integer userId) {
+		return userOrderDao.selectStockCodeOne(userId);
+	}
+
+	@Override
+	public String selectHobList(Integer userId, Integer page, Integer limit) {
+		if (page == null) {
+			page = 1;
+		}
+		if (limit == null) {
+			limit = 10;
+		}
+		int totalCount = userOrderDao.selectHobCount(userId);
+		List<UserOrderVO> lists = new ArrayList<>();
+		List<UserOrderVO> list = userOrderDao.selectHobList(userId, (page - 1) * limit, limit);
+
+		for (UserOrder userOrder : list) {
+			if (userOrder.getOrderBuyer() != null) {
+				userOrder.setAveragePrice(
+						(userOrder.getOrderBuyer() * userOrder.getOrderNumber()) / userOrder.getOrderNumber());
+			} else {
+				userOrder.setAveragePrice(
+						(userOrder.getOrderExitPrice() * userOrder.getOrderNumber()) / userOrder.getOrderNumber());
+			}
+//			userOrder.setProfitLoss(
+//					(userOrder.getOrderExitPrice() - userOrder.getOrderBuyer()) * userOrder.getOrderNumber());
+		}
+		// 真实的一年总收益未完成 数据不完全
+		for (int i = 1; i <= 12; i++) {
+			UserOrderVO hb = new UserOrderVO();
+			hb.setMonth(i);
+			// if(i==1) {
+			// hb.setTotalAmount(-100);
+			// hb.setTotalMoney(100);
+			// }
+			// if(i==2) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(-50);
+			// }
+			// if(i==3) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(20);
+			// }
+			// if(i==4) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(100);
+			// }
+			// if(i==5) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(120);
+			// }
+			// if(i==6) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(200);
+			// }
+			// if(i==7) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(150);
+			// }
+			// if(i==8) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(20);
+			// }
+			// if(i==9) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(-12);
+			// }
+			// if(i==10) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(12);
+			// }
+			// if(i==11) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(20);
+			// }
+			// if(i==12) {
+			// hb.setTotalMoney(100);
+			// hb.setTotalAmount(100);
+			// }
+			lists.add(hb);
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("curve", lists);
+		map.put("hob", list);
+
+		map.put("totalMoney", 114500);
+		List<Map<String, Object>> ls = new ArrayList<Map<String, Object>>();
+		ls.add(map);
+		return JsonUtil.buildJsonByTotalCount(ls, totalCount);
+	}
+
+	@Transactional
+	@Override
+	public void autoDealOrder() {
+		try {
+			List<UserOrder> lists = userOrderDao.selectOrderByEntrust(); // 查询所有委托的
+			if (lists.size() > 0) {
+				for (UserOrder u : lists) {
+					Double nowPrice = StockData.getPrice(u.getStockCode(), u.getMarket());//现价
+					String cp = String.valueOf(nowPrice);
+					UserOrderMain main = userOrderMainDao.getUserOrderMain(u.getUserId(), u.getStockCode());
+					User user = userDao.getUserInfoById(main.getUserId());
+					if (u.getOrderType() == 1) { // 委托买入
+						String buyPrice = String.valueOf(u.getOrderBuyer());
+						if (buyPrice.equals(cp)) { // 当委托价等于现价 执行相关操作
+							u.setTradeTime(new Date());
+							u.setOrderParticipationType(1);
+							userOrderDao.updateUserOrder(u);
+							main.setStockNumber(main.getStockNumber() + u.getOrderNumber().intValue());
+							userOrderMainDao.updateUserOrderMain(main);
+
+							// 插入记录
+							Double shouXu = 0.00;
+							Double gouHu = 0.00;
+							shouXu = MathUtils.buyPrice1(u.getOrderBuyer(), u.getOrderNumber());
+							// (过户费 股票code以6开头计算过户费)
+							// 判断股票的code是否以数字6开头
+							// String a = userOrder.getStockCode().substring(0, 1);
+							if (u.getMarket().equals("SH")) { // 上证收取过户费
+								gouHu = MathUtils.transferFee(u.getOrderNumber());
+							} else {
+								gouHu = 0.00;
+							}
+							// 建仓费放入资金明细表中
+							FlowRecord flowRecord1 = DataUtil.changeFlowRecord(user.getUserId(), shouXu + gouHu, 2, 2,
+									user.getUserMoney());
+							flowRecordDao.addFlowRecord(flowRecord1);
+							// 手续费放入资金明细表中
+							FlowRecord flowRecord2 = DataUtil.changeFlowRecord(user.getUserId(), shouXu+ gouHu, 6, 2,
+									user.getUserMoney());
+							flowRecordDao.addFlowRecord(flowRecord2);
+							// 8把买入的数据插入手续费统计列表中
+							Poundage poundage = DataUtil.changeBuyPoundage(u, user, gouHu, shouXu);
+							if(user.getInviterId() != null) { //有代理
+								Admin admin = adminDao.getAdminById(user.getInviterId(), null, null);
+								poundage.setAgentHandInto(admin.getHandInto());
+								if(admin.getHandInto() != null) {
+									poundage.setAdminChargePrice((gouHu+shouXu)*(admin.getHandInto()/100));
+								}
+							}
+							poundageDao.addPoundage(poundage);
+							Message message = DataUtil.changeMessage(user.getUserId(), "系统消息",
+									u.getStockCode() + "持仓成功", "", 1, 1);
+							messageDao.addMessage(message);
+						}
+					} else { // 委托卖出
+						String sellPrice = String.valueOf(u.getOrderExitPrice());
+						if (sellPrice.equals(cp)) { // 当现价等于委托卖价 执行相关操作
+							u.setTradeTime(new Date());
+							u.setIsPc(1);
+							u.setOrderParticipationType(4);
+							userOrderDao.updateUserOrder(u);
+							int number = u.getOrderNumber().intValue();
+							main.setStockNumber(main.getStockNumber() - number);
+							userOrderMainDao.updateUserOrderMain(main);
+
+							// 插入记录
+							// 修改钱
+							// 卖出成功扣除(手续费 + 过户费 + 印花税)
+							// (卖出时: 佣金比例为此单的万分之二 ,佣金不足5.00 用5.00扣除 印花税 (卖出金额的千分之一))
+							Double sellPrice1 = MathUtils.sellPrice1(u.getOrderExitPrice(), u.getOrderNumber());
+							Double yh = u.getOrderNumber() * u.getOrderExitPrice() * 0.001;
+							// (过户费 上证收取过户费)
+							Double gouHu = 0.00;
+//							if (main.getMarket().equals("SSE")) { // 上证收取过户费 ： 单向收费
+//								gouHu = MathUtils.transferFee(u.getOrderNumber());
+//							} else {
+//								gouHu = 0.00;
+//							}
+							Double expendableFund = u.getOrderNumber() * u.getOrderExitPrice() - sellPrice1 - gouHu
+									- yh;
+							user.setUserExpendableFund(user.getUserExpendableFund() + expendableFund);
+							// 更新用户可用资金
+							userDao.updateUser(user);
+//							FlowRecord flowRecord = DataUtil.changeFlowRecord(user.getUserId(),
+//									u.getOrderExitPrice() * u.getOrderNumber(), 2, 1, user.getUserExpendableFund());
+//							flowRecordDao.addFlowRecord(flowRecord);
+							// 保证金放入资金明细表中
+							FlowRecord flowRecord1 = DataUtil.changeFlowRecord(user.getUserId(),
+									u.getOrderExitPrice() * u.getOrderNumber(), 1, 2, user.getUserMoney());
+							flowRecordDao.addFlowRecord(flowRecord1);
+							// 手续费放入资金明细表中
+							FlowRecord flowRecord2 = DataUtil.changeFlowRecord(user.getUserId(), sellPrice1 + gouHu, 6,
+									2, user.getUserMoney());
+							flowRecordDao.addFlowRecord(flowRecord2);
+							// 9把卖出的数据插入手续费统计列表中
+							Poundage poundage = DataUtil.changeSellPoundage(u, user, gouHu, sellPrice1, yh);
+							poundageDao.addPoundage(poundage);
+
+							Message message = DataUtil.changeMessage(user.getUserId(), "系统消息",
+									u.getStockCode() + "卖出成功", "", 1, 1);
+							messageDao.addMessage(message);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.info("the method is error,the reason is :" + e.getMessage());
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+	}
+
+	/**
+	 * 自动撤单
+	 */
+	@Transactional
+	@Override
+	public void autoCheDan() {
+		log.info("自动撤单进来");
+		try {
+			List<UserOrder> lists = userOrderDao.selectOrderByEntrust(); // 查询所有委托的
+			if (lists.size() > 0) {
+				for (UserOrder u : lists) {
+					User user = userDao.getUserInfoById(u.getUserId());
+					u.setTradeTime(new Date());
+					u.setOrderParticipationType(5);
+					double total = 0.00;
+					if (u.getOrderType() == 1) { // 买入
+						total = u.getOrderBuyer() * u.getOrderNumber();
+						user.setUserExpendableFund(user.getUserExpendableFund() + total);
+						userDao.updateUser(user);
+					} else {// 卖出
+						UserOrderMain main = userOrderMainDao.getUserOrderMainById(u.getId());
+						if (main != null) {
+							int number = u.getOrderNumber().intValue();
+							main.setAllowSellNumber(main.getAllowSellNumber() + number);
+							userOrderMainDao.updateUserOrderMain(main);
+						}
+					}
+					userOrderDao.updateUserOrder(u);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+
+	}
+
+	@Override
+	public List<UserOrderVO> download() {
+		// TODO Auto-generated method stub
+		return userOrderDao.download();
+	}
+
+	@Override
+	public List<UserOrderVO> downloadAll(Integer adminId, Integer parentId) {
+		// TODO Auto-generated method stub
+		return userOrderDao.downloadAll(adminId, parentId);
+	}
+
+}

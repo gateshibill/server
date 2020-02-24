@@ -1,0 +1,13 @@
+package com.sjy.service;
+
+
+import com.sjy.entity.FlowRecord;
+import com.sjy.entity.FlowRecordVO;
+
+public interface FlowRecordService {
+	//api专用
+	public String getFlowRecordList(FlowRecord record,Integer page,Integer limit);
+    public String selectAllFlowRecord(FlowRecordVO flowRecordVO, Integer page, Integer limit);
+
+	String getCapitalStatistics(FlowRecord flowRecord, Integer page, Integer limit);
+}

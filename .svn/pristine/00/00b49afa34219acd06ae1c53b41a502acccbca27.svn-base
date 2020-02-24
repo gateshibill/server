@@ -1,0 +1,206 @@
+1. 持仓列表要获取 user_order_main + user_order 的优化
+2. 当委托中 变为 持仓 或卖出的时候 ， 相对应的 持股数 / 钱 / 市值等都要改变
+3. 卖出遵循 t+1 规则 
+4. 手续费、建仓费、预警值、平仓值等的计算
+5. 我的自选： 现价 / 涨跌幅的计算
+6. 消息的推送 ： 如委托买入成功 / 委托卖出成功等需要推送一条消息
+7. 消息的移除和批量移除、未读消息的显示等
+8. 操盘手续费的扣除 ： 自动扣除
+9. 后台三级代理的测试
+10.资讯的爬取，前期先后台添加
+11.一些数据转成科学计数法
+
+
+
+
+三级代理说明：
+	总管理员 ： 查看全部信息
+	一级代理 ： 查看自己和自己从属代理的信息
+	二级代理 ： 查看自己和自己从属代理的信息
+	三级代理 ： 查看自己的信息
+
+拦截处理
+	未登录拦截： 跳转登录页面
+	没有权限拦截：跳转 403页面
+	报错拦截 ： 跳转500页面
+	未找到拦截 ： 跳转404页面	
+	
+原则上来说：
+只有超级管理员有彻底删除的权利
+
+其他的删除【如：接口】一律是假删除,后续优化
+
+
+
+
+
+
+
+{"symbol":"600016","sellVolume02":1874894,"sellVolume03":1895320,"sellVolume01":119800,"tradingDate":20190529,"vwap":6.149,"lop":6.14,"hip":6.15,"changeMoney":-0.01,"buyVolume05":1263900,"changeRatio":-0.0016,"sellPrice05":6.19,"buyVolume04":1377100,"sellVolume04":1372560,"id":0,"sellVolume05":1488863,"buyVolume01":1068444,"sellPrice01":6.15,"sellPrice02":6.16,"buyVolume03":3080600,"sellPrice03":6.17,"buyVolume02":3073915,"sellPrice04":6.18,"op":6.15,"tradingTime":"2019-05-29 09:54:00.000","buyPrice04":6.11,"buyPrice03":6.12,"buyPrice02":6.13,"buyPrice01":6.14,"cm":656063,"buyPrice05":6.1,"cp":6.14,"cq":106700,"market":"SSE","obpd":6.18,"createTime":1559094840000,"clvLop":6.13,"clvHip":6.16,"shortName":"民生银行","tq":1.3901238E7}
+
+symbol : 证券代码
+Market : 交易所
+TradingDate : 交易日期
+TradingTime : 交易时间
+UNIX : 时间戳
+OP : 分时内开盘价
+HIP : 分时分最高价
+LOP : 分时内最低价
+CP : 分时内收盘价
+CQ : 分时内成交量
+CM : 分时内成交金额
+ChangeMoney : 涨跌
+ChangeRatio : 涨跌幅
+TQ : 成交总量
+Vwap : 成交量加权平均价
+OBPD : 开盘基准价
+ClvLOP : 开盘至今最低价
+ClvHIP : 开盘至今最高价
+ClvVwap : 开盘至今交易量加权平均价
+ShortName : 证券简称
+Position : 持仓量
+ConSign : 连续合约代码
+Rtn : 简单收益率
+ConSignName : 连续合约名称
+Varieties : 品种
+sellVolume01 : 申卖量一
+sellVolume02 : 申卖量二
+sellVolume03 : 申卖量三
+sellVolume04 : 申卖量四
+sellVolume05 : 申卖量五
+sellPrice01 :  申卖价一
+sellPrice02 :  申卖价二
+sellPrice03 :  申卖价三
+sellPrice04 :  申卖价四 
+sellPrice015 : 申卖价五
+buyVolume01 : 申买量一
+buyVolume02 : 申买量二
+buyVolume03 : 申买量三
+buyVolume04 : 申买量四
+buyVolume05 : 申买量五
+buyPrice01 : 申买价一
+buyPrice02 : 申买价二
+buyPrice03 : 申买价三
+buyPrice04 : 申买价四
+buyPrice05 : 申买价五
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+页面
+template/views/pc  : 官网页面路径
+
+
+
+
+
+
+  @Override
+	    public Double getStockCodeInfor(String symbolCode) throws UnsupportedEncodingException {
+			double yesterdayClosingPrice=0 ;
+			double szSymbol =0 ;
+			double shSymbol =0 ;
+
+	        // 创建消息回调对象，用于接收实时数据
+	        IGTAQTSCallbackBase callback = new GTACallbackBase();
+	        //创建API对象，与服务端交互使用
+	        IGTAQTSApi baseService = GTAQTSApiBaseImpl.getInstance().CreateInstance(callback);
+	        //基础API环境初始化，在开始使用API操作函数前，只调用一次
+	        baseService.BaseInit();
+	        //设置超时时间
+	        baseService.BaseSetTimeout(30);
+
+	        //注册FENS地址
+	        //***** 警告：实际生产环境使用时，从国泰安公司获取到的FENS地址，此处需要全部通过“RegisterService”函数接口注册，
+	        //*****       否则，在数据高可用方面，会大打折扣。
+	        //***** 如有4个FENS ip地址，需要如下调用：
+	        baseService.BaseRegisterService(ip1, port1);
+	        baseService.BaseRegisterService(ip2, port1);
+	        baseService.BaseRegisterService(ip3, port2);
+	        baseService.BaseRegisterService(ip4, port2);
+
+	        do{
+	            //通过用户名与密码向服务器登陆   NetType : 0 表示公网(默认值)，1 表示特殊网络（内网、专线等）
+	            int ret = baseService.BaseLoginX(username, password,nettype);
+	            //判断是否登录成功
+	            if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+	                System.out.println("Login error:" + ret);
+	                break;
+	            }
+	            //快照数据集合  SZSEL1_Quotation：查询深交所 L1 静态数据
+	            List<SZSEL1_Static> snapList = new ArrayList<SZSEL1_Static>();
+	            //快照数据集合  SSEL1_Quotation：查询上交所 L1 静态数据
+	            List<SSEL1_Static> sseList = new ArrayList<SSEL1_Static>();
+
+	            ret = baseService.QuerySnap_SZSEL1_Static(symbolCode, snapList);
+	            if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+	                System.out.println("QuerySnap_SZSEL1_Static error:" + ret);
+	                break;
+	            }
+	            ret = baseService.QuerySnap_SSEL1_Static(symbolCode, sseList);
+	            if ( QTSDataType.RetCode.Ret_Success != QTSDataType.RetCode.fetchByCode(ret) ){
+	                System.out.println("QuerySnap_SSEL1_Static error:" + ret);
+	                break;
+	            }
+
+	            //深交所
+	            for (int idx = 0; idx < snapList.size(); idx++) {
+	                byte[] symbol = snapList.get(idx).Symbol;
+	                byte[] securityName = snapList.get(idx).SecurityName;
+					String strSymbol = new String(symbol,0,symbol.length,"UTF-8").trim();
+					String strSecurityName = new String(securityName,0,securityName.length,"UTF-8").trim();
+					szSymbol =snapList.get(idx).PreClosePrice;
+	            }
+
+	            //上交所
+	            for (int idx = 0; idx < sseList.size(); idx++) {
+	                byte[] symbol = sseList.get(idx).Symbol;
+	                byte[] securityName = sseList.get(idx).SecurityName;
+					String strSymbol = new String(symbol,0,symbol.length,"UTF-8").trim();
+					String strSecurityName = new String(securityName,0,securityName.length,"UTF-8").trim();
+					shSymbol =sseList.get(idx).PreClosePrice;
+	            }
+	        }while(false);
+
+	        //基础API环境反初始化
+	        baseService.BaseUninit();
+
+			if(szSymbol ==0){
+				yesterdayClosingPrice =shSymbol;
+			}else if(shSymbol ==0){
+				yesterdayClosingPrice =szSymbol;
+			}
+	        return yesterdayClosingPrice;
+	    }
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+decimal ：
+(1)商业计算使用BigDecimal。
+
+(2)尽量使用参数类型为String的构造函数。
+
+(3) BigDecimal都是不可变的（immutable）的，在进行每一步运算时，都会产生一个新的对象，所以在做加减乘除运算时千万要保存操作后的值。	
+
+public BigDecimal add(BigDecimal value);                        //加法
+
+public BigDecimal subtract(BigDecimal value);                   //减法 
+
+public BigDecimal multiply(BigDecimal value);                   //乘法
+
+public BigDecimal divide(BigDecimal value);                     //除法    

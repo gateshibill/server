@@ -1,0 +1,48 @@
+package com.sjy.controller;
+
+import com.sjy.service.AdminService;
+import com.sjy.service.CapitalDetailsService;
+import com.sjy.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/")
+public class IndexController {
+
+    @Autowired
+    private CapitalDetailsService capitalDetailsService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private AdminService adminService;
+
+
+    @RequestMapping("/index")
+    public String index() {
+        return "index";
+    }
+
+    @RequestMapping("/main")
+    public String main(Model model) {
+        //查询
+        int userCount = userService.getUserCount();//用户数量
+        int adminCount = adminService.getAdminCount();//代理数量
+        Double topup= capitalDetailsService.getTopup();//今日充值
+        Double drawings= capitalDetailsService.getDrawings();//今日提现
+        Double tradeMoney = topup-drawings;//总资金
+
+        model.addAttribute("tradeMoney",tradeMoney);
+        model.addAttribute("userCount",userCount);
+        model.addAttribute("adminCount",adminCount);
+        model.addAttribute("topup",topup);
+        model.addAttribute("drawings",drawings);
+        return "main";
+    }
+
+
+
+
+}

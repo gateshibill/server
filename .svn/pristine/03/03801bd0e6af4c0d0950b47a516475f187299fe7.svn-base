@@ -1,0 +1,17 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    min-spare-threads: 30
+  port: 8080
+spring:
+  profiles:
+    #加载额外组件配置，可配置多个，以","分隔
+    include: db,log
+  datasource:
+    # 数据库地址
+    url: jdbc:mysql://159.138.39.202:3306/hu_shen_tong?useSSL=false
+    # 账号
+    username: root
+    # 密码
+    password: Sjy168999!@#

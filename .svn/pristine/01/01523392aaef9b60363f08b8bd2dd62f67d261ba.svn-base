@@ -1,0 +1,19 @@
+package com.sjy.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.sjy.entity.OneDayData;
+
+
+@Mapper
+public interface OneDayDataDao {
+	/**
+	 * 获取日k 
+	 * @param symbol
+	 * @return
+	 */
+	List<OneDayData> getDayDataList(@Param("symbol")String symbol,@Param("market")String market);
+}

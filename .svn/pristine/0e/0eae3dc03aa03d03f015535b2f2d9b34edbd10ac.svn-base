@@ -1,0 +1,72 @@
+package com.sjy.dao;
+
+import com.sjy.entity.HistoricalBill;
+import com.sjy.entity.UserOrder;
+import com.sjy.entity.UserOrderVO;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+@Mapper
+public interface UserOrderDao {
+
+    int selectUserOrderCount(@Param("userOrder") UserOrder userOrder, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    List<UserOrder> selectUserOrderList(@Param("userOrder") UserOrder userOrder, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("page") Integer page, @Param("limit") Integer limit);
+    List<UserOrder> getUserOrderList(@Param("userOrder") UserOrder userOrder, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("page") Integer page, @Param("limit") Integer limit,@Param("adminId") Integer adminId);
+    int getUserOrderCount(@Param("userOrder") UserOrder userOrder, @Param("startTime") String startTime, @Param("endTime") String endTime,@Param("adminId") Integer adminId);
+    Integer insertUserOrder(UserOrder userOrder);
+
+    int selectOrderNumber(@Param("orderId") int orderId);
+
+    //获取详情
+    UserOrder getOrderById(@Param("orderId") Integer orderId);
+
+    //删除
+    Integer delUserOrder(@Param("orderId") Integer orderId);
+
+    //更新
+    Integer updateUserOrder(UserOrder order);
+
+    //搜索
+    int getSellStockSearchCount(@Param("userId") Integer userId, @Param("keyWord") String keyWord);
+
+    List<UserOrder> getSellStockSearch(@Param("userId") Integer userId, @Param("keyWord") String keyWord);
+
+    //当天/历史 委托   type:1 当天 2 历史
+    int dayWTCount(@Param("order") UserOrder order, @Param("type") Integer type);
+
+    List<UserOrder> dayWTList(@Param("order") UserOrder order, @Param("type") Integer type, @Param("page") Integer page, @Param("limit") Integer limit);
+
+    //当天成交
+    int daySuccessTradeCount(@Param("order") UserOrder order, @Param("type") Integer type);
+
+    List<UserOrder> daySuccessTradeList(@Param("order") UserOrder order, @Param("type") Integer type, @Param("page") Integer page, @Param("limit") Integer limit);
+
+    UserOrder getUserShareHolding(@Param("userId") Integer userId ,@Param("stockCode") String stockCode);
+    
+    //更加股票代码更新卖出记录
+    void updateOrderBystockCode(UserOrder order);
+    
+    //撤单保留一天
+   List<UserOrder> selectNewUserOrderList(@Param("userOrder") UserOrder userOrder, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("page") Integer page, @Param("limit") Integer limit);
+
+   List<UserOrder> selectStockCode(@Param("userId") Integer userId);
+   
+   //买入后，卖出需要t+1;
+   List<UserOrder> selectTone();
+
+   List<UserOrder> selectStockCodeOne(@Param("userId") Integer userId);
+   
+   //根据user_order_main 主键 id查询
+   Double getCostPrice(@Param("id")Integer id);
+   
+   List<UserOrderVO> selectHobList(@Param("userId")Integer userId,@Param("page")Integer page,@Param("limit")Integer limit);	//对历史账单进行查询
+	
+   int selectHobCount(@Param("userId")Integer userId);	//查询总记录数
+   
+   List<UserOrder> selectMarketValue(@Param("userId")Integer userId);	//总市值
+   
+} 

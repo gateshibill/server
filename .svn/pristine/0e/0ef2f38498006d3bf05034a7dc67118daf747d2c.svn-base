@@ -1,0 +1,433 @@
+package com.sjy.controller;
+
+import com.sjy.dao.*;
+import com.sjy.data.StockData;
+import com.sjy.entity.*;
+import com.sjy.service.*;
+import com.sjy.util.DataUtil;
+import com.sjy.util.DateUtil;
+import com.sjy.util.MathUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@RequestMapping("/memberRiskControl")
+public class MemberRiskControlController {
+
+	@Autowired
+	private MemberRiskControlService memberRiskControlService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private UserOrderMainService userOrderMainService;
+	@Autowired
+	private UserOrderDao userOrderDao; // 明细
+	@Autowired
+	private UserDao userDao;
+	@Autowired
+	private MessageDao messageDao; // 通知信息
+	@Autowired
+	private FlowRecordDao flowRecordDao; // 资金明细
+	@Autowired
+	private PoundageDao poundageDao; // 手续费
+	@Autowired
+	private UserOrderMainDao userOrderMainDao; // user_order主表
+	@Autowired
+	private PositionOrderService positionOrderService;
+	@Autowired
+	private PositionOrderDao positionOrderDao;
+	@Autowired
+	private StockOperateService stockOperateService;
+	@Autowired
+	private AdminDao adminDao;
+
+	/**
+	 * 进入会员风控列表页面
+	 * 
+	 * @param model
+	 * @param memberRiskControl
+	 * @return
+	 */
+
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String index(Model model, MemberRiskControl memberRiskControl) {
+		model.addAttribute("memberRiskControl", memberRiskControl);
+		return "memberRiskControl/index";
+	}
+
+	/**
+	 * 会员风控列表页面 总资产 > 亏损警戒线 ===> 会员风控列表页面
+	 *
+	 * @param response
+	 * @param memberRiskControlVO
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getrisklist", method = RequestMethod.POST)
+	public String getRiskList(HttpServletRequest request, HttpServletResponse response, String userName,
+			String userPhone, Integer page, Integer limit) {
+		String result = null;
+		// 获取当前登录admin对象
+		Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+		if (admin.getAdminLevel() == 0) {
+			result = userService.getMemberRiskList(userName, userPhone, page, limit);
+		} else {
+			result = userService.getMemberRiskListDL(userName, page, limit, admin.getAdminId());
+		}
+		return result;
+	}
+
+	/**
+	 * 进入预警线风控列表页面
+	 * 
+	 * @param model
+	 * @param memberRiskControl
+	 * @return
+	 */
+
+	@RequestMapping(value = "/warning", method = RequestMethod.GET)
+	public String warningIndex(Model model, MemberRiskControl memberRiskControl) {
+		model.addAttribute("memberRiskControl", memberRiskControl);
+		return "memberRiskControl/warning";
+	}
+
+	/**
+	 * 预警线风控列表页面 亏损平仓线<总资产 < 亏损警戒线 ===> 预警线风控管理列表页面
+	 *
+	 * @param response
+	 * @param memberRiskControlVO
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getwarninglist", method = RequestMethod.POST)
+	public String getWarningList(HttpServletRequest request, HttpServletResponse response, String userPhone,
+			String userName, Integer page, Integer limit) {
+		String result = null;
+		// 获取当前登录admin对象
+		Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+		Integer adminId = admin.getAdminId();
+		Integer parentId = admin.getParentId();
+		// 判断用户是否是超级管理员 0：超级管理员
+		if (admin.getAdminLevel() == 0) {
+			result = userService.getWarninglList(userName, userPhone, page, limit);
+		} else {
+			result = userService.getWarninglListDL(userName, page, limit, admin.getAdminId());
+		}
+		return result;
+	}
+
+	/**
+	 * 进入平仓线风控列表页面
+	 * 
+	 * @param model
+	 * @param memberRiskControl
+	 * @return
+	 */
+
+	@RequestMapping(value = "/unwind", method = RequestMethod.GET)
+	public String unwindIndex(Model model, MemberRiskControl memberRiskControl) {
+		model.addAttribute("memberRiskControl", memberRiskControl);
+		return "memberRiskControl/unwind";
+	}
+
+	/**
+	 * 平仓线风控列表页面 总资产 < 亏损平仓线 ===> 平仓线风控管理
+	 *
+	 * @param response
+	 * @param memberRiskControlVO
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getunwindlist", method = RequestMethod.POST)
+	public String getUnwindList(HttpServletRequest request, HttpServletResponse response, String userName,
+			String userPhone, Integer page, Integer limit) {
+		String result = null;
+		// 获取当前登录admin对象
+		Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+		Integer adminId = admin.getAdminId();
+		Integer parentId = admin.getParentId();
+		// 判断用户是否是超级管理员 0：超级管理员
+		if (admin.getAdminLevel() == 0) {
+			result = userService.getUnwindlist(userName, userPhone, page, limit);
+		} else {
+			result = userService.getUnwindlistDL(userName, page, limit, admin.getAdminId());
+		}
+		return result;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/pc", method = RequestMethod.POST)
+	public Map<String, String> pc(Integer userId) {
+		Map<String, String> map = new HashMap<String, String>();
+		if (userId != null) {
+			Double sellPrice1 = 0.0; // 佣金
+			Double yh = 0.0; // 印花
+			Double gouHu = 0.0; // 过户
+			List<UserOrderVO> userOrderVOS = positionOrderDao.userOrderPC(userId);
+			UserOrder userOrder = new UserOrder();
+			User byUserId = userService.getUserByUserId(userId);
+			for (UserOrderVO user : userOrderVOS) {
+				try {
+					Double nowPrice = StockData.getPrice(user.getStockCode(), user.getMarket());
+
+					String cp = String.valueOf(nowPrice); // 获取现价cp
+					// 卖出成功扣除(手续费 + 过户费 + 印花税)
+					// (卖出时: 佣金比例为此单的万分之二 ,佣金不足5.00 用5.00扣除 印花税 (卖出金额的千分之一))
+					sellPrice1 = MathUtils.sellPrice1(Double.valueOf(cp), Double.valueOf(user.getOrderNumber()));
+					yh = Double.valueOf(user.getOrderNumber()) * Double.valueOf(cp) * 0.001;
+					// (过户费 上证收取过户费)
+					if (user.getMarket().equals("SH")) { // 上证收取过户费
+						gouHu = MathUtils.transferFee(Double.valueOf(user.getOrderNumber()));
+					} else {
+						gouHu = 0.00;
+					}
+					// 更改userOrderMain表记录
+					UserOrderMain userOrderMainPC = userOrderMainService.getUserOrderMain(user.getStockCode(), userId);
+					userOrderMainPC.setStockNumber(0);
+					userOrderMainPC.setAllowSellNumber(0);
+					userOrderMainService.updateUserOrderMain(userOrderMainPC);
+					// 插入卖出记录
+					userOrder.setMarket(user.getMarket());
+					userOrder.setCreateTime(new Date());
+					// userOrder.setTradeTime(new Date());
+					userOrder.setOrderParticipationType(3); // 3 当前委托（平仓，卖出中）
+					if (DateUtil.isTradingHours() && !DateUtil.isWeekend()) {
+						userOrder.setTradeTime(new Date());
+						userOrder.setOrderParticipationType(4); // 交易时间内,卖出成功
+					}
+					userOrder.setOrderPrice(nowPrice);
+					userOrder.setOrderCode(DateUtil.getCode(user.getUserId()));
+					userOrder.setOrderType(2); // 卖出
+					userOrder.setUserId(user.getUserId());
+					userOrder.setOrderNumber(Double.valueOf(user.getOrderNumber()));
+					userOrder.setStockCode(user.getStockCode());
+					userOrder.setOrderBuyer(user.getOrderBuyer());
+					userOrder.setEntrustTime(new Date());
+					userOrder.setStockName(user.getStockName());
+					userOrder.setOrderExitPrice(Double.valueOf(cp));
+					userOrderDao.insertUserOrder(userOrder);
+					// 更改卖出信息
+					user.setIsPc(1);
+					userOrderDao.updateUserOrder(user);
+					// 6.更改用户金额
+					Double expendableFund = user.getOrderNumber() * Double.valueOf(cp) + sellPrice1 + gouHu;
+					User user1 = userDao.getUserInfoById(user.getUserId());
+					user1.setUserExpendableFund(user1.getUserExpendableFund() + expendableFund); // 用户可用资金
+					user1.setUserOpenMarketValue(
+							user1.getUserOpenMarketValue() - (user.getOrderNumber() * Double.valueOf(cp)));// 减去持仓市值
+					if (user1.getUserOpenMarketValue() < 0) {
+						user1.setUserOpenMarketValue(0.00);
+					}
+					user1.setUserNetAsset(user1.getUserNetAsset() - sellPrice1 - gouHu);// 用户总资产
+					user1.setUserMoney(user1.getUserMoney() - sellPrice1 - gouHu);
+					userDao.updateUser(user1);
+					// 7.插入流水记录 : 后续优化 、扣除手续费 后续优化 ;、扣除手续费 后续优化 ;
+					FlowRecord flowRecord = DataUtil.changeFlowRecord(user.getUserId(),
+							user.getOrderNumber() * Double.valueOf(cp), 2, 1, user1.getUserExpendableFund());
+					flowRecordDao.addFlowRecord(flowRecord);
+					// 保证金放入资金明细表中
+					FlowRecord flowRecord1 = DataUtil.changeFlowRecord(user.getUserId(), sellPrice1 + gouHu, 1, 2,
+							user1.getUserMoney());
+					flowRecordDao.addFlowRecord(flowRecord1);
+					// 手续费放入资金明细表中
+					FlowRecord flowRecord2 = DataUtil.changeFlowRecord(user.getUserId(), sellPrice1 + gouHu, 6, 2,
+							user1.getUserMoney());
+					flowRecordDao.addFlowRecord(flowRecord2);
+					// 8委托卖出成功后,把消息推送给用户
+					Message message = DataUtil.changeMessage(user.getUserId(), "系统消息", "已平仓卖出成功", "", 1, 1);
+					messageDao.addMessage(message);
+					// 9把卖出的数据插入手续费统计列表中
+					Poundage poundage = new Poundage();
+					poundage.setOrderNumber(user.getOrderId());
+					poundage.setUserId(user.getUserId());
+					poundage.setOrderCode(DateUtil.getCode(user.getUserId()));
+					poundage.setStockName(user.getStockName());
+					poundage.setStockCode(user.getStockCode());
+					poundage.setTurnover(Double.valueOf(user.getOrderNumber()));
+					poundage.setSellPrice(Double.valueOf(cp));
+					poundage.setMoney(Double.valueOf(user.getOrderNumber()) * Double.valueOf(cp));
+					poundage.setTransfer(gouHu);
+					poundage.setPrinting(yh);
+					poundage.setCommission(sellPrice1 - yh);
+					poundage.setPoundagePrice(sellPrice1);
+					poundage.setChargePrice(0.00); // 服务中心
+					poundage.setAdminId(user1.getInviterId());
+					poundage.setAdminChargePrice(0.00); // 代理商收取费用 优化
+					if (user1.getInviterId() != null) { // 有代理
+						Admin admin = adminDao.getAdminById(user1.getInviterId(), null, null);
+						poundage.setAgentHandInto(admin.getHandInto());
+						if (admin.getHandInto() != null) {
+							poundage.setAdminChargePrice((gouHu + sellPrice1 + yh) * admin.getHandInto() / 100);
+						}
+					}
+					poundage.setDealFlag("2");
+					poundage.setDealTime(new Date());
+					poundageDao.addPoundage(poundage);
+					byUserId.setIsTraders(1);
+				} catch (Exception e) {
+					e.printStackTrace();
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				}
+			}
+			if (byUserId.getIsTraders() == 1) {
+				StockOperate stockOperateDetailOne = stockOperateService.getStockOperateUserId(userId);
+				byUserId.setUserMoney(byUserId.getUserNetAsset()
+						- (stockOperateDetailOne.getBzjMoney() * stockOperateDetailOne.getPzMultiple()));
+				byUserId.setUserNetAsset(0.00);
+				byUserId.setUserExpendableFund(0.00);
+				userDao.updateUser(byUserId);
+				map.put("msg", "success");
+				// 计算用户平仓后真实的钱 (用户余额 = 充值 + 上次操盘剩余资金 - 手续费 - 利息 - 提现 - 目前余额)
+			}
+		} else {
+			map.put("msg", "error");
+		}
+		return map;
+	}
+
+
+	@ResponseBody
+	@RequestMapping(value = "/userPC", method = RequestMethod.POST)
+	public Map<String, String> userPC(Integer userId) {
+		Map<String, String> map = new HashMap<String, String>();
+		if (userId != null) {
+			Double sellPrice1 = 0.0; // 佣金
+			Double yh = 0.0; // 印花
+			Double gouHu = 0.0; // 过户
+			List<UserOrderMain> userOrderMainPC = userOrderMainService.getUserOrderMainPC(userId);
+			UserOrder userOrder = new UserOrder();
+			User byUserId = userService.getUserByUserId(userId);
+			for (UserOrderMain userOrderMain : userOrderMainPC) {
+				try {
+					Double nowPrice = StockData.getPrice(userOrderMain.getStockCode(), userOrderMain.getMarket());
+
+					String cp = String.valueOf(nowPrice); // 获取现价cp
+					// 卖出成功扣除(手续费 + 过户费 + 印花税)
+					// (卖出时: 佣金比例为此单的万分之二 ,佣金不足5.00 用5.00扣除 印花税 (卖出金额的千分之一))
+					sellPrice1 = MathUtils.sellPrice1(Double.valueOf(cp), Double.valueOf(userOrderMain.getStockNumber()));
+					yh = Double.valueOf(userOrderMain.getStockNumber()) * Double.valueOf(cp) * 0.001;
+					// (过户费 上证收取过户费)
+					if (userOrderMain.getMarket().equals("SH")) { // 上证收取过户费
+						gouHu = MathUtils.transferFee(Double.valueOf(userOrderMain.getStockNumber()));
+					} else {
+						gouHu = 0.00;
+					}
+					// 更改userOrderMain表记录
+					UserOrderMain userOrderMainPC1 = userOrderMainService.getUserOrderMain(userOrderMain.getStockCode(), userId);
+					userOrderMainPC1.setStockNumber(0);
+					userOrderMainPC1.setAllowSellNumber(0);
+					userOrderMainService.updateUserOrderMain(userOrderMainPC1);
+					// 插入卖出记录
+					userOrder.setMarket(userOrderMain.getMarket());
+					userOrder.setCreateTime(new Date());
+					// userOrder.setTradeTime(new Date());
+					userOrder.setOrderParticipationType(3); // 3 当前委托（平仓，卖出中）
+					if (DateUtil.isTradingHours() && !DateUtil.isWeekend()) {
+						userOrder.setTradeTime(new Date());
+						userOrder.setOrderParticipationType(4); // 交易时间内,卖出成功
+					}
+					userOrder.setOrderPrice(nowPrice);
+					userOrder.setOrderType(2); // 卖出
+					userOrder.setUserId(userOrderMain.getUserId());
+					userOrder.setOrderCode(DateUtil.getCode(userOrderMain.getUserId()));
+					userOrder.setOrderNumber(Double.valueOf(userOrderMain.getStockNumber()));
+					userOrder.setStockCode(userOrderMain.getStockCode());
+					userOrder.setOrderBuyer(null);
+					userOrder.setEntrustTime(new Date());
+					userOrder.setStockName(userOrderMain.getStockName());
+					userOrder.setOrderExitPrice(Double.valueOf(cp));
+					userOrderDao.insertUserOrder(userOrder);
+					// 更改卖出信息
+					//user.setIsPc(1);
+					userOrder.setIsPc(1);
+					//插入平仓卖出信息
+					userOrderDao.insertUserOrder(userOrder);
+					// 6.更改用户金额
+					Double expendableFund = userOrderMain.getStockNumber() * Double.valueOf(cp) + sellPrice1 + gouHu;
+					User user1 = userDao.getUserInfoById(userOrderMain.getUserId());
+					user1.setUserExpendableFund(user1.getUserExpendableFund() + expendableFund); // 用户可用资金
+					user1.setUserOpenMarketValue(
+							user1.getUserOpenMarketValue() - (userOrderMain.getStockNumber() * Double.valueOf(cp)));// 减去持仓市值
+					if (user1.getUserOpenMarketValue() < 0) {
+						user1.setUserOpenMarketValue(0.00);
+					}
+					user1.setUserNetAsset(user1.getUserNetAsset() - sellPrice1 - gouHu);// 用户总资产
+					user1.setUserMoney(user1.getUserMoney() - sellPrice1 - gouHu);
+					userDao.updateUser(user1);
+					// 7.插入流水记录 : 后续优化 、扣除手续费 后续优化 ;、扣除手续费 后续优化 ;
+					FlowRecord flowRecord = DataUtil.changeFlowRecord(userOrderMain.getUserId(),
+							userOrderMain.getStockNumber() * Double.valueOf(cp), 2, 1, user1.getUserExpendableFund());
+					flowRecordDao.addFlowRecord(flowRecord);
+					// 保证金放入资金明细表中
+					FlowRecord flowRecord1 = DataUtil.changeFlowRecord(userOrderMain.getUserId(), sellPrice1 + gouHu, 1, 2,
+							user1.getUserMoney());
+					flowRecordDao.addFlowRecord(flowRecord1);
+					// 手续费放入资金明细表中
+					FlowRecord flowRecord2 = DataUtil.changeFlowRecord(userOrderMain.getUserId(), sellPrice1 + gouHu, 6, 2,
+							user1.getUserMoney());
+					flowRecordDao.addFlowRecord(flowRecord2);
+					// 8委托卖出成功后,把消息推送给用户
+					Message message = DataUtil.changeMessage(userOrderMain.getUserId(), "系统消息", "已平仓卖出成功", "", 1, 1);
+					messageDao.addMessage(message);
+					// 9把卖出的数据插入手续费统计列表中
+					Poundage poundage = new Poundage();
+					poundage.setOrderNumber(userOrder.getOrderId());
+					poundage.setUserId(userOrderMain.getUserId());
+					poundage.setOrderCode(DateUtil.getCode(userOrderMain.getUserId()));
+					poundage.setStockName(userOrderMain.getStockName());
+					poundage.setStockCode(userOrderMain.getStockCode());
+					poundage.setTurnover(Double.valueOf(userOrderMain.getStockNumber()));
+					poundage.setSellPrice(Double.valueOf(cp));
+					poundage.setMoney(Double.valueOf(userOrderMain.getStockNumber()) * Double.valueOf(cp));
+					poundage.setTransfer(gouHu);
+					poundage.setPrinting(yh);
+					poundage.setCommission(sellPrice1 - yh);
+					poundage.setPoundagePrice(sellPrice1);
+					poundage.setChargePrice(0.00); // 服务中心
+					poundage.setAdminId(user1.getInviterId());
+					poundage.setAdminChargePrice(0.00); // 代理商收取费用 优化
+					if (user1.getInviterId() != null) { // 有代理
+						Admin admin = adminDao.getAdminById(user1.getInviterId(), null, null);
+						poundage.setAgentHandInto(admin.getHandInto());
+						if (admin.getHandInto() != null) {
+							poundage.setAdminChargePrice((gouHu + sellPrice1 + yh) * admin.getHandInto() / 100);
+						}
+					}
+					poundage.setDealFlag("2");
+					poundage.setDealTime(new Date());
+					poundageDao.addPoundage(poundage);
+					byUserId.setIsTraders(1);
+				} catch (Exception e) {
+					e.printStackTrace();
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				}
+			}
+			if (byUserId.getIsTraders() == 1) {
+				StockOperate stockOperateDetailOne = stockOperateService.getStockOperateUserId(userId);
+				byUserId.setUserMoney(byUserId.getUserNetAsset()
+						- (stockOperateDetailOne.getBzjMoney() * stockOperateDetailOne.getPzMultiple()));
+				byUserId.setUserNetAsset(0.00);
+				byUserId.setUserExpendableFund(0.00);
+				userDao.updateUser(byUserId);
+				map.put("msg", "success");
+				// 计算用户平仓后真实的钱 (用户余额 = 充值 + 上次操盘剩余资金 - 手续费 - 利息 - 提现 - 目前余额)
+			}
+		} else {
+			map.put("msg", "error");
+		}
+		return map;
+	}
+
+}

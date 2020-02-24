@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.TwoDayDataDao">
+
+	<resultMap type="com.sjy.entity.TwoDayData"
+		id="BaseResultMap">
+		<id column="id" property="id" />
+		<result column="symbol" property="symbol" />
+		<result column="short_name" property="shortName" />
+		<result column="market" property="market" />
+		<result column="obpd" property="obpd" />
+		<result column="op" property="op" />
+		<result column="cp" property="cp" />
+		<result column="hip" property="hip" />
+		<result column="lop" property="lop" />
+		<result column="cq" property="cq" />
+		<result column="cm" property="cm" />
+		<result column="tq" property="tq" />
+		<result column="vwap" property="vwap" />
+		<result column="change" property="change" />
+		<result column="change_ratio" property="changeRatio" />
+		<result column="clv_lop" property="clvLop" />
+		<result column="clv_hip" property="clvHip" />
+		<result column="sell_price01" property="sellPrice01" />
+		<result column="sell_price02" property="sellPrice02" />
+		<result column="sell_price03" property="sellPrice03" />
+		<result column="sell_price04" property="sellPrice04" />
+		<result column="sell_price05" property="sellPrice05" />
+		<result column="sell_volume01" property="sellVolume01" />
+		<result column="sell_volume02" property="sellVolume02" />
+		<result column="sell_volume03" property="sellVolume03" />
+		<result column="sell_volume04" property="sellVolume04" />
+		<result column="sell_volume05" property="sellVolume05" />
+		<result column="buy_price01" property="buyPrice01" />
+		<result column="buy_price02" property="buyPrice02" />
+		<result column="buy_price03" property="buyPrice03" />
+		<result column="buy_price04" property="buyPrice04" />
+		<result column="buy_price05 " property="buyPrice05" />
+		<result column="buy_volume01" property="buyVolume01" />
+		<result column="buy_volume02" property="buyVolume02" />
+		<result column="buy_volume03" property="buyVolume03" />
+		<result column="buy_volume04" property="buyVolume04" />
+		<result column="buy_volume05" property="buyVolume05" />
+		<result column="trading_date" property="tradingDate" />
+		<result column="trading_time" property="tradingTime" />
+		<result column="create_time" property="createTime" />
+	</resultMap>
+	<sql id="twoDayDataField">
+		symbol,
+		short_name,
+		market,
+		trading_date,
+		trading_time,
+		obpd,
+		op,
+		cp,
+		hip,
+		lop,
+		cq,
+		cm,
+		tq,
+		vwap,
+		change_money,
+		change_ratio,
+		clv_lop,
+		clv_hip
+	</sql>
+	<insert id="addOneData"
+		parameterType="com.sjy.entity.TwoDayData">
+		INSERT INTO two_day_data(
+		`symbol`,
+		`short_name`,
+		`market`,
+		`trading_date`,
+		`trading_time`,
+		`obpd`,
+		`op`,
+		`cp`,
+		`hip`,
+		`lop`,
+		`cq`,
+		`cm`,
+		`tq`,
+		`vwap`,
+		`change_money`,
+		`change_ratio`,
+		`clv_lop`,
+		`clv_hip`,
+		`sell_price01`,
+		`sell_price02`,
+		`sell_price03`,
+		`sell_price04`,
+		`sell_price05`,
+		`sell_volume01`,
+		`sell_volume02`,
+		`sell_volume03`,
+		`sell_volume04`,
+		`sell_volume05`,
+		`buy_price01`,
+		`buy_price02`,
+		`buy_price03`,
+		`buy_price04`,
+		`buy_price05`,
+		`buy_volume01`,
+		`buy_volume02`,
+		`buy_volume03`,
+		`buy_volume04`,
+		`buy_volume05`,
+		`create_time`
+		)VALUES(
+		#{symbol},
+		#{shortName},
+		#{market},
+		#{tradingDate},
+		#{tradingTime},
+		#{obpd},
+		#{op},
+		#{cp},
+		#{hip},
+		#{lop},
+		#{cq},
+		#{cm},
+		#{tq},
+		#{vwap},
+		#{changeMoney},
+		#{changeRatio},
+		#{clvLop},
+		#{clvHip},
+		#{sellPrice01},
+		#{sellPrice02},
+		#{sellPrice03},
+		#{sellPrice04},
+		#{sellPrice05},
+		#{sellVolume01},
+		#{sellVolume02},
+		#{sellVolume03},
+		#{sellVolume04},
+		#{sellVolume05},
+		#{buyPrice01},
+		#{buyPrice02},
+		#{buyPrice03},
+		#{buyPrice04},
+		#{buyPrice05},
+		#{buyVolume01},
+		#{buyVolume02},
+		#{buyVolume03},
+		#{buyVolume04},
+		#{buyVolume05},
+		#{createTime}
+		)
+	</insert>
+	
+	<insert id="addManyData" parameterType="com.sjy.entity.TwoDayData" >
+		INSERT INTO two_day_data(
+		`symbol`,
+		`short_name`,
+		`market`,
+		`trading_date`,
+		`trading_time`,
+		`obpd`,
+		`op`,
+		`cp`,
+		`hip`,
+		`lop`,
+		`cq`,
+		`cm`,
+		`tq`,
+		`vwap`,
+		`change_money`,
+		`change_ratio`,
+		`clv_lop`,
+		`clv_hip`,
+		`sell_price01`,
+		`sell_price02`,
+		`sell_price03`,
+		`sell_price04`,
+		`sell_price05`,
+		`sell_volume01`,
+		`sell_volume02`,
+		`sell_volume03`,
+		`sell_volume04`,
+		`sell_volume05`,
+		`buy_price01`,
+		`buy_price02`,
+		`buy_price03`,
+		`buy_price04`,
+		`buy_price05`,
+		`buy_volume01`,
+		`buy_volume02`,
+		`buy_volume03`,
+		`buy_volume04`,
+		`buy_volume05`,
+		`create_time`
+		) VALUES
+		<foreach collection="datas" item="data" separator=",">
+		  (
+			  	#{data.symbol},
+				#{data.shortName},
+				#{data.market},
+				#{data.tradingDate},
+				#{data.tradingTime},
+				#{data.obpd},
+				#{data.op},
+				#{data.cp},
+				#{data.hip},
+				#{data.lop},
+				#{data.cq},
+				#{data.cm},
+				#{data.tq},
+				#{data.vwap},
+				#{data.changeMoney},
+				#{data.changeRatio},
+				#{data.clvLop},
+				#{data.clvHip},
+				#{data.sellPrice01},
+				#{data.sellPrice02},
+				#{data.sellPrice03},
+				#{data.sellPrice04},
+				#{data.sellPrice05},
+				#{data.sellVolume01},
+				#{data.sellVolume02},
+				#{data.sellVolume03},
+				#{data.sellVolume04},
+				#{data.sellVolume05},
+				#{data.buyPrice01},
+				#{data.buyPrice02},
+				#{data.buyPrice03},
+				#{data.buyPrice04},
+				#{data.buyPrice05},
+				#{data.buyVolume01},
+				#{data.buyVolume02},
+				#{data.buyVolume03},
+				#{data.buyVolume04},
+				#{data.buyVolume05},
+				#{data.createTime}
+		  )
+		</foreach>	
+	</insert>
+	<select id="getDayDataList" resultMap="BaseResultMap">
+		select 
+		id,
+		symbol,
+		short_name,
+		market,
+		trading_date,
+		trading_time,
+		obpd,
+		op,
+		cp,
+		hip,
+		lop,
+		cq,
+		cm,
+		tq,
+		vwap,
+		change_money,
+		change_ratio,
+		clv_lop,
+		clv_hip
+		from two_day_data where 1 = 1
+		<if test="symbol != null and symbol != ''">
+			and symbol = #{symbol}
+		</if>
+		<if test="market != null and market != ''">
+			and market = #{market}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,18 @@
+package com.sjy.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.sjy.entity.InformationTable;
+
+@Mapper
+public interface InformationTableDao {
+	Integer addInfomation(InformationTable informationTable);	//新增资讯
+	Integer delInfomation(@Param("informationId")Integer informationId);	//删除资讯
+	int selectInformationCount(InformationTable informationTable);	//查询记录数
+	List<InformationTable> selectInformationList(@Param("informationTable")InformationTable informationTable,@Param("page")Integer page,@Param("limit")Integer limit);	//查询资讯列表
+	Integer updateInformation(InformationTable informationTable);	//修改资讯
+	InformationTable getInformationById(@Param("informationId")Integer informationId);	
+}

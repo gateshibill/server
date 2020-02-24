@@ -1,0 +1,23 @@
+package com.sjy.dao;
+
+import com.sjy.entity.StockDetails;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
+
+@Mapper
+public interface StockDetailsDao {
+
+    void addStockDetails(StockDetails stockDetails);
+
+    StockDetails getStockDetails(@Param("symbol")String symbol);
+
+    StockDetails getSDBySymbolOrName(Map map);
+    
+    List<StockDetails> getDetailsList(@Param("symbol")String symbol);
+    
+    List<StockDetails> getTimeShareList(@Param("symbol")String symbol);
+}

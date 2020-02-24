@@ -1,0 +1,85 @@
+layui.use(['form', 'layer', 'table', 'laytpl', 'laydate'], function () {
+    var form = layui.form,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery,
+        laytpl = layui.laytpl,
+        laydate = layui.laydate,
+        table = layui.table;
+    //风险控制
+    var tableIns = table.render({
+        elem: '#adminList',
+        method: 'post',
+        url: '/flowrecord/getflowrecordlist',
+        cellMinWidth: 95,
+        page: true,
+        //height: "full-125",
+        limits: [10, 15, 20, 25],
+        limit: 12,
+        id: "adminListTable",
+        totalRow: true,
+        cols: [[
+            {field: 'flowId', title: '编号',width:80,align: "center",totalRowText: '合计'},
+            {field: 'userName', title: '会员名', align: "center"},
+            {field: 'adminName', title: '代理', align: "center"},
+            {
+                field: 'flowNumber', title: '流水金额', align: 'center',totalRow: true, templet: function (d) {
+                return "<span style='color:red'>" + d.flowNumber.toFixed(2) + "</span>"
+            }
+            },
+            {
+                field: 'flowWay', title: '用途', align: 'center', sort: true, templet: function (d) {
+                if (d.flowWay == "1") {
+                    return "保证金";
+                } else if (d.flowWay == "2") {
+                    return "建仓";
+                } else if (d.flowWay == "3") {
+                    return "递延";
+                } else if (d.flowWay == "4") {
+                    return "充值";
+                } else if (d.flowWay == "5") {
+                    return "提现";
+                } else if (d.flowWay == "6") {
+                    return "手续费";
+                } else if (d.flowWay == "7") {
+                    return "服务";
+                }
+            }
+            },
+            {
+                field: 'flowType', title: '类型', align: 'center', sort: true, templet: function (d) {
+                if (d.flowType == "1") {
+                    return "<span style='background-color:#5cb85c;padding:3px 10px;color:#fff;border-radius:1px'>收入</span>";
+                } else if (d.flowType == "2") {
+                    return "<span style='background-color:#d9534f;padding:3px 10px;color:#fff;border-radius:1px'>支出</span>";
+                }
+            }
+            },
+            {
+                field: 'afterMoney', title: '流水后余额', align: 'center', templet: function (d) {
+                return "<span style='color:red'>" + d.afterMoney.toFixed(2) + "</span>"
+            }
+            },
+            {field: 'createTime', title: '创建时间', align: 'center'},
+        ]]
+    });
+
+    //搜索【此功能需要后台配合，所以暂时没有动态效果演示】
+    $(".search_btn").on("click", function () {
+        var userName = $('.userName').val();
+        var sTime = $('#startTime').val();
+        var eTime = $('#endTime').val();
+        var flowWay=$('.flowWay').val();
+        table.reload("adminListTable", {
+            page: {
+                curr: 1 //重新从第 1 页开始
+            },
+            where: {
+                userName: userName,
+                flowWay: flowWay,
+                sTime: sTime,
+                eTime: eTime,
+            }
+        })
+    });
+
+})

@@ -1,0 +1,186 @@
+package com.sjy.util;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.sjy.entity.FlowRecord;
+import com.sjy.entity.Message;
+import com.sjy.entity.Poundage;
+import com.sjy.entity.User;
+import com.sjy.entity.UserOrder;
+import com.sjy.util.Redis.RedisUtil1;
+import com.sjy.util.Redis.RedisUtil2;
+
+
+public class DataUtil {
+	public static List<Map<String, String>> dataFilter(List<Map<String, String>> lists) {
+		// 遍历过滤重复的值
+		for (int i = 0; i < lists.size(); i++) {
+			for (int j = i + 1; j < lists.size(); j++) {
+				if (lists.get(i).get("time").equals(lists.get(j).get("time"))) {
+					lists.remove(i);// 删除一样的元素
+					i--;
+					break;
+				}
+				if(lists.get(i).get("time").substring(11,16).equals("09:29")) {
+					lists.remove(i);
+				}
+			}
+		}
+//		System.out.println(lists.size());
+		return lists;
+	}
+	
+	public static String addtime(String timeStr, String addnumber) {
+		String str = null;
+
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
+
+		Date date = null;
+		try {
+			date = df.parse(timeStr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Calendar gc = new GregorianCalendar();
+		gc.setTime(date);
+		gc.add(GregorianCalendar.MINUTE, Integer.parseInt(addnumber));
+		str = df.format(gc.getTime());
+		return str;
+	}
+	/**
+	 * redis返回值
+	 * @param symbol
+	 * @param market
+	 * @return
+	 */
+	public static String getRedisAllInfoByKey(String symbol,String market) {
+		int args = Integer.valueOf(symbol);
+		String key = symbol+":"+market;//股票:市场  = key值
+		String newStr = null;
+		if(args % 2 == 0) { //Redis2
+			if(RedisUtil2.exists(key)) {
+				if(RedisUtil2.llen(key)>0) {
+					newStr = RedisUtil2.lindex(key, -1); // 最新
+				}
+			}
+		}else { //Redis1
+			if(RedisUtil1.exists(key)) {
+				if(RedisUtil1.llen(key)>0) {
+					newStr = RedisUtil1.lindex(key, -1); // 最新
+				}
+			}
+		}
+		return newStr;
+	}
+	/**
+	 * 检测是否够钱买股票
+	 * @param userExpendableFund ： 可用资金
+	 * @param buyTotalFee // 买股票总金额  or  买股票总金额+手续费
+	 * @return
+	 */
+	public static boolean checkisFee(Double userExpendableFund,Double buyTotalFee) {
+		boolean isflag = false;
+		if(userExpendableFund >= buyTotalFee) {
+			isflag = true;
+		}
+		return isflag;
+	}
+	/**
+	 * 简化方法的语句
+	 * @param userId
+	 * @param flowNumber
+	 * @param flowWay
+	 * @param flowType
+	 * @param afterMoney
+	 * @return
+	 */
+	public static FlowRecord changeFlowRecord(Integer userId,Double flowNumber,Integer flowWay,Integer flowType,Double afterMoney) {
+		FlowRecord flowRecord = new FlowRecord();
+		flowRecord.setUserId(userId);
+		flowRecord.setFlowNumber(flowNumber);
+		flowRecord.setFlowWay(flowWay);
+		flowRecord.setFlowType(flowType);
+		flowRecord.setAfterMoney(afterMoney);
+		flowRecord.setCreateTime(new Date());
+		return flowRecord;
+	}
+	/**
+	 * 买入服务费
+	 * @param userOrder
+	 * @param user
+	 * @param guohu
+	 * @param shouxu
+	 * @return
+	 */
+	public static Poundage changeBuyPoundage(UserOrder userOrder,User user,Double gouHu,Double shouXu) {
+		Poundage poundage = new Poundage();
+		poundage.setOrderNumber(userOrder.getOrderId());
+		poundage.setUserId(userOrder.getUserId());
+		poundage.setStockName(userOrder.getStockName());
+		poundage.setStockCode(userOrder.getStockCode());
+		poundage.setTurnover(userOrder.getOrderNumber());
+		poundage.setSellPrice(userOrder.getOrderBuyer());
+		poundage.setMoney(userOrder.getOrderBuyer() * userOrder.getOrderNumber());
+		poundage.setTransfer(gouHu);
+		poundage.setPrinting(0.00);
+		poundage.setCommission(shouXu);
+		poundage.setPoundagePrice(gouHu + shouXu);
+		poundage.setChargePrice(0.00); // 服务中心
+		poundage.setAdminId(user.getInviterId());
+		poundage.setAdminChargePrice(0.00); // 代理商收取费用 优化
+		poundage.setDealFlag("1");
+		poundage.setDealTime(new Date());
+		return poundage;
+	}
+	/**
+	 * 卖出服务费
+	 * @param userOrder
+	 * @param user
+	 * @param gouHu
+	 * @param shouXu
+	 * @param sellPrice1
+	 * @param yh
+	 * @return
+	 */
+	public static Poundage changeSellPoundage(UserOrder userOrder,User user,Double gouHu,Double sellPrice1,Double yh) {
+		Poundage poundage = new Poundage();
+		poundage.setOrderNumber(userOrder.getOrderId());
+		poundage.setUserId(userOrder.getUserId());
+		poundage.setStockName(userOrder.getStockName());
+		poundage.setStockCode(userOrder.getStockCode());
+		poundage.setTurnover(userOrder.getOrderNumber());
+		poundage.setSellPrice(userOrder.getOrderExitPrice());
+		poundage.setMoney(userOrder.getOrderExitPrice() * userOrder.getOrderNumber());
+		poundage.setTransfer(gouHu);
+		poundage.setPrinting(yh);
+		poundage.setCommission(sellPrice1 - yh);
+		poundage.setPoundagePrice(sellPrice1);
+		poundage.setChargePrice(0.00); // 服务中心
+		poundage.setAdminId(user.getInviterId());
+		poundage.setAdminChargePrice(0.00); // 代理商收取费用 优化
+		poundage.setDealFlag("2");
+		poundage.setDealTime(new Date());
+		return poundage;
+	}
+	public static Message changeMessage(Integer userId,String title,String messageContent,
+			String name,Integer type,Integer state) {
+		Message message = new Message();
+		message.setUserId(userId);
+		message.setMessageTitle(title);
+		message.setMessageContent(messageContent);
+		message.setMessageName(name);
+		message.setMessageType(type);
+		message.setMessageState(state);
+		message.setCreateTime(new Date());
+		return message;
+	}
+}

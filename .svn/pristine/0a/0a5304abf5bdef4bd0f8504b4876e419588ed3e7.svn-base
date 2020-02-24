@@ -1,0 +1,17 @@
+package com.sjy.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.sjy.entity.SystemConfig;
+
+@Mapper
+public interface SystemConfigDao {
+	Integer addSysConfig(SystemConfig systemConfig);	//新增系统配置
+	Integer delSysConfig(@Param("sysId")Integer sysId);	//删除系统配置
+	Integer updateSysConfig(SystemConfig systemConfig);	//修改系统配置
+	int selectSysConfigCount(@Param("sysId")Integer sysId);	//查询总记录数
+	List<SystemConfig> selectSysConfigList(@Param("systemConfig")SystemConfig systemConfig,@Param("page")Integer page,@Param("limit")Integer limit);
+}

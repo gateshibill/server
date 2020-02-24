@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.PowerDao">
+	<resultMap type="com.ylb.entity.Power" id="BaseResultMap">
+		<id column="power_id" property="powerId" jdbcType="INTEGER"/>
+		<result column="power_name" property="powerName" jdbcType="VARCHAR"/>
+		<result column="power_url" property="powerUrl" jdbcType="VARCHAR"/>
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<sql id="powerField">
+		power_id,power_name,power_url,parent_id,create_time
+	</sql>
+	<select id="getPowerList" resultMap="BaseResultMap">
+		select <include refid="powerField"></include> from exUserPower where 1=1
+		<if test="power != null">
+			<if test="power.parentId != null">
+				and parent_id = #{power.parentId}
+			</if>
+		</if>
+		<if test="page != null and limit != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+</mapper>

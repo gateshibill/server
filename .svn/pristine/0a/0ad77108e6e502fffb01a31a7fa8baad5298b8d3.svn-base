@@ -1,0 +1,43 @@
+package com.sjy.entity;
+/**
+ * 交易主表
+ * @author wxh
+ *
+ */
+public class UserOrderMain {
+	private Integer id; //主键id
+	private Integer userId;//用户id
+	private String symbol;//股票代码
+	private String stockName;//股票中文名称
+	private Integer stockNumber;//股票数量
+	public Integer getId() {
+		return id;
+	}
+	public Integer getUserId() {
+		return userId;
+	}
+	public String getSymbol() {
+		return symbol;
+	}
+	public String getStockName() {
+		return stockName;
+	}
+	public Integer getStockNumber() {
+		return stockNumber;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+	public void setStockName(String stockName) {
+		this.stockName = stockName;
+	}
+	public void setStockNumber(Integer stockNumber) {
+		this.stockNumber = stockNumber;
+	}
+}

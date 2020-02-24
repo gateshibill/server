@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org"
+	xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+<meta charset="utf-8">
+<title>Stock后台管理</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="/static/admin/layui/css/layui.css"
+	media="all" />
+<link rel="stylesheet" href="/static/admin/css/index.css" media="all" />
+<style type="text/css">
+.layui-nav-tree .accountManagement,
+.layui-nav-tree .windManagement,
+.layui-nav-tree .moneyManagement,
+.layui-nav-tree .tradeManagement,
+.layui-nav-tree .systemManagement,
+.layui-nav-tree .logManagement{
+	display:none;
+}
+</style>
+</head>
+<body class="main_body">
+	<div class="layui-layout layui-layout-admin">
+		<!-- 顶部 -->
+		<div class="layui-header header">
+			<div class="layui-main mag0">
+				<a href="#" class="logo">StockManage</a>
+				<!-- 显示/隐藏菜单 -->
+				<a href="javascript:;" class="seraph hideMenu icon-caidan"></a>
+				<!-- 移动端顶级菜单 -->
+				<ul class="layui-nav mobileTopLevelMenus" mobile>
+					<li class="layui-nav-item" data-menu="accountManagement"><a
+						href="javascript:;"><i class="seraph icon-caidan"></i><cite>StockManage</cite></a>
+						<dl class="layui-nav-child">
+							<shiro:hasPermission name="accountManagement">
+								<dd class="layui-this" data-menu="accountManagement">
+									<a href="javascript:;"><i class="layui-icon"
+										data-icon="&#xe63c;">&#xe63c;</i><cite>账号管理</cite></a>
+								</dd>
+							</shiro:hasPermission>
+							<shiro:hasPermission name="windManagement">
+								<dd data-menu="windManagement">
+									<a href="javascript:;"><i class="seraph icon-icon10"
+										data-icon="icon-icon10"></i><cite>风控管理</cite></a>
+								</dd>
+							</shiro:hasPermission>
+							<shiro:hasPermission name="moneyManagement">
+								<dd data-menu="moneyManagement">
+									<a href="javascript:;"><i class="layui-icon"
+										data-icon="&#xe620;">&#xe620;</i><cite>资金管理</cite></a>
+								</dd>
+							</shiro:hasPermission>
+							<shiro:hasPermission name="tradeManagement">
+								<dd data-menu="tradeManagement">
+									<a href="javascript:;"><i class="layui-icon"
+										data-icon="&#xe705;">&#xe705;</i><cite>交易管理</cite></a>
+								</dd>
+							</shiro:hasPermission>
+							<shiro:hasPermission name="systemManagement">
+								<dd data-menu="systemManagement">
+									<a href="javascript:;"><i class="layui-icon"
+										data-icon="&#xe620;">&#xe620;</i><cite>系统管理</cite></a>
+								</dd>
+							</shiro:hasPermission>
+							<shiro:hasPermission name="logManagement">
+								<dd data-menu="logManagement">
+									<a href="javascript:;"><i class="layui-icon"
+										data-icon="&#xe705;">&#xe705;</i><cite>使用文档</cite></a>
+								</dd>
+							</shiro:hasPermission>
+						</dl></li>
+				</ul>
+				<!-- PC端顶级菜单 -->
+				<ul class="layui-nav topLevelMenus" pc>
+					<shiro:hasPermission name="accountManagement">
+						<li class="layui-nav-item layui-this"
+							data-menu="accountManagement" pc><a href="javascript:;"><i
+								class="layui-icon" data-icon="&#xe63c;">&#xe63c;</i><cite>账号管理</cite></a>
+						</li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="windManagement">
+						<li class="layui-nav-item" data-menu="windManagement" pc><a
+							href="javascript:;"><i class="seraph icon-icon10"
+								data-icon="icon-icon10"></i><cite>风控管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="moneyManagement">
+						<li class="layui-nav-item" data-menu="moneyManagement" pc><a
+							href="javascript:;"><i class="layui-icon"
+								data-icon="&#xe620;">&#xe620;</i><cite>资金管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="tradeManagement">
+						<li class="layui-nav-item" data-menu="tradeManagement" pc><a
+							href="javascript:;"><i class="layui-icon"
+								data-icon="&#xe705;">&#xe705;</i><cite>交易管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="systemManageMent">
+						<li class="layui-nav-item" data-menu="systemManagement" pc><a
+							href="javascript:;"><i class="layui-icon"
+								data-icon="&#xe705;">&#xe705;</i><cite>系统管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="logManagement">
+						<li class="layui-nav-item" data-menu="logManagement" pc><a
+							href="javascript:;"><i class="layui-icon"
+								data-icon="&#xe705;">&#xe705;</i><cite>日志管理</cite></a></li>
+					</shiro:hasPermission>
+				</ul>
+				<!-- 顶部右侧菜单 -->
+				<ul class="layui-nav top_menu">
+					<shiro:hasPermission name="clearCache">					
+						<li class="layui-nav-item" pc><a href="javascript:;"
+						class="clearCache"><i class="layui-icon" data-icon="&#xe640;">&#xe640;</i><cite>清除缓存</cite><span
+							class="layui-badge-dot"></span></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="lockScreen">					
+						<li class="layui-nav-item lockcms" pc><a href="javascript:;"><i
+							class="seraph icon-lock"></i><cite>锁屏</cite></a></li>
+					</shiro:hasPermission>
+					<li class="layui-nav-item" id="userInfo"><a
+						href="javascript:;"><img src="/static/admin/images/face.jpg"
+							class="layui-nav-img userAvatar" width="35" height="35"><cite
+							class="adminName" th:text="${session.stockManageAdmin.adminAccount}"></cite></a>
+					<dl class="layui-nav-child">
+							<dd>
+								<a href="javascript:;" data-url="/admin/userinfo"><i
+									class="seraph icon-ziliao" data-icon="icon-ziliao"></i><cite>个人资料</cite></a>
+							</dd>
+							<dd>
+								<a href="javascript:;" data-url="/admin/updatepwd"><i
+									class="seraph icon-xiugai" data-icon="icon-xiugai"></i><cite>修改密码</cite></a>
+							</dd>
+							<shiro:hasPermission name="systemNotice">			
+								<dd>
+									<a href="javascript:;"  class="showNotice"><i
+										class="layui-icon">&#xe645;</i><cite>系统公告</cite><span
+										class="layui-badge-dot"></span></a>
+								</dd>
+							</shiro:hasPermission>
+							<!-- <shiro:hasPermission name="setFunction">					
+								<dd>
+									<a href="javascript:;" class="functionSetting"><i
+										class="layui-icon">&#xe620;</i><cite>功能设定</cite><span
+										class="layui-badge-dot"></span></a>
+								</dd>
+							</shiro:hasPermission> -->
+							<shiro:hasPermission name="changeSkin">					
+							<dd>
+								<a href="javascript:;" class="changeSkin"><i
+									class="layui-icon">&#xe61b;</i><cite>更换皮肤</cite></a>
+							</dd>
+							</shiro:hasPermission>
+							<dd>
+								<a href="javascript:void(0)" onclick="signOut()" class="signOut"><i
+									class="seraph icon-tuichu"></i><cite>退出</cite></a>
+							</dd>
+						</dl></li>
+				</ul>
+			</div>
+		</div>
+		<!-- 左侧导航 -->
+		<div class="layui-side layui-bg-black">
+			<div class="user-photo">
+				<a class="img" title="我的头像"><img
+					src="/static/admin/images/face.jpg" class="userAvatar"></a>
+				<p>
+					你好！<span class="userName" th:text="${session.stockManageAdmin.adminAccount}"></span>, 欢迎登录
+				</p>
+			</div>
+
+			<div class="navBar layui-side-scroll" id="navBar">
+				<ul class="layui-nav layui-nav-tree">
+					<li class="layui-nav-item layui-this"><a href="javascript:;"
+						data-url="/index"><i class="layui-icon" data-icon=""></i><cite>后台首页</cite></a>
+					</li>
+					
+					<!-- 账号管理 -->
+					<shiro:hasPermission name="userManage">
+						<li class="layui-nav-item accountManagement"><a
+						data-url="user/index"><i class="seraph icon-text"
+							data-icon="icon-text"></i><cite>会员管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="adminManage">
+						<li class="layui-nav-item accountManagement"><a data-url="admin/index"><i
+							class="layui-icon" data-icon="&#xe634;">&#xe634;</i><cite>代理商管理</cite></a></li>
+					</shiro:hasPermission>
+
+
+
+	
+					<!-- 风控管理 -->
+					<shiro:hasPermission name="userWindManage">				
+						<li class="layui-nav-item windManagement"><a
+							data-url="memberRiskControl/index"><i class="layui-icon"
+								data-icon="&#xe612;">&#xe612;</i><cite>会员风控管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="warmWindManage">
+					<li class="layui-nav-item windManagement"><a
+						data-url="memberRiskControl/warning"><i class="seraph icon-vip"
+							data-icon="icon-vip"></i><cite>预警线风控管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="closeWindManage">					
+						<li class="layui-nav-item windManagement"><a data-url="memberRiskControl/unwind"><i
+							class="layui-icon" data-icon="&#xe634;">&#xe634;</i><cite>平仓线风控管理</cite></a></li>
+					</shiro:hasPermission>
+
+
+					<!-- 资金管理 -->
+					<shiro:hasPermission name="handManage">					
+					<li class="layui-nav-item moneyManagement"><a
+						data-url="poundage/index"><i
+							class="layui-icon" data-icon="&#xe631;">&#xe631;</i><cite>手续费统计</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="serviceManage">					
+						<li class="layui-nav-item moneyManagement"><a
+							data-url="serve/index"><i
+							class="seraph icon-log" data-icon="icon-log"></i><cite>服务费统计</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="fundManage">					
+						<li class="layui-nav-item moneyManagement"><a
+						data-url="flowrecord/index"><i
+							class="layui-icon" data-icon="&#xe64c;">&#xe64c;</i><cite>资金明细</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="rechargeManage">					
+						<li class="layui-nav-item moneyManagement"><a
+						data-url="page/systemSetting/icons.html"><i class="layui-icon"
+							data-icon="&#xe857;">&#xe857;</i><cite>充值管理</cite></a>
+								<dl class="layui-nav-child">
+									<dd><a data-url="capitalDetail/applycentre"><i class="layui-icon" data-icon=""></i><cite>充值申请</cite></a></dd>
+									<dd><a data-url="capitalDetail/applythrough" ><i class="layui-icon" data-icon=""></i><cite>充值通过</cite></a></dd>
+									<dd><a data-url="capitalDetail/applyfail" ><i class="layui-icon" data-icon=""></i><cite>充值失败</cite></a></dd>
+								</dl>
+							</li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="cashManage">					
+						<li class="layui-nav-item moneyManagement"><a
+						data-url="page/systemSetting/icons.html"><i class="layui-icon"
+							data-icon="&#xe857;">&#xe857;</i><cite>提现管理</cite></a>
+							<dl class="layui-nav-child">
+								<dd><a data-url="capitalDetail/withdrawalcentre"><i class="layui-icon" data-icon=""></i><cite>提现申请</cite></a></dd>
+								<dd><a data-url="capitalDetail/withdrawalthrough" ><i class="layui-icon" data-icon=""></i><cite>提现通过</cite></a></dd>
+								<dd><a data-url="capitalDetail/withdrawalfail" ><i class="layui-icon" data-icon=""></i><cite>提现失败</cite></a></dd>
+							</dl>
+						</li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="capitalManage">					
+						<li class="layui-nav-item moneyManagement"><a
+							data-url="page/systemSetting/icons.html"><i class="layui-icon"
+								data-icon="&#xe857;">&#xe857;</i><cite>资金统计</cite></a></li>
+					</shiro:hasPermission>
+					<!-- 交易管理 -->
+					<shiro:hasPermission name="transactionManage">					
+						<li class="layui-nav-item tradeManagement"><a
+						data-url="userOrder/index"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>成交管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="entrustManage">					
+						<li class="layui-nav-item tradeManagement"><a
+						data-url="entrustOrder/index"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>委托管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="holdManage">					
+						<li class="layui-nav-item tradeManagement"><a data-url="page/doc/navDoc.html"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>持仓管理</cite></a></li>
+					</shiro:hasPermission>
+
+					<!-- 系统设置 -->
+					<shiro:hasPermission name="bannerManage">					
+						<li class="layui-nav-item systemManagement"><a
+						data-url="shuffling/index"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>广告管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="noticeManage">						
+						<li class="layui-nav-item systemManagement"><a
+						data-url="/notice/index"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>公告管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="articleManage">						
+						<li class="layui-nav-item systemManagement"><a data-url="informationtable/index"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>资讯管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="roleManage">					
+						<li class="layui-nav-item systemManagement"><a data-url="role/index"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>角色管理</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="systemManage">					
+						<li class="layui-nav-item systemManagement"><a data-url="/sysconfig/index"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>系统设置</cite></a></li>
+					</shiro:hasPermission>
+
+
+					<!-- 日志管理 -->
+					<shiro:hasPermission name="operateLog">						
+						<li class="layui-nav-item logManagement"><a
+						data-url="/operatelog/index?logType=2"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>操作日志</cite></a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="loginLog">					
+						<li class="layui-nav-item logManagement"><a
+						data-url="/operatelog/index?logType=1"><i
+							class="seraph icon-mokuai" data-icon="icon-mokuai"></i><cite>登录日志</cite></a></li>
+					</shiro:hasPermission>
+				</ul>
+			</div>
+		</div>
+		<!-- 右侧内容 -->
+		<div class="layui-body layui-form">
+			<div class="layui-tab mag0" lay-filter="bodyTab" id="top_tabs_box">
+				<ul class="layui-tab-title top_tab" id="top_tabs">
+					<li class="layui-this" lay-id=""><i class="layui-icon">&#xe68e;</i>
+						<cite>后台首页</cite></li>
+				</ul>
+				<ul class="layui-nav closeBox">
+					<li class="layui-nav-item"><a href="javascript:;"><i
+							class="layui-icon caozuo">&#xe643;</i> 页面操作</a>
+						<dl class="layui-nav-child">
+							<dd>
+								<a href="javascript:;" class="refresh refreshThis"><i
+									class="layui-icon">&#x1002;</i> 刷新当前</a>
+							</dd>
+							<dd>
+								<a href="javascript:;" class="closePageOther"><i
+									class="seraph icon-prohibit"></i> 关闭其他</a>
+							</dd>
+							<dd>
+								<a href="javascript:;" class="closePageAll"><i
+									class="seraph icon-guanbi"></i> 关闭全部</a>
+							</dd>
+						</dl></li>
+				</ul>
+				<div class="layui-tab-content clildFrame">
+					<div class="layui-tab-item layui-show">
+						<iframe src="/main"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 底部 -->
+		<div class="layui-footer footer">
+			<p>
+				<span>copyright @2018 神经云网络科技有限公司</span>
+			</p>
+		</div>
+	</div>
+
+	<!-- 移动导航 -->
+	<div class="site-tree-mobile">
+		<i class="layui-icon">&#xe602;</i>
+	</div>
+	<div class="site-mobile-shade"></div>
+
+	<script type="text/javascript" src="/static/admin/layui/layui.js"></script>
+	<script type="text/javascript" src="/static/admin/js/index.js"></script>
+	<script type="text/javascript" src="/static/admin/js/cache.js"></script>
+	<script type="text/javascript"></script>
+</body>
+</html>

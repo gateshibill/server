@@ -1,0 +1,41 @@
+package com.sjy.dao;
+
+import com.sjy.entity.FlowRecord;
+import com.sjy.entity.FlowRecordVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+@Mapper
+public interface FlowRecordDao {
+
+    int selectFlowRecordCount(@Param("FlowRecord") FlowRecord flowRecord);
+    //api用于查询每个人的资金明细
+    List<FlowRecord> selectFlowRecordList(@Param("record") FlowRecord record,@Param("page")Integer page,@Param("limit")Integer limit);
+    //后台数据
+    int selectAllRecordCount(@Param("FlowRecordVO")FlowRecordVO flowRecordVO,@Param("startTime")String startTime,@Param("endTime")String endTime);
+
+    List<FlowRecordVO> selectAllFlowRecord(@Param("FlowRecordVO")FlowRecordVO flowRecordVO,@Param("startTime")String startTime,@Param("endTime")String endTime, @Param("page")Integer page, @Param("limit")Integer limit);
+    //代理资金明细
+    List<FlowRecordVO> getAllFlowRecord(@Param("FlowRecordVO")FlowRecordVO flowRecordVO,@Param("startTime")String startTime,@Param("endTime")String endTime, @Param("page")Integer page, @Param("limit")Integer limit, @Param("adminId") Integer adminId, @Param("parentId")Integer parentId);
+    //获取代理资金明细表数据统计
+    int getAllRecordCount(@Param("FlowRecordVO")FlowRecordVO flowRecordVO,@Param("startTime")String startTime,@Param("endTime")String endTime, @Param("adminId") Integer adminId, @Param("parentId")Integer parentId);
+
+    int selectCapitalStatisticsCount(@Param("flowRecord") FlowRecord flowRecord);
+
+    List<FlowRecord> selectCapitalStatisticsList(@Param("flowRecord") FlowRecord flowRecord,@Param("page") Integer page,@Param("limit") Integer limit);
+
+    // 获取资金统计用户收入数据
+    List<FlowRecordVO> selectUserIncome(@Param("FlowRecordVO")FlowRecordVO flowRecordVO, @Param("page")Integer page, @Param("limit")Integer limit);
+    // 获取资金统计用户收入数据个数
+    int selectUserIncomeCount(@Param("flowRecord") FlowRecord flowRecord);
+
+    // 获取资金统计用户支出数据
+    List<FlowRecordVO> selectUserSpending(@Param("FlowRecordVO")FlowRecordVO flowRecordVO, @Param("page")Integer page, @Param("limit")Integer limit);
+    // 获取资金统计用户支出数据个数
+    int selectUserSpendingCount(@Param("flowRecord") FlowRecord flowRecord);
+
+    List<FlowRecordVO> selectCapital(@Param("FlowRecordVO")FlowRecordVO flowRecordVO, @Param("page")Integer page, @Param("limit")Integer limit);
+
+}

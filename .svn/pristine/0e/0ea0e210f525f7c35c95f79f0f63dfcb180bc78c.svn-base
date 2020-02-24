@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.PoundageDao">
+    <resultMap type="com.sjy.entity.Poundage" id="BaseResultMap">
+        <id column="poundage_id" property="poundageId"/>
+        <result column="order_number" property="orderNumber"/>
+        <result column="user_id" property="userId"/>
+        <result column="stock_name" property="stockName"/>
+        <result column="stock_code" property="stockCode"/>
+        <result column="turnover" property="turnover"/>
+        <result column="sell_price" property="sellPrice"/>
+        <result column="money" property="money"/>
+        <result column="poundage_price" property="poundagePrice"/>
+        <result column="charge_price" property="chargePrice"/>
+        <result column="transfer" property="transfer"/>
+        <result column="printing" property="printing"/>
+        <result column="commission" property="commission"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_charge_price" property="adminChargePrice"/>
+        <result column="deal_flag" property="dealFlag"/>
+        <result column="deal_time" property="dealTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		poundage_id,order_number,user_id,stock_code,turnover,sell_price,
+			   money,red_line,poundage_price,charge_price,admin_id,admin_charge_price,
+			   transfer,printing,commission,deal_flag,deal_time
+	</sql>
+
+    <resultMap type="com.sjy.entity.PoundageVO" id="Join_Result_Column" extends="BaseResultMap">
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="adminName" jdbcType="VARCHAR" property="adminName"/>
+    </resultMap>
+    <!-- 获取手续费表数据 -->
+    <select id="selectAllPoundage" parameterType="com.sjy.entity.Poundage" resultMap="Join_Result_Column">
+        select p.poundage_id,p.order_number,p.user_id,p.stock_name,p.stock_code,p.turnover,p.sell_price,
+        p.money,p.poundage_price,p.charge_price,p.admin_id,p.admin_charge_price,p.deal_flag,p.deal_time,
+        p.transfer,p.printing,p.commission,
+        u.user_name as userName,a.admin_name as adminName
+        from poundage p
+        left join user u on u.user_id = p.user_id
+        left join admin a on a.admin_id = p.admin_id
+        where u.inviter_id = a.admin_id
+        <if test="PoundageVO != null">
+            <if test="PoundageVO.userName != null and PoundageVO.userName != ''">
+                and u.user_name like concat ('%',#{PoundageVO.userName},'%')
+            </if>
+            <if test="PoundageVO.adminName != null and PoundageVO.adminName != ''">
+                and a.admin_name like concat ('%',#{PoundageVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and p.deal_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and p.deal_time &lt;= #{endTime}
+        </if>
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+    
+    <select id="getAllPoundage" parameterType="com.sjy.entity.Poundage" resultMap="Join_Result_Column">
+         select p.poundage_id,p.order_number,p.user_id,p.stock_name,p.stock_code,p.turnover,p.sell_price,
+        p.money,p.poundage_price,p.charge_price,p.admin_id,p.admin_charge_price,p.deal_flag,p.deal_time,
+        p.transfer,p.printing,p.commission,
+        u.user_name as userName,a.admin_name as adminName
+        from poundage p
+        left join user u on u.user_id = p.user_id
+        left join admin a on a.admin_id = p.admin_id
+        where u.inviter_id = a.admin_id and a.admin_id = #{adminId} or a.parent_id = #{parentId}
+        <if test="PoundageVO != null">
+            <if test="PoundageVO.userName != null and PoundageVO.userName != ''">
+                and u.user_name like concat ('%',#{PoundageVO.userName},'%')
+            </if>
+            <if test="PoundageVO.adminName != null and PoundageVO.adminName != ''">
+                and a.admin_name like concat ('%',#{PoundageVO.adminName},'%')
+            </if>
+        </if>
+       <if test="startTime != null and startTime != ''">
+            and p.deal_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and p.deal_time &lt;= #{endTime}
+        </if>
+       <!-- <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if> -->
+    </select>
+
+    <select id="selectAllPoundageCount" resultType="INT">
+        select count(1) from poundage p
+        left join user u on u.user_id = p.user_id
+        left join admin a on a.admin_id = p.admin_id
+        where u.inviter_id = a.admin_id
+        <if test="PoundageVO != null">
+            <if test="PoundageVO.userName != null and PoundageVO.userName != ''">
+                and u.user_name like concat ('%',#{PoundageVO.userName},'%')
+            </if>
+            <if test="PoundageVO.adminName != null and PoundageVO.adminName != ''">
+                and a.admin_name like concat ('%',#{PoundageVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and p.deal_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and p.deal_time &lt;= #{endTime}
+        </if>
+    </select>
+
+	<select id="getAllPoundageCount" resultType="INT">
+        select count(1) from poundage p
+        left join user u on u.user_id = p.user_id
+        left join admin a on a.admin_id = p.admin_id
+        where u.inviter_id = a.admin_id and a.admin_id = #{adminId} or a.parent_id = #{parentId}
+        <if test="PoundageVO != null">
+            <if test="PoundageVO.userName != null and PoundageVO.userName != ''">
+                and u.user_name like concat ('%',#{PoundageVO.userName},'%')
+            </if>
+            <if test="PoundageVO.adminName != null and PoundageVO.adminName != ''">
+                and a.admin_name like concat ('%',#{PoundageVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and p.deal_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and p.deal_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="selectPoundageAll" parameterType="com.sjy.entity.Poundage" resultMap="Join_Result_Column">
+    select a.admin_name as agent,a.admin_level as level,uo.order_id as orderNumber1,uo.user_id as
+    orderSerial,uo.order_price as sellPrice1 ,uo.stock_code as stockCode1,uo.stock_name as stockName1,
+    uo.order_type as dealFlag,uo.create_time as dealTime1,uo.order_buyer as buyMoney,uo.order_type as dealFlag1,
+    uo.order_number as turnover,uo.order_market_value as money,u.user_name as userName
+    from user_order uo
+    left JOIN poundage p on p.order_number = uo.order_id
+    left JOIN user u on u.user_id = uo.user_id
+    left JOIN admin a on u.inviter_id = a.admin_id where 1=1
+    <if test="PoundageVO != null">
+        <if test="PoundageVO.userName != null and PoundageVO.userName != ''">
+            and u.user_name like concat ('%',#{PoundageVO.userName},'%')
+        </if>
+        <if test="PoundageVO.adminName != null and PoundageVO.adminName != ''">
+            and a.admin_name like concat ('%',#{PoundageVO.adminName},'%')
+        </if>
+    </if>
+    <if test="startTime != null and startTime != ''">
+        and uo.create_time >= #{startTime}
+    </if>
+    <if test="endTime!=null and endTime!=''">
+        and uo.create_time &lt;= #{endTime}
+    </if>
+    <if test="page != null and limit != null">
+        limit #{page},#{limit}
+    </if>
+</select>
+
+    <select id="getPoundageAll" parameterType="com.sjy.entity.Poundage" resultMap="Join_Result_Column">
+        select a.admin_name as agent,a.admin_level as level,uo.order_id as orderNumber1,uo.user_id as
+        orderSerial,uo.order_price as sellPrice1 ,uo.stock_code as stockCode1,uo.stock_name as stockName1,
+        uo.order_type as dealFlag,uo.create_time as dealTime1,uo.order_buyer as buyMoney,uo.order_type as dealFlag1,
+        uo.order_number as turnover,uo.order_market_value as money,u.user_name as userName
+        from user_order uo
+        left JOIN poundage p on p.order_number = uo.order_id
+        left JOIN user u on u.user_id = uo.user_id
+        left JOIN admin a on u.inviter_id = a.admin_id
+        where 1=1
+        and a.admin_id = #{adminId} or a.parent_id = #{parentId}
+        <if test="PoundageVO != null">
+            <if test="PoundageVO.userName != null and PoundageVO.userName != ''">
+                and u.user_name like concat ('%',#{PoundageVO.userName},'%')
+            </if>
+            <if test="PoundageVO.adminName != null and PoundageVO.adminName != ''">
+                and a.admin_name like concat ('%',#{PoundageVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and uo.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and uo.create_time &lt;= #{endTime}
+        </if>
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+
+    <select id="getPoundageCount" resultType="INT">
+        select count(1) from user_order uo
+        left JOIN poundage p on p.order_number = uo.order_id
+        left JOIN user u on u.user_id = uo.user_id
+        left JOIN admin a on u.inviter_id = a.admin_id where 1=1
+        and a.admin_id = #{adminId} or a.parent_id = #{parentId}
+        <if test="PoundageVO != null">
+            <if test="PoundageVO.userName != null and PoundageVO.userName != ''">
+                and u.user_name like concat ('%',#{PoundageVO.userName},'%')
+            </if>
+            <if test="PoundageVO.adminName != null and PoundageVO.adminName != ''">
+                and a.admin_name like concat ('%',#{PoundageVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and uo.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and uo.create_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="selectPoundageCount" resultType="INT">
+        select count(1) from user_order uo
+        left JOIN poundage p on p.order_number = uo.order_id
+        left JOIN user u on u.user_id = uo.user_id
+        left JOIN admin a on u.inviter_id = a.admin_id where 1=1
+        <if test="PoundageVO != null">
+            <if test="PoundageVO.userName != null and PoundageVO.userName != ''">
+                and u.user_name like concat ('%',#{PoundageVO.userName},'%')
+            </if>
+            <if test="PoundageVO.adminName != null and PoundageVO.adminName != ''">
+                and a.admin_name like concat ('%',#{PoundageVO.adminName},'%')
+            </if>
+        </if>
+            <if test="startTime != null and startTime != ''">
+                and uo.create_time >= #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and uo.create_time &lt;= #{endTime}
+            </if>
+    </select>
+
+    <!--修改数据-->
+    <update id="updatePoundageAll" parameterType="com.sjy.entity.Poundage">
+        update poundage
+        <set>
+            <if test="poundageId != null">
+                poundage_id = #{poundageId},
+            </if>
+            <if test="orderNumber != null">
+                order_number = #{orderNumber},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="stockName != null">
+                stock_name = #{stockName},
+            </if>
+            <if test=" stockCode != null">
+                stock_code = #{stockCode},
+            </if>
+            <if test="turnover != null">
+                turnover = #{turnover},
+            </if>
+            <if test="sellPrice != null">
+                sell_price = #{sellPrice},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="poundagePrice != null">
+                poundage_price = #{poundagePrice},
+            </if>
+            <if test="transfer != null">
+                transfer = #{transfer},
+            </if>
+            <if test="printing != null">
+                printing = #{printing},
+            </if>
+            <if test="commission != null">
+                commission = #{commission},
+            </if>
+            <if test="chargePrice != null">
+                charge_price = #{chargePrice},
+            </if>
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+            <if test="adminChargePrice != null">
+                admin_charge_price = #{adminChargePrice},
+            </if>
+            <if test="dealFlag != null">
+                deal_flag = #{dealFlag},
+            </if>
+            <if test="dealTime != null">
+                deal_time = #{dealTime},
+            </if>
+        </set>
+        where poundage_id = #{poundageId,jdbcType=BIGINT}
+    </update>
+
+    <insert id="addPoundage" parameterType="com.sjy.entity.Poundage" useGeneratedKeys="true" keyProperty="poundageId">
+		insert into poundage(`poundage_id`,`order_number`,`user_id`,`stock_name`,`stock_code`,`turnover`,`sell_price`,`money`,`poundage_price`,
+		`transfer`,`printing`,`commission`,`charge_price`,`admin_id`,`admin_charge_price`,`deal_flag`,`deal_time`)
+		values (#{poundageId},#{orderNumber},#{userId},#{stockName},#{stockCode},#{turnover},#{sellPrice},#{money},#{poundagePrice},#{transfer},
+		#{printing},#{commission},#{chargePrice},#{adminId},#{adminChargePrice},#{dealFlag},#{dealTime})
+	</insert>
+
+</mapper>

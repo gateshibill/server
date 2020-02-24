@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org"
+	xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<meta charset="utf-8">
+	<title>修改密码</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="/static/admin/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/static/admin/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form layui-row changePwd">
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+		<div class="layui-form-item">
+			<label class="layui-form-label">用户名</label>
+			<div class="layui-input-block">
+				<input type="text" th:value="${session.stockManageAdmin.adminAccount}" disabled class="layui-input layui-disabled">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">旧密码</label>
+			<div class="layui-input-block">
+				<input type="password" name="oldPwd" value="" placeholder="请输入旧密码" lay-verify="required" class="layui-input pwd">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">新密码</label>
+			<div class="layui-input-block">
+				<input type="password" name="newPwd" value="" placeholder="请输入新密码" lay-verify="required" id="oldPwd" class="layui-input pwd">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">确认密码</label>
+			<div class="layui-input-block">
+				<input type="password" name="confirmPwd" value="" placeholder="请确认密码" lay-verify="required" class="layui-input pwd">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+			<input type="hidden" name="adminId" th:value="${session.stockManageAdmin.adminId}"/>
+				<button class="layui-btn" lay-submit="" lay-filter="changePwd">立即修改</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</div>
+</form>
+<script type="text/javascript" src="/static/admin/layui/layui.js"></script>
+<script type="text/javascript">
+layui.use(['form','layer'],function(){
+    var form = layui.form,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery;
+  	//修改密码
+    form.on("submit(changePwd)",function(data){
+        var index = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
+        var oldPwd = data.field.oldPwd;
+        console.log("oldPwd---"+oldPwd);
+        var newPwd =  data.field.newPwd;
+        console.log("newPwd---"+newPwd);
+        var confirmPwd = data.field.confirmPwd;
+        console.log("confirmPwd---"+confirmPwd);
+
+        if(oldPwd == newPwd){
+        	layer.msg("新密码和旧密码不能相同",{icon:5});
+        	return false;
+        }
+        if(newPwd != confirmPwd){
+        	layer.msg("确认密码和新密码不一致");
+        	return false;
+        }
+        //还需要验证密码的
+        $.post('/admin/doupdatepwd',{
+        	adminId:data.field.adminId,
+        	oldPwd:data.field.oldPwd,
+        	newPwd:data.field.newPwd
+        },function(res){
+        	if(res.code == 0){
+        		layer.msg('修改密码成功',{icon:6});
+        		return false;
+        	}else{
+        		layer.msg(res.msg,{icon:5})
+        	}
+        },'json')
+        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+    })
+       
+})    
+</script>
+</body>
+</html>

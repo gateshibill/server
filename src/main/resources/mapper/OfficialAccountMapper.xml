@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.OfficialAccountDao">
+	<resultMap type="com.ylb.entity.OfficialAccount"
+		id="BaseResultMap">
+		<id column="id" property="id" />
+		<id column="user_id" property="username" />
+		<result column="name" property="name" />
+		<result column="header" property="header" />
+		<result column="phone" property="phone" />
+		<result column="email" property="email" />
+		<result column="level" property="level" />
+		<result column="poster" property="poster" />
+		<result column="organization" property="organization" />
+		<result column="description" property="description" />
+		<result column="address" property="address" />
+		<result column="website" property="website" />
+		<result column="type" property="type" />
+		<result column="status" property="status" />
+		<result column="create_time" property="createTime" />
+		<result column="subscribeService_id"
+			property="subscribeServiceId" />
+		<result column="follower_count" property="followerCount" />
+		<result column="refresh_time" property="updateTime" />
+
+	</resultMap>
+
+	<insert id="addOfficialAccount"
+		parameterType="com.ylb.entity.OfficialAccount" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into
+		exOfficialAccount(`user_id`,`name`,`header`,`phone`,`email`,`level`,`poster`,`organization`,`description`,`address`,`website`,`create_time`,`type`,`status`)
+		values
+		(#{username},#{name},#{header},#{phone},#{email},#{level},#{poster},#{organization},#{description},#{address},#{website},#{createTime},#{type},#{status})
+	</insert>
+	<update id="updateOfficialAccount"
+		parameterType="com.ylb.entity.OfficialAccount">
+		update exOfficialAccount
+		<set>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="header != null and header != ''">
+				header = #{header},
+			</if>
+			<if test="phone != null and phone != ''">
+				phone = #{phone},
+			</if>
+			<if test="email != null and email != ''">
+				email = #{email},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description},
+			</if>
+			<if test="organization != null and organization != ''">
+				organization = #{organization},
+			</if>
+			<if test="address != null and address != ''">
+				address = #{address},
+			</if>
+			<if test="website != null and website != ''">
+				website = #{website},
+			</if>
+			<if test="level != null">
+				level = #{level},
+			</if>
+			<if test="type != null">
+				type = #{type},
+			</if>	
+			<!-- 	
+			<if test="status != null">
+				status = #{status}
+			</if>
+			 -->	
+			<if test="subscribeServiceId != null">
+				subscribe_service_id = #{subscribeServiceId}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<select id="getFollowOfficialAccountListByUserId"
+		resultMap="BaseResultMap">
+		select oa.*,
+		(select count(*)
+		from exOfficialAccountFollower where official_account_id=oa.id and
+		status=1) as follower_count	
+		from exOfficialAccount as oa left join exOfficialAccountFollower as oaf on
+		oa.id = oaf.official_account_id
+		where oaf.user_id=#{userId} 
+		and oaf.status=1
+		and oa.status=1
+		limit #{page},#{limit}
+	</select>
+
+	<select id="getAllOfficialAccountList" resultMap="BaseResultMap">
+		select *
+		from exOfficialAccount order by create_time desc
+		limit #{page},#{limit}
+	</select>
+	<select id="getUserOfficialAccountListByUserId"
+		resultMap="BaseResultMap">
+		select *,
+		(select count(*)
+		from exOfficialAccountFollower where official_account_id=#{id} and
+		status=1) as follower_count
+		from exOfficialAccount
+		where user_id=#{userId}
+		and   status&lt;3
+		order by create_time desc
+	</select>
+	<select id="getOfficialAccountById" resultMap="BaseResultMap">
+		select *,
+		(select count(*)
+		from exOfficialAccountFollower where id=#{id} and
+		status=1) as follower_count
+		from exOfficialAccount
+		where id=#{id}
+	</select>
+	
+   <select id="getManageUserOfficialAccountList" resultMap="BaseResultMap">
+		select oa.*
+		from exOfficialAccount as oa 
+		left join exUserManageOaRole as umor on 
+		oa.id = umor.official_account_id
+		where umor.username = #{username} 
+		order by oa.create_time desc
+	</select>
+
+	<select id="searchOfficialAccountListByKeyword"
+		resultMap="BaseResultMap">
+		select oa.*,
+		(select count(*)
+		from exOfficialAccountFollower where official_account_id=oa.id and
+		status=1) as follower_count		
+		from  exOfficialAccount as oa 
+		left join exOfficialAccountFollower as oaf on oa.user_id = oaf.user_id
+		where oa.name like
+		CONCAT('%',#{keyword,jdbcType=VARCHAR},'%')
+		and oa.status=1 
+		and oa.user_id = oaf.user_id
+		group by oa.id 
+		limit #{page},#{limit}
+	</select>
+
+</mapper>

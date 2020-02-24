@@ -1,0 +1,17 @@
+package com.sjy.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.sjy.entity.InfoType;
+
+@Mapper
+public interface InfoTypeDao {
+	Integer addType(InfoType infoType);	//新增资讯类型
+	Integer delType(@Param("typeId")Integer typeId);	//删除资讯类型
+	int selectTypeCount(@Param("typeId")Integer typeId);	//查询总记录数
+	List<InfoType> selectTypeList(@Param("infoType")InfoType infoType,@Param("page")Integer page,@Param("limit")Integer limit);
+	Integer updateType(InfoType infoType);	//修改资讯列表
+}

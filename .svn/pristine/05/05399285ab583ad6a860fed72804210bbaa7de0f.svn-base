@@ -1,0 +1,67 @@
+package com.sjy.util;
+
+import java.util.List;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+
+public class JsonUtil {
+	/**
+	 * 返回json字符串
+	 * 
+	 * @param code
+	 * @param msg
+	 * @param object
+	 * @return
+	 */
+	public static String buildFalseJson(int code, String msg, Object object) {
+		String jsonString = "{";
+		jsonString += "\"code\": \"" + code + "\", ";
+		jsonString += "\"msg\": \"" + msg + "\", ";
+		jsonString += "\"object\": \"" + object + "\" ";
+		jsonString += "}";
+		return jsonString;
+	}
+
+	/**
+	 * 
+	 * @param code
+	 * @param msg
+	 * @param count
+	 * @param object
+	 * @return
+	 */
+	public static String buildFalseJson(int code, String msg, int count, Object object) {
+		String jsonString = "{";
+		jsonString += "\"code\": \"" + code + "\", ";
+		jsonString += "\"msg\": \"" + msg + "\", ";
+		jsonString += "\"count\": \"" + count + "\", ";
+		jsonString += "\"object\": \"" + object + "\" ";
+		jsonString += "}";
+		return jsonString;
+	}
+
+
+	public static String buildJsonByTotalCount(List<?> list, int totalCount) {
+		String jsonString = "{";
+		String JsonContext = "";
+		int count = 0;
+		if (!CommonUtil.isEmpty(list)) {
+			JsonContext = JSONArray.toJSONStringWithDateFormat(list, "yyyy-MM-dd HH:mm:ss",SerializerFeature.WriteDateUseDateFormat);
+			count = totalCount;
+			jsonString += "\"code\": \"0\", ";
+			jsonString += "\"msg\": \"处理成功\",";
+		} else {
+			JsonContext = "[] ";
+			count = 0;
+			jsonString += "\"code\": \"1\", ";
+			jsonString += "\"msg\": \"此查询无数据\",";
+		}
+		jsonString += "\"count\": " + count + ",";
+		jsonString += "\"data\":";
+		jsonString += JsonContext;
+		jsonString += "} ";
+		return jsonString;
+	}
+
+}

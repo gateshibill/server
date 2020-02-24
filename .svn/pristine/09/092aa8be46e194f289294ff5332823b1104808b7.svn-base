@@ -1,0 +1,63 @@
+package com.sjy.controller;
+
+import com.sjy.entity.Admin;
+import com.sjy.entity.Poundage;
+import com.sjy.entity.PoundageVO;
+import com.sjy.service.PoundageService;
+import com.sjy.service.UserOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+
+@Controller
+@RequestMapping("/poundage")
+public class PoundageController {
+
+    @Autowired
+    private PoundageService poundageService;
+    @Resource
+    private UserOrderService userOrderService;
+
+    /**
+     * 进入手续费列表页面
+     * @param model
+     * @param poundage
+     * @return*/
+
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public String index(Model model, Poundage poundage) {
+        model.addAttribute("poundage", poundage);
+        return "poundage/index";
+    }
+    /**
+     * 手续费列表页面
+     * @param response
+     * @param poundageVO
+     * @return*/
+    @ResponseBody
+    @RequestMapping(value="/getpoundagelist",method=RequestMethod.POST)
+    public String getUserList(HttpServletRequest request, HttpServletResponse response, PoundageVO poundageVO, String sTime, String eTime, Integer page, Integer limit)throws ParseException {
+        String result =null;
+        //获取当前登录admin对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        Integer adminId = admin.getAdminId();
+        Integer parentId = admin.getParentId();
+
+        //判断用户是否是超级管理员  0：超级管理员
+        if(admin.getAdminLevel() == 0){
+            result = poundageService.selectPoundageAll(poundageVO,sTime,eTime, page, limit) ;
+        }else{
+            result = poundageService.getPoundageAll(poundageVO,sTime,eTime, page, limit,adminId,parentId);
+        }
+
+         return result;
+    }
+}

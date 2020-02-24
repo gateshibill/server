@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.ServeDao">
+    <resultMap type="com.sjy.entity.Serve" id="BaseResultMap">
+        <id column="serve_id" property="serveId"/>
+        <result column="order_number" property="orderNumber"/>
+        <result column="user_id" property="userId"/>
+        <result column="actual_amount" property="actualAmount"/>
+        <result column="service_center" property="serviceCenter"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="charge_price" property="chargePrice"/>
+        <result column="user_money" property="userMoney"/>
+        <result column="serve_flag" property="serveFlag"/>
+        <result column="serve_time" property="serveTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		serve_id,order_number,user_id,actual_amount,service_center,
+		admin_id,charge_price,user_money,serve_flag,serve_time,agent_service_into,agent_service_fee
+	</sql>
+
+    <resultMap type="com.sjy.entity.ServeVO" id="Join_Result_Column" extends="BaseResultMap">
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="adminName" jdbcType="VARCHAR" property="adminName"/>
+    </resultMap>
+
+    <insert id="addServe" parameterType="com.sjy.entity.Serve" useGeneratedKeys="true" keyProperty="serveId">
+		insert into serve(`serve_id`,`user_id`,`actual_amount`,`service_center`,`admin_id`,`charge_price`,
+		`user_money`,`serve_flag`,`serve_time`,`agent_service_into`,`agent_service_fee`) 
+		values (#{serveId},#{userId},#{actualAmount},#{serviceCenter},#{adminId},
+		#{chargePrice},#{userMoney},#{serveFlag},#{serveTime},#{agentServiceInto},#{agentServiceFee})
+	</insert>
+
+    <!-- 获取服务费表数据 -->
+    <select id="selectServeAll" parameterType="com.sjy.entity.Serve" resultMap="Join_Result_Column">
+        select s.serve_id,s.order_number,s.user_id,s.actual_amount,s.service_center,
+        s.admin_id,s.charge_price,s.user_money,s.serve_flag,s.serve_time,s.agent_service_into,s.agent_service_fee
+        u.user_name as userName,a.admin_name as adminName
+        from serve s
+        left join user u on u.user_id = s.user_id
+        left join admin a on a.admin_id = s.admin_id
+        <if test="ServeVO != null">
+            <if test="ServeVO.userName != null and ServeVO.userName != ''">
+                and u.user_name like concat ('%',#{ServeVO.userName},'%')
+            </if>
+            <if test="ServeVO.adminName != null and ServeVO.adminName != ''">
+                and a.admin_name like concat ('%',#{ServeVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and cd.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and cd.create_time &lt;= #{endTime}
+        </if>
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+
+    <!-- 获取服务费表数据统计 -->
+    <select id="selectServeAllCount" resultType="INT">
+        select count(1)
+        from serve s
+        left join user u on u.user_id = s.user_id
+        left join admin a on a.admin_id = s.admin_id
+        <if test="ServeVO != null">
+            <if test="ServeVO.userName != null and ServeVO.userName != ''">
+                and u.user_name like concat ('%',#{ServeVO.userName},'%')
+            </if>
+            <if test="ServeVO.adminName != null and ServeVO.adminName != ''">
+                and a.admin_name like concat ('%',#{ServeVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and cd.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and cd.create_time &lt;= #{endTime}
+        </if>
+    </select>
+
+
+
+    <select id="selectAllServe" parameterType="com.sjy.entity.Serve" resultMap="Join_Result_Column">
+        select cd.id as orderNumber1,u.user_name as userName,u.user_money as userMoneys,cd.trade_money as tradeMoney,
+        a.admin_name as agent,a.admin_level as level,cd.create_time as createTime
+        from capital_details cd
+        left JOIN user u on u.user_id = cd.user_id
+        left JOIN admin a on u.inviter_id = a.admin_id
+        where cd.trade_type = 1 and cd.is_deal = 1
+        <if test="ServeVO != null">
+            <if test="ServeVO.userName != null and ServeVO.userName != ''">
+                and u.user_name like concat ('%',#{ServeVO.userName},'%')
+            </if>
+            <if test="ServeVO.adminName != null and ServeVO.adminName != ''">
+                and a.admin_name like concat ('%',#{ServeVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and cd.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and cd.create_time &lt;= #{endTime}
+        </if>
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+
+
+    <select id="getAllServe" parameterType="com.sjy.entity.Serve" resultMap="Join_Result_Column">
+        select cd.id as orderNumber1,u.user_name as userName,u.user_money as userMoneys,cd.trade_money as tradeMoney,
+        a.admin_name as agent,a.admin_level as level,cd.create_time as createTime
+        from capital_details cd
+        left JOIN user u on u.user_id = cd.user_id
+        left JOIN admin a on u.inviter_id = a.admin_id
+        where cd.trade_type = 1 and cd.is_deal = 1
+        and a.admin_id = #{adminId} and a.parent_id = #{parentId}
+        <if test="ServeVO != null">
+            <if test="ServeVO.userName != null and ServeVO.userName != ''">
+                and u.user_name like concat ('%',#{ServeVO.userName},'%')
+            </if>
+            <if test="ServeVO.adminName != null and ServeVO.adminName != ''">
+                and a.admin_name like concat ('%',#{ServeVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and cd.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and cd.create_time &lt;= #{endTime}
+        </if>
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+
+    <select id="getServeCount" resultType="INT">
+        select count(1) from capital_details cd
+        left JOIN user u on u.user_id = cd.user_id
+        left JOIN admin a on u.inviter_id = a.admin_id
+        where cd.trade_type = 1 and cd.is_deal = 1
+        and a.admin_id = #{adminId} and a.parent_id = #{parentId}
+        <if test="ServeVO != null">
+            <if test="ServeVO.userName != null and ServeVO.userName != ''">
+                and u.user_name like concat ('%',#{ServeVO.userName},'%')
+            </if>
+            <if test="ServeVO.adminName != null and ServeVO.adminName != ''">
+                and a.admin_name like concat ('%',#{ServeVO.adminName},'%')
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and cd.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and cd.create_time &lt;= #{endTime}
+        </if>
+    </select>
+
+</mapper>

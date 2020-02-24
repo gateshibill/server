@@ -1,0 +1,114 @@
+package com.sjy.service.impl;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sjy.dao.OperateLogDao;
+import com.sjy.entity.Admin;
+import com.sjy.entity.OperateLog;
+import com.sjy.service.OperateLogService;
+import com.sjy.util.JsonUtil;
+@Service
+public class OperateLogServiceImpl implements OperateLogService{
+	@Autowired
+	private OperateLogDao operateLogDao;
+	/**
+	 * 添加日志
+	 */
+	@Override
+	public boolean addOperateLog(HttpServletRequest request,OperateLog log) {
+		log.setCreateTime(new Date());
+		log.setLogIp(request.getRemoteAddr());
+		Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+		log.setLogAdminId(admin.getAdminId());
+		try {
+			operateLogDao.addOperateLog(log);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	/**
+	 * 删除日志
+	 */
+	@Override
+	public String delOperateLog(Integer logId) {
+		int code = 1;
+		String msg = "删除日志失败";
+		if(logId == null) {
+			msg = "非法参数";
+		}else {
+			Integer deleteId = operateLogDao.delOperateLog(logId);
+			if(deleteId != null) {
+				code = 0;
+				msg = "删除日志成功";
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String delSelectOperateLog(List<String> logIds) {
+		int code = 1;
+		String msg = "删除日志失败";
+		if(logIds.size() > 0) {
+			try {
+				List<Integer> ids = new ArrayList<Integer>();
+				for (int i = 0; i < logIds.size(); i++) {
+					ids.add(Integer.valueOf(logIds.get(i)));
+				}
+				operateLogDao.delSelectOperateLog(ids);
+				msg = "删除日志成功";
+				code = 0;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else {
+			msg = "请选择要删除的数据";
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String getOperateLogList(OperateLog log, String sTime,String eTime,Integer page, Integer limit) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		String startTime = null;
+		String endTime = null;
+		if(sTime != null && !sTime.equals("")) {
+			startTime = startSdf.format(sdf.parse(sTime));
+		}
+		if(eTime != null && !eTime.equals("")) {
+			endTime = endSdf.format(sdf.parse(eTime));
+		}
+		int totalCount = operateLogDao.getOperateLogCount(log, startTime, endTime);
+		List<OperateLog> lists = operateLogDao.getOperateLogList(log,startTime,endTime,(page-1) * limit,limit);
+		return JsonUtil.buildJsonByTotalCount(lists, totalCount);
+	}
+    
+	//测试时间转换
+	public static void main(String[] args) {
+		String  abc = "2019-05-13";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+		SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+
+		try {
+			System.out.println(startSdf.format(sdf.parse(abc)));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+
+}

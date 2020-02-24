@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.ShufflingFigureDao">
+<resultMap type="com.sjy.entity.ShufflingFigure" id="BaseResultMap">
+		<id column="shuffling_id" property="shufflingId" />
+		<result column="shuffling_img" property="shufflingImg" />
+		<result column="shuffling_index" property="shufflingIndex" />
+		<result column="shuffling_href" property="shufflingHref" />
+		<result column="create_time" property="createTime" />
+	</resultMap>
+	<insert id="addFigure" parameterType="com.sjy.entity.ShufflingFigure" useGeneratedKeys="true" keyProperty="shufflingId">
+		insert into shuffling_figure(`shuffling_img`,`shuffling_index`,`shuffling_href`,`create_time`)
+		values (#{shufflingImg},#{shufflingIndex},#{shufflingHref},#{createTime})
+	</insert>
+	<delete id="delFigure" parameterType="com.sjy.entity.ShufflingFigure">
+		delete from shuffling_figure where shuffling_id=#{shufflingId}
+	</delete>
+	<update id="updateFigure" parameterType="com.sjy.entity.ShufflingFigure">
+		update shuffling_figure
+		<set>
+			<if test="shufflingImg != null and shufflingImg != ''">
+				shuffling_img = #{shufflingImg},
+			</if>
+			<if test="shufflingIndex != null and shufflingIndex != ''">
+				shuffling_index = #{shufflingIndex},
+			</if>
+			<if test="shufflingHref != null and shufflingHref != ''">
+				shuffling_href = #{shufflingHref},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time = #{createTime},
+			</if>
+		</set>
+		where shuffling_id = #{shufflingId}
+	</update>
+	<select id="selectFigureCount" resultType="INT">
+		select count(1) from shuffling_figure where 1=1
+		<if test="shufflingImg != null and shufflingImg !=''">
+			and shuffling_img = #{shufflingImg}
+		</if>
+	</select>
+	<select id="selectFigureList" resultMap="BaseResultMap">
+		select shuffling_id,shuffling_img,shuffling_index,shuffling_href,create_time from shuffling_figure where 1=1
+		<if test="shufflingImg != null and shufflingImg !=''">
+			and shuffling_img = #{shufflingImg}
+		</if>
+		<if test="shufflingIndex != null and shufflingIndex !=''">
+			and shuffling_index = #{shufflingIndex}
+		</if>
+		<if test="shufflingHref != null and shufflingHref != ''">
+			and shuffling_href = #{shufflingHref}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			and create_time = #{createTime}
+		</if>
+	</select>
+	<select id="getFigureInfoId" resultMap="BaseResultMap">
+		select shuffling_id,shuffling_img,shuffling_index,shuffling_href,create_time from shuffling_figure where 1=1
+		<if test="shufflingId != null">
+			and shuffling_id = #{shufflingId}
+		</if>
+	</select>
+</mapper>

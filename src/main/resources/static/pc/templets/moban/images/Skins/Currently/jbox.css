@@ -1,0 +1,90 @@
+*:focus {
+	OUTLINE-WIDTH: medium; OUTLINE-STYLE: none; OUTLINE-COLOR: invert
+}
+.jbox-fade {
+	BACKGROUND-COLOR: #000000
+}
+.jbox-drag {
+	BORDER-TOP: #86ae00 1px dashed; BORDER-RIGHT: #86ae00 1px dashed; BORDER-BOTTOM: #86ae00 1px dashed; BORDER-LEFT: #86ae00 1px dashed
+}
+DIV.jbox {
+	FONT-SIZE: 12px; BORDER-TOP: medium none; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-LEFT: medium none; PADDING-RIGHT: 0px
+}
+DIV.jbox .jbox-border {
+	BACKGROUND: #000000 0px 0px; FILTER: alpha(opacity=20); -moz-opacity: 0.2; opacity: 0.2
+}
+DIV.jbox .jbox-container {
+	BACKGROUND-COLOR: #fff; border-radius: 5px
+}
+DIV.jbox .jbox-title-panel {
+	BACKGROUND-COLOR: #ccc; border-radius: 5px 5px 0 0
+}
+DIV.jbox .jbox-title {
+	FONT-WEIGHT: bold; COLOR: #ffffff
+}
+DIV.jbox .jbox-title-icon {
+	BACKGROUND: url(images/jbox-title-icon.gif) no-repeat 3px 5px
+}
+DIV.jbox .jbox-close {
+	BACKGROUND: url(images/jbox-close1.gif) no-repeat 0px 0px
+}
+DIV.jbox .jbox-close-hover {
+	BACKGROUND: url(images/jbox-close1.gif) no-repeat 0px 0px
+}
+DIV.jbox .jbox-close-hover {
+	BACKGROUND-POSITION: -20px 0px
+}
+DIV.jbox .jbox-content {
+	COLOR: #444444; MIN-HEIGHT: 24px; LINE-HEIGHT: 18px
+}
+DIV.jbox .jbox-content-loading {
+	BACKGROUND-COLOR: #e6e6e6
+}
+DIV.jbox .jbox-content-loading-image {
+	BACKGROUND: url(images/jbox-content-loading.gif) no-repeat center bottom
+}
+DIV.jbox .jbox-button-panel {
+	BORDER-TOP: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee; border-radius: 0 0 5px 5px
+}
+DIV.jbox .jbox-bottom-text {
+	COLOR: #444444; TEXT-INDENT: 10px
+}
+DIV.jbox .jbox-button {
+	CURSOR: default; BORDER-TOP: #435700 1px solid; HEIGHT: 22px; BORDER-RIGHT: #435700 1px solid; BACKGROUND: #86ae00; BORDER-BOTTOM: #435700 1px solid; COLOR: #fff; FILTER: progid:DXImageTransform.Microsoft.gradient(startColorstr='#92b61a', endColorstr='#6b8b00'); BORDER-LEFT: #435700 1px solid; MARGIN: 1px 7px 0px 0px; border-radius: 3px 3px 3px 3px
+}
+DIV.jbox .jbox-button-hover {
+	BACKGROUND: #86ae00; FILTER: progid:DXImageTransform.Microsoft.gradient(startColorstr='#86ae00', endColorstr='#506800')
+}
+DIV.jbox .jbox-button-active {
+	FILTER: progid:DXImageTransform.Microsoft.gradient(startColorstr='#506800', endColorstr='#86ae00')
+}
+DIV.jbox-warning .jbox .jbox-button-panel {
+	BACKGROUND-COLOR: #ffffff
+}
+DIV.jbox .jbox-tip-color {
+	BORDER-TOP: #ccc 1px dashed; BORDER-RIGHT: #ccc 1px dashed; BORDER-BOTTOM: #ccc 1px dashed; BORDER-LEFT: #ccc 1px dashed; BACKGROUND-COLOR: #fff; border-radius: 30px
+}
+DIV.jbox SPAN.jbox-icon {
+	BACKGROUND: url(images/jbox-icons.png) no-repeat 0px 0px; _background: url(images/jbox-icons-ie6.gif) no-repeat scroll 0 0 transparent
+}
+DIV.jbox SPAN.jbox-icon-info {
+	
+}
+DIV.jbox SPAN.jbox-icon-question {
+	BACKGROUND-POSITION: -35px center
+}
+DIV.jbox SPAN.jbox-icon-success {
+	BACKGROUND-POSITION: -70px center
+}
+DIV.jbox SPAN.jbox-icon-warning {
+	BACKGROUND-POSITION: -105px center
+}
+DIV.jbox SPAN.jbox-icon-fail {
+	BACKGROUND-POSITION: -140px center
+}
+DIV.jbox SPAN.jbox-icon-none {
+	OVERFLOW: hidden; DISPLAY: none
+}
+DIV.jbox SPAN.jbox-icon-loading {
+	BACKGROUND: url(images/jbox-loading1.gif) no-repeat center center
+}

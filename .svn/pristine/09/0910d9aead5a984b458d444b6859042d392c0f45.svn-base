@@ -1,0 +1,60 @@
+package com.sjy.dao;
+
+import com.sjy.entity.User;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+@Mapper
+public interface UserDao {
+    Integer addUser(User user);
+
+    Integer delUser(@Param("userId") Integer userId);
+
+    int selectUserCount(@Param("user") User user, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    List<User> selectUserList(@Param("user") User user, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("page") Integer page, @Param("limit") Integer limit);
+
+    Integer updateUser(User user);
+
+    Integer updateUserCapital(User user);//修改资产
+
+    User getUserInfoById(@Param("userId") Integer userId);
+
+    int checkIsAlready(@Param("userId") Integer userId, @Param("userName") String userName, @Param("userPhone") String userPhone);
+
+    Integer auditUser(User user);    //审核会员，重复方法，后续删除
+
+    void updateuserById(User user);    //重复方法，后续删除
+
+    User userLogin(@Param("phone") String phone, @Param("password") String password);//用户登录
+
+    User getInfoByPhone(@Param("phone") String phone);
+
+    User checkIsOldPwd(@Param("userId") Integer userId, @Param("password") String password); //检测原始密码是否正确
+
+    //用户总数
+    int getUserCount();
+    //平台用户总金额
+    Double getUserMoneyAll();
+
+	List<User> getUserList(@Param("user")User user,@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("page")Integer page,@Param("limit")Integer limit,@Param("adminId") Integer adminId, @Param("parentId")Integer parentId);
+
+    Integer updateUserPrice(User user);
+
+    int getUserCount1(@Param("user") User user, @Param("startTime") String startTime, @Param("endTime") String endTime,@Param("adminId") Integer adminId, @Param("parentId")Integer parentId);
+    
+    int getUnwindCount(@Param("userName")String userName,@Param("userPhone")String userPhone);
+    List<User> getUnwindlList(@Param("userName")String userName,@Param("userPhone")String userPhone, @Param("page")Integer page, @Param("limit")Integer limit);
+    
+    //获取数量
+    int getUnwindDLCount(@Param("userName")String userName,@Param("adminId")Integer adminId);
+    //根据代理人ID获取代理人下面的用户
+    List<User> getUnwindlListDL(@Param("userName")String userName, @Param("page")Integer page, @Param("limit")Integer limit,@Param("adminId")Integer adminId);
+
+    User getUserPhone(@Param("userPhone")String userPhone);
+
+    User selectUserCoding(@Param("userCoding")String userCoding);
+    
+}

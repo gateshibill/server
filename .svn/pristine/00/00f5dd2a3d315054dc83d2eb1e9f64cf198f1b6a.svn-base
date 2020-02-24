@@ -1,0 +1,56 @@
+package com.sjy.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.sjy.entity.Notice;
+
+@Mapper
+public interface NoticeDao {
+	/**
+	 * 新增公告
+	 * @param notice
+	 * @return
+	 */
+	Integer addNotice(Notice notice);
+	/**
+	 * 删除公告
+	 * @param noticeId
+	 * @return
+	 */
+	Integer delNotice(@Param("noticeId")Integer noticeId);
+	/**
+	 * 更新公告
+	 * @param notice
+	 * @return
+	 */
+	Integer updateNotice(Notice notice);
+	/**
+	 * 获取公告条数
+	 * @param notice
+	 * @return
+	 */
+	int getNoticeCount(@Param("notice")Notice notice);
+	/**
+	 * 获取公告列表
+	 * @param notice
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<Notice> getNoticeList(@Param("notice")Notice notice,@Param("page")Integer page,@Param("limit")Integer limit);
+	/**
+	 * 获取公告详情
+	 * @param noticeId
+	 * @return
+	 */
+	Notice getNoticeById(@Param("noticeId")Integer noticeId);
+	/**
+	 * 获取最新一条公告
+	 * @return
+	 */
+	Notice getNewNotice();
+	
+}

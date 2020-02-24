@@ -1,0 +1,34 @@
+layui.use(['form','layer','jquery'],function(){
+	var form = layui.form,
+		layer = parent.layer === undefined ? layui.layer : top.layer,
+		laypage = layui.laypage,
+		$ = layui.jquery;
+	
+ 	form.on("submit(systemParameter)",function(data){
+ 		//弹出loading
+ 		var index = top.layer.msg('数据提交中，请稍候',{icon: 16,time:false,shade:0.8});
+ 		$.post('/sysconfig/updatesysconfig',{
+ 			sysId:data.field.sysId,
+ 			hyfkWind:data.field.hyfkWind,
+ 			yjxWind:data.field.yjxWind,
+ 			pcxWind:data.field.pcxWind,
+ 			bzjSet:data.field.bzjSet,
+ 			oneAgent:data.field.oneAgent,
+ 			twoAgent:data.field.twoAgent,
+ 			threeAgent : data.field.threeAgent,
+ 			rechargeRatio : data.field.rechargeRatio,
+ 			deferredCharges : data.field.deferredCharges,
+			servicePhone : data.field.servicePhone,
+ 		},function(data){
+ 			if(data.code == 0){
+ 				setTimeout(function(){
+ 					layer.msg("设置成功！",{icon:6});
+ 					layer.close(index);
+ 		        },500);
+ 			}else{
+ 				layer.msg(data.msg,{icon:5});
+ 			}
+ 		},'json');
+ 		return false;
+ 	})
+})

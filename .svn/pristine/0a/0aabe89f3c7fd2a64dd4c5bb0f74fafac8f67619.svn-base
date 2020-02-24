@@ -1,0 +1,333 @@
+package com.sjy.api;
+
+import com.alibaba.fastjson.JSONObject;
+import com.sjy.entity.*;
+import com.sjy.service.*;
+import com.sjy.util.JsonUtil;
+import com.sjy.util.RedisUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.text.ParseException;
+import java.util.List;
+
+/**
+ * 股票api
+ * 
+ * @author wxh
+ *
+ */
+@RestController
+@CrossOrigin
+@RequestMapping("/api/stock")
+public class StockApiController {
+	@Autowired
+	private SimulationTransactionService simulationTransactionService;
+	@Autowired
+	private StockCodeService stockCodeService;
+	@Autowired
+	private UserOrderService userOrderService;
+	@Autowired
+	private UserService userService;
+	@Resource
+	private StockDetailsService stockDetailsService;
+	/***
+	 * 获取模拟列表
+	 * 
+	 * @param st
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@RequestMapping("/getStList")
+	public String getStList(SimulationTransaction st, Integer page, Integer limit) {
+		return simulationTransactionService.selectSimulationTransactionList(st, page, limit);
+	}
+
+	/**
+	 * 创建模拟交易
+	 * 
+	 * @param st
+	 * @return
+	 */
+	@RequestMapping(value = "/addSt", method = RequestMethod.POST)
+	public String addSt(SimulationTransaction st) {
+		return simulationTransactionService.addSimulation(st);
+	}
+
+	/**
+	 * 更新模拟交易
+	 * 
+	 * @param st
+	 * @return
+	 */
+	@RequestMapping(value = "/updateSt", method = RequestMethod.POST)
+	public String updateSt(SimulationTransaction st) {
+		return simulationTransactionService.updateSimulation(st);
+	}
+
+	/**
+	 * 删除模拟交易
+	 * 
+	 * @param simulationTransactionId
+	 * @return
+	 */
+	@RequestMapping(value = "/delSt", method = RequestMethod.POST)
+	public String delSt(Integer simulationTransactionId) {
+		return simulationTransactionService.delSimulation(simulationTransactionId);
+	}
+	/**
+	 * 获取股票代码列表
+	 * @param stock
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@RequestMapping(value="getStockList")
+	public String getStockList(StockCode stock,Integer page,Integer limit) {
+		return stockCodeService.selectStockCodeList(stock, page, limit);
+	}
+	/**
+	 * 获取真实的交易数据列表
+	 * @param order
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@RequestMapping("/getUserOrderList")
+	public String getUserOrderList(UserOrder order,Integer page,Integer limit)throws ParseException {
+		return userOrderService.selectUserOrder(order,null,null, page, limit);
+	}
+	/**
+	 * 获取委托数据
+	 * @param order
+	 * @param type   1：当天委托  2 ：历史委托
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@RequestMapping("/getEntrustList")
+	public String getEntrustList(UserOrder order,Integer source,Integer type,Integer page,Integer limit) {
+		String str = "";
+		if(source == 1) {
+			str = userOrderService.getEntrustList(order, type, page, limit);
+		}else {
+			str = userOrderService.getTradeList(order, type, page, limit);
+		}
+		return str;
+	}
+	/**
+	 * 获取交易数据 
+	 * @param type  1：当天交易数据   2 ： 历史交易数据
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@RequestMapping("/getSimulationEntrustList")
+	public String getSimulationEntrustList(SimulationTransaction st,Integer source,Integer type,Integer page,Integer limit) {
+		String str = "";
+		if(source == 1) {
+			str = simulationTransactionService.getSimulationEntrustList(st, type, page, limit);
+		}else {
+			str = simulationTransactionService.getSimulationTradeList(st, type, page, limit);
+		}
+		return str;
+	}
+	/**
+	 * 创建真实交易
+	 * @return
+	 */
+	@RequestMapping(value="/createUserOrder",method=RequestMethod.POST)
+	public String createUserOrder(UserOrder order) {
+		return userOrderService.addUserOrder(order);
+	}
+	/**
+	 * 删除真实交易
+	 * @param orderId
+	 * @return
+	 */
+	@RequestMapping(value="/delUserOrder",method=RequestMethod.POST)
+	public String delUserOrder(Integer orderId) {
+		return userOrderService.delUserOrder(orderId);
+	}
+	/**
+	 * 更新真实交易
+	 * @param order
+	 * @return
+	 */
+	@RequestMapping(value="/updateUserOrder",method=RequestMethod.POST)
+	public String updateUserOrder(UserOrder order) {
+		return userOrderService.updateUserOrder(order);
+	}
+	/**
+	 * 查出我持仓的股票
+	 * @param userId
+	 * @param keyWord
+	 * @return
+	 */
+	@RequestMapping("/getSellStockSearch")
+	public String getSellStockSearch(Integer userId,String keyWord) {
+		return userOrderService.getSellStockSearch(userId, keyWord);
+	}
+	
+	/*#########################################模拟交易接口###########################################################*/
+	/**
+	 * 模拟委托买入 ：当价格和现价一样的时候，直接模拟持仓；否则等到委托价后在买入持仓
+	 * @param st
+	 * @return
+	 */
+//	@RequestMapping(value="/simulationEntrutBuy",method=RequestMethod.POST)
+//	public String simulationEntrutBuy(SimulationTransaction st) {
+//		return "";
+//	}
+
+	/**
+	 * 模拟委托卖出
+	 * @param userId
+	 * @param stockCode
+	 * @param entrustPriceSimulate
+	 * @param numberSimulate
+	 * @return
+	 */
+	@Transactional
+	@RequestMapping(value="/simulationEntrutSell",method=RequestMethod.POST)
+	public String simulationEntrutSell(Integer userId,String stockCode,Double entrustPriceSimulate,Integer numberSimulate) {
+
+		int code;
+		String msg;
+
+		//判断参数
+		if(userId ==null || stockCode ==null || entrustPriceSimulate ==null || numberSimulate ==null ){
+			code =2;
+			msg= "请求参数有误";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+		//根据用户id、证券代码获取用户最新持有的证券数量
+		UserOrder userOrder = userOrderService.getUserShareHolding(userId,stockCode);
+
+		//卖出的数量不能大于持有股数的
+		if(numberSimulate > userOrder.getOrderNumber()){
+			code =3;
+			msg= "模拟卖出的证券数量大于持有的证券数量，请重新输入！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+		//证券当前市值 * 股数
+		Double totalPrice = entrustPriceSimulate * numberSimulate;
+		//添加用户余额和减少用户持仓市值
+		Integer count = userService.updateUserPrice(userId,totalPrice);
+		if(count ==1){
+			code =0;
+			msg= "模拟委托卖出成功！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}else{
+			code =1;
+			msg= "模拟委托卖出失败！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+	}
+
+
+	/**
+	 * 模拟撤单 ：把订单状态改成 5 ，相对应的资金返回给用户
+	 * @param simulationTransactionId
+	 * @return
+	 */
+	@RequestMapping(value="/simulationCancelOrder",method=RequestMethod.POST)
+	public String simulationCancelOrder(Integer simulationTransactionId) {
+		return simulationTransactionService.simulationCancelOrder(simulationTransactionId);
+	}
+	
+	
+	/*#########################################真实交易接口#####################################################*/
+	/**
+	 * 委托卖出 ：卖出的 可以部分卖出价格返回给用户，相对应的持仓市值就要改变
+	 * @param userId
+	 * @param stockCode
+	 * @param entrustPrice
+	 * @param number
+	 * @return
+	 */
+	@Transactional
+	@RequestMapping(value="/entrustSell",method=RequestMethod.POST)
+	public String entrustSell(Integer userId,String stockCode,Double entrustPrice,Integer number){
+
+		int code;
+		String msg;
+
+        //判断参数
+		if(userId ==null || stockCode ==null|| entrustPrice ==null || number ==null ){
+			code =2;
+			msg= "请求参数有误";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+        //根据用户id、证券代码获取用户最新持有的证券数量
+		UserOrder userOrder = userOrderService.getUserShareHolding(userId,stockCode);
+		//卖出的数量不能大于持有股数的
+		if(number>userOrder.getOrderNumber()){
+			code =3;
+			msg= "卖出的证券数量大于持有的证券数量，请重新输入！";
+			return JsonUtil.buildFalseJson(code, msg, "");
+		}
+
+        //证券当前市值 * 股数
+		Double totalPrice = entrustPrice * number;
+        //添加用户余额和减少用户持仓市值
+		Integer count = userService.updateUserPrice(userId,totalPrice);
+		if(count ==1){
+			 code =0;
+			 msg= "委托卖出成功！";
+			 return JsonUtil.buildFalseJson(code, msg, "");
+		}else{
+			 code =1;
+			 msg= "委托卖出失败！";
+             return JsonUtil.buildFalseJson(code, msg, "");
+		}
+	}
+
+
+	/**
+	 * 撤单  : 把订单状态改成 5 ，相对应的资金返回给用户
+	 * @param orderId
+	 * @return
+	 */
+	@RequestMapping(value="/cancelOrder",method=RequestMethod.POST)
+	public String cancelOrder(Integer orderId) {
+		return userOrderService.cancelOrder(orderId);
+	}
+
+
+	/**
+	 * 通过证券代码获取证券信息
+	 * @param symbol
+	 * @return
+	 */
+	@RequestMapping(value="/getStockInfor",method=RequestMethod.POST)
+	public String getStockInfor(String symbol){
+
+		int code =0;
+		String msg ="成功";
+		RedisUtil redisUtil = new RedisUtil();
+
+		//判断redis是否存在证券代码
+		if(redisUtil.exists(symbol) ==true){
+			//获取单个证券代码最新的一条
+			String s = redisUtil.lindex(symbol,0);
+			JSONObject jsStr = JSONObject.parseObject(s);
+			return JsonUtil.buildFalseJson(code, msg, jsStr);
+		}else{
+			StockDetails stockDetails = stockDetailsService.getStockDetails(symbol);
+			return JsonUtil.buildFalseJson(code, msg, stockDetails);
+		}
+	}
+
+
+}

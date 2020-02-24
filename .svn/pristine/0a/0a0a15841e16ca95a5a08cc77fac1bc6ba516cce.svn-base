@@ -1,0 +1,149 @@
+package com.sjy.entity;
+
+import java.math.BigDecimal;
+
+public class MemberRiskControl {
+
+    //会员风险控制表id
+    private Integer memberRiskControlId;
+    //会员用户id
+    private Integer userId;
+    //保证金
+    private BigDecimal cashDeposit;
+    //总资产
+    private BigDecimal totalAssets;
+    //启始资金(本金)
+    private BigDecimal startupMoney;
+    //股票市值
+    private BigDecimal stockValue;
+    //可用资金
+    private BigDecimal expendableFund;
+    //持仓比例
+    private Double positionRatio;
+    //总浮动盈亏
+    private BigDecimal totalVariableProfitLoss;
+    //盈亏比例
+    private Double profitLossRatio;
+    //亏损警戒线
+    private BigDecimal redLine;
+    //亏损平仓线
+    private BigDecimal lossLine;
+
+    //用户名
+    private String userName;
+
+    public BigDecimal getStartupMoney() {
+        return startupMoney;
+    }
+
+    public void setStartupMoney(BigDecimal startupMoney) {
+        this.startupMoney = startupMoney;
+    }
+
+    public Integer getMemberRiskControlId() {
+        return memberRiskControlId;
+    }
+
+    public void setMemberRiskControlId(Integer memberRiskControlId) {
+        this.memberRiskControlId = memberRiskControlId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public BigDecimal getCashDeposit() {
+        return cashDeposit;
+    }
+
+    public void setCashDeposit(BigDecimal cashDeposit) {
+        this.cashDeposit = cashDeposit;
+    }
+
+    public BigDecimal getTotalAssets() {
+        return totalAssets;
+    }
+
+    public void setTotalAssets(BigDecimal totalAssets) {
+        this.totalAssets = totalAssets;
+    }
+
+    public BigDecimal getStockValue() {
+        return stockValue;
+    }
+
+    public void setStockValue(BigDecimal stockValue) {
+        this.stockValue = stockValue;
+    }
+
+    public BigDecimal getExpendableFund() {
+        return expendableFund;
+    }
+
+    public void setExpendableFund(BigDecimal expendableFund) {
+        this.expendableFund = expendableFund;
+    }
+
+    public Double getPositionRatio() {
+        return positionRatio;
+    }
+
+    public void setPositionRatio(Double positionRatio) {
+        this.positionRatio = positionRatio;
+    }
+
+    public BigDecimal getTotalVariableProfitLoss() {
+        return totalVariableProfitLoss;
+    }
+
+    public void setTotalVariableProfitLoss(BigDecimal totalVariableProfitLoss) {
+        this.totalVariableProfitLoss = totalVariableProfitLoss;
+    }
+
+    public Double getProfitLossRatio() {
+        return profitLossRatio;
+    }
+
+    public void setProfitLossRatio(Double profitLossRatio) {
+        this.profitLossRatio = profitLossRatio;
+    }
+
+    public BigDecimal getRedLine() {
+        return redLine;
+    }
+
+    public void setRedLine(BigDecimal redLine) {
+        this.redLine = redLine;
+    }
+
+    public BigDecimal getLossLine() {
+        return lossLine;
+    }
+
+    public void setLossLine(BigDecimal lossLine) {
+        this.lossLine = lossLine;
+    }
+
+    @Override
+    public String toString() {
+        return "MemberRiskControl{" +
+                "memberRiskControlId=" + memberRiskControlId +
+                ", userId=" + userId +
+                ", cashDeposit=" + cashDeposit +
+                ", totalAssets=" + totalAssets +
+                ", startupMoney=" + startupMoney +
+                ", stockValue=" + stockValue +
+                ", expendableFund=" + expendableFund +
+                ", positionRatio=" + positionRatio +
+                ", totalVariableProfitLoss=" + totalVariableProfitLoss +
+                ", profitLossRatio=" + profitLossRatio +
+                ", redLine=" + redLine +
+                ", lossLine=" + lossLine +
+                ", userName='" + userName + '\'' +
+                '}';
+    }
+}

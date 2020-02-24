@@ -1,0 +1,21 @@
+package com.sjy.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.sjy.entity.User;
+@Mapper
+public interface UserDao {
+	Integer addUser(User user);
+	Integer delUser(@Param("userId")Integer userId);
+	int selectUserCount(@Param("userName")String userName);
+	List<User> selectUserList(@Param("user")User user,@Param("page")Integer page,@Param("limit")Integer limit);
+	Integer updateUser(User user);
+	User getUserInfoById(@Param("userId")Integer userId);
+	int checkIsAlready(@Param("userId")Integer userId,@Param("userName")String userName,@Param("userPhone")String userPhone);
+	Integer auditUser(User user);	//审核会员
+
+	void updateuserById(User user);
+}

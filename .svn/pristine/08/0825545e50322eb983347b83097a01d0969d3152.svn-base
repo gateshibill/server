@@ -1,0 +1,221 @@
+package com.sjy.controller;
+
+import com.sjy.entity.Admin;
+import com.sjy.entity.UserOrder;
+import com.sjy.entity.UserOrderVO;
+import com.sjy.service.UserOrderService;
+import com.sjy.util.ExportExcelSeedBack;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Administrator on 2019/5/14.
+ */
+@Controller
+@RequestMapping("/userOrder")
+public class UserOrderController {
+
+
+    @Autowired
+    private UserOrderService userOrderService;
+
+
+    /**
+     * 进入订单列表页面
+     *
+     * @param model
+     * @param userOrder
+     * @return
+     */
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public String index(Model model, UserOrder userOrder) {
+        model.addAttribute("userOrder", userOrder);
+        return "userOrder/index";
+    }
+
+    /**
+     * 获取订单商品列表
+     *
+     * @param response
+     * @param userOrder
+     * @param page
+     * @param limit
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getUserOrderList", method = RequestMethod.POST)
+    public String getAdminList(HttpServletRequest request, HttpServletResponse response, UserOrder userOrder,String sTime,String eTime, Integer page, Integer limit) throws ParseException {
+    	String result=null;
+    	//获取当前登录admin对象
+    	Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+    	Integer adminId = admin.getAdminId();
+    	Integer parentId = admin.getParentId();
+    		if(admin.getAdminLevel() ==0){
+        		result =  userOrderService.selectUserOrder(userOrder,sTime,eTime,page, limit);
+        	}else {
+        		result =  userOrderService.getUserOrderList(userOrder,sTime,eTime,page, limit,adminId);
+        	}
+    	
+        return result;
+
+    }
+
+
+    /**
+     * 添加订单页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/addUserOrder", method = RequestMethod.GET)
+    public String addUserOrder() {
+        return "userOrder/addUserOrder";
+    }
+
+    /**
+     * 执行添加订单页面
+     *
+     * @param response
+     * @param userOrder
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/doAddUserOrder", method = RequestMethod.POST)
+    public String doAddUserOrder(HttpServletResponse response, UserOrder userOrder) {
+        String result = userOrderService.addUserOrder(userOrder);
+        return result;
+    }
+
+    /**
+     * 进入买入卖出编辑页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/updateUserOrder", method = RequestMethod.GET)
+    public String updateUserOrder() {
+        return "userOrder/updateUserOrder";
+    }
+
+    /**
+     * 执行编辑买入卖出页面
+     *
+     * @param response
+     * @param userOrder
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/doUpdateUserOrder", method = RequestMethod.POST)
+    public String doUpdateUserOrder(HttpServletResponse response, UserOrder userOrder) {
+        String result = userOrderService.updateUserOrder(userOrder);
+
+        return result;
+    }
+
+    /**
+     * 导出成EXCEL 
+     * @param request
+     * @param flowId
+     * @param userName
+     * @param flowNumber
+     * @param flowWay
+     * @param flowType
+     * @param afterMoney
+     * @param createTime
+     * @param response
+     */
+    @RequestMapping(value = "downLoadExcel", method = RequestMethod.GET)
+    @ResponseBody
+    public void orderExport(
+            HttpServletRequest request,
+            @RequestParam(value = "orderCode", required = false) Integer orderId,
+            @RequestParam(value = "userName", required = false) String userName,
+            @RequestParam(value = "stockName", required = false) String stockName,
+            @RequestParam(value = "stockCode", required = false) String stockCode,
+            @RequestParam(value = "orderNumber", required = false) Integer orderNumber,
+            @RequestParam(value = "orderBuyer", required = false) Double orderBuyer,
+            @RequestParam(value = "turnover", required = false) Double turnover,
+            @RequestParam(value = "orderType", required = false) Integer orderType,
+            @RequestParam(value = "tradeTime", required = false) String tradeTime,
+            HttpServletResponse response) {
+
+    	//获取当前登录admin对象
+        Admin admin = (Admin) request.getSession().getAttribute("stockManageAdmin");
+        Integer adminId = admin.getAdminId();
+        Integer parentId = admin.getParentId();
+
+        List<UserOrderVO> userOrder;
+        //判断用户是否是超级管理员  0：超级管理员
+    	if(admin.getAdminLevel() ==0){
+    		userOrder =  userOrderService.download();
+    	}else {
+    		userOrder =  userOrderService.downloadAll(adminId,parentId);
+    	}
+        
+
+        // 导出文件的标题
+        String title = "成交管理报表" + ".xls";
+        // 设置表格标题行
+        String[] headers = new String[] { "编号","交易编号", "会员名(账号)", "股票名称", "股票代码", "股票数量",
+                "成交单价", "成交金额", "买卖标志", "成交时间"};
+        List<Object[]> dataList = new ArrayList<Object[]>();
+        Object[] objs = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (UserOrderVO userOrderVO : userOrder) {// 循环每一条数据
+            objs = new Object[headers.length];
+            objs[0] = userOrderVO.getOrderId();
+            objs[1] = userOrderVO.getOrderCode();
+            objs[2] = userOrderVO.getUserName();
+            objs[3] = userOrderVO.getStockName();
+            objs[4] = userOrderVO.getStockCode();
+            objs[5] = userOrderVO.getOrderNumber();
+            if(userOrderVO.getOrderParticipationType()==1||userOrderVO.getOrderParticipationType()==2) {
+            	objs[6] = userOrderVO.getOrderBuyer();
+            }else {
+            	objs[6] = userOrderVO.getOrderExitPrice();
+            }
+            if(userOrderVO.getOrderParticipationType()==1||userOrderVO.getOrderParticipationType()==2) {
+            	userOrderVO.setTurnover(userOrderVO.getOrderNumber()* userOrderVO.getOrderBuyer());
+            }else {
+            	userOrderVO.setTurnover(userOrderVO.getOrderNumber()* userOrderVO.getOrderExitPrice());
+            }
+            objs[7] = userOrderVO.getTurnover();
+            if(userOrderVO.getOrderType().intValue()==1) {
+            	objs[8] ="买入股票";
+            }else {
+            	objs[8] ="卖出股票";
+            }
+			objs[9] = sdf.format(userOrderVO.getTradeTime());
+
+            // 数据添加到excel表格
+            dataList.add(objs);
+        }
+        // 使用流将数据导出
+        OutputStream out = null;
+        try {
+            // 防止中文乱码
+            String headStr = "attachment; filename=\""
+                    + new String(title.getBytes("gb2312"), "ISO8859-1") + "\"";
+            response.setContentType("octets/stream");
+            response.setContentType("APPLICATION/OCTET-STREAM");
+            response.setHeader("Content-Disposition", headStr);
+            out = response.getOutputStream();
+            //ExportExcel ex = new ExportExcel(title, headers, dataList);//有标题
+            ExportExcelSeedBack ex = new ExportExcelSeedBack(title, headers,dataList);// 没有标题
+            ex.export(out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

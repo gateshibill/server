@@ -1,0 +1,193 @@
+package com.sjy.service.impl;
+
+
+import com.sjy.dao.CapitalDetailsDao;
+import com.sjy.entity.CapitalDetails;
+import com.sjy.entity.CapitalDetailsVO;
+import com.sjy.service.CapitalDetailsService;
+import com.sjy.util.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class CapitalDetailsServiceImpl implements CapitalDetailsService {
+
+    @Autowired
+    private CapitalDetailsDao capitalDetailsDao;
+    /**
+     * 查询充值申请中数据
+     **/
+    @Override
+    public String selectApplyCentre(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectApplyCentreCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectApplyCentre(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询充值申请通过数据
+     **/
+    @Override
+    public String selectApplyThrough(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectApplyThroughCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectApplyThrough(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询充值申请未通过数据
+     **/
+    @Override
+    public String selectApplyFail(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectApplyPassCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectApplyFail(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询提现申请中数据
+     **/
+    @Override
+    public String selectWithdrawalCentre(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectWithdrawalCentreCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectWithdrawalCentre(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询提现申请通过数据
+     **/
+    @Override
+    public String selectWithdrawalThrough(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectWithdrawalThroughCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectWithdrawalThrough(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+    /**
+     * 查询提现申请未通过数据
+     **/
+    @Override
+    public String selectWithdrawalFail(CapitalDetailsVO capitalDetailsVO, Integer page, Integer limit) {
+        if(page == null) {
+            page = 1;
+        }
+        if(limit == null) {
+            limit = 10;
+        }
+        int count = capitalDetailsDao.selectWithdrawalPassCount(capitalDetailsVO);
+        List<CapitalDetailsVO> lists = capitalDetailsDao.selectWithdrawalFail(capitalDetailsVO, (page-1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+
+
+    /**
+     * 充值
+     */
+    @Override
+    public String recharge(CapitalDetails details) {
+        int code = 1;
+        String msg = "充值失败";
+        if(details.getUserId() == null) {
+            msg = "请先登录";
+        }else {
+            if(details.getTradeMoney() == null) {
+                msg = "请输入合法的金额";
+            }else {
+                details.setCreateTime(new Date());
+                details.setIsDeal(0);
+                details.setSource(1);
+                details.setTradeType(1);
+                Integer insertId = capitalDetailsDao.addCapitalDetails(details);
+                if(insertId != null) {
+                    code = 0;
+                    msg = "充值成功";
+                }
+            }
+        }
+        return JsonUtil.buildFalseJson(code, msg, "");
+    }
+    /**
+     * 提现
+     */
+    @Override
+    public String withdraw(CapitalDetails details) {
+        int code = 1;
+        String msg = "提现失败";
+        if(details.getUserId() == null) {
+            msg = "请先登录";
+        }else {
+            if(details.getTradeMoney() == null) {
+                msg = "请输入合法的金额";
+            }else {
+                if(details.getUserCard().equals("") || details.getUserId() == null) {
+                    msg = "银行卡账户不能为空";
+                }else {
+                    details.setIsDeal(0);
+                    details.setTradeType(2);
+                    details.setSource(1);
+                    details.setCreateTime(new Date());
+                    Integer insertId = capitalDetailsDao.addCapitalDetails(details);
+                    if(insertId != null) {
+                        code = 0;
+                        msg = "提交成功";
+                    }
+                }
+            }
+        }
+        return JsonUtil.buildFalseJson(code, msg, "");
+    }
+
+    /**
+     * 改变申请状态为同意
+     **/
+    @Override
+    public Integer updateIsDealPass(CapitalDetails capitalDetails) {
+        return capitalDetailsDao.updateIsDealPass(capitalDetails);
+    }
+    /**
+     * 改变申请状态为失败
+     **/
+    @Override
+    public Integer updateIsDealFail(CapitalDetails capitalDetails) {
+        return capitalDetailsDao.updateIsDealFail(capitalDetails);
+    }
+
+    @Override
+    public CapitalDetails selectByPrimaryKey(Integer id) {
+        return capitalDetailsDao.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public Integer updateIsDealFailAll(CapitalDetails capitalDetails) {
+        return capitalDetailsDao.updateIsDealFailAll(capitalDetails);
+    }
+}

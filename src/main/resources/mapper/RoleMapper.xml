@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.RoleDao">
+	<resultMap type="com.ylb.entity.Role" id="BaseResultMap">
+
+		<id column="official_account_id" property="officialAccountId"
+			jdbcType="INTEGER" />
+		<id column="role_id" property="roleId" jdbcType="INTEGER" />
+		<result column="role_name" property="roleName"
+			jdbcType="VARCHAR" />
+		<result column="is_effect" property="isEffect"
+			jdbcType="INTEGER" />
+		<result column="create_time" property="createTime"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="roleField">
+		role_id,role_name,is_effect,create_time
+	</sql>
+	<insert id="addRole" parameterType="com.ylb.entity.Role"
+		useGeneratedKeys="true" keyProperty="roleId">
+		insert into exUserRole
+		(`official_account_id`,`role_name`,`is_effect`,`create_time`)
+		values(#{officialAccountId},#{roleName},#{isEffect},#{createTime})
+	</insert>
+	<delete id="delRole" parameterType="com.ylb.entity.Role">
+		delete from exUserRole where
+		role_id = #{roleId}
+	</delete>
+	<select id="getRoleCount" resultType="INT">
+		select count(1) from exUserRole where 1=1
+		<if test="role != null">
+			<if test="role.isEffect != null">
+				and is_effect = #{role.isEffect}
+			</if>
+			<if test="role.roleName != null and role.roleName != ''">
+				and role_name like concat('%',#{role.roleName},'%');
+			</if>
+		</if>
+	</select>
+	<select id="getRoleList" resultMap="BaseResultMap">
+		select
+		<include refid="roleField"></include>
+		from exUserRole where role_id !=1
+		<if test="role != null">
+			<if test="isEffect != null">
+				and is_effect = #{isEffect}
+			</if>
+			<if test="roleName != null and roleName != ''">
+				and role_name like concat('%',#{roleName},'%')
+			</if>
+		</if>
+		<if test="page != null and limit != null">
+		    order by create_time desc
+		</if>
+	</select>
+	<update id="updateRole" parameterType="com.ylb.entity.Role">
+		update exUserRole
+		<set>
+			<if test="roleName != null and roleName != ''">
+				role_name = #{roleName},
+			</if>
+			<if test="isEffect != null">
+				is_effect = #{isEffect}
+			</if>
+		</set>
+		where role_id = #{roleId}
+	</update>
+	<select id="getRoleById" resultMap="BaseResultMap">
+		select
+		<include refid="roleField"></include>
+		from exUserRole where role_id = #{roleId}
+	</select>
+	<select id="checkRoleIsAlready" resultType="INT">
+		select count(1) from exUserRole where 1=1
+		<if test="roleName != null and roleName != ''">
+			and role_name = #{roleName}
+		</if>
+		<if test="roleId != null">
+			and role_id &lt;&gt; #{roleId}
+		</if>
+	</select>
+	<select id="getAllRole" resultMap="BaseResultMap">
+		select
+		<include refid="roleField"></include>
+		from exUserRole 
+		where is_effect = 1
+		and  role_id !=1
+	</select>
+	<select id="getRoleByOfficailAcountAndUsername"
+		resultMap="BaseResultMap">
+		select ou.*,
+		ur.role_name as role_name,
+		umor.role_id as
+		role_id
+		from ofUser as ou
+		left join exUserManageOaRole as umor on ou.username = umor.username
+		left join exUserRole as ur on umor.role_id = ur.role_id
+		where
+		umor.official_account_id=#{officialAccountId}
+		and umor.username=
+		#{username}
+		order by umor.create_time desc
+	</select>
+</mapper>

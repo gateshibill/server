@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.RolePowerDao">
+	<resultMap type="com.ylb.entity.RolePower" id="BaseResultMap">
+		<result column="role_id" property="roleId" jdbcType="INTEGER"/>
+		<result column="power_id" property="powerId" jdbcType="INTEGER"/>
+	</resultMap>
+	<insert id="addRolePower" parameterType="com.ylb.entity.RolePower">
+		insert into exUserRolePower(role_id,power_id) values
+		<foreach collection="lists" item="item" separator=",">
+			(
+				#{item.roleId},#{item.powerId}
+			)
+		</foreach>		  
+	</insert>
+	
+	<delete id="delAllPower" parameterType="com.ylb.entity.RolePower">
+		delete from exUserRolePower where role_id = #{roleId}	
+	</delete>
+	
+	<select id="getPowerListByRoleId" resultMap="BaseResultMap">
+		select role_id,power_id from  exUserRolePower where 1=1
+		<if test="roleId != null">
+			and role_id = #{roleId}
+		</if>
+	</select>
+</mapper>

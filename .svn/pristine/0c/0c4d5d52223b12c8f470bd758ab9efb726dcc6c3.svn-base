@@ -1,0 +1,131 @@
+package com.sjy.service.impl;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sjy.dao.UserDao;
+import com.sjy.entity.User;
+import com.sjy.service.UserService;
+import com.sjy.util.JsonUtil;
+import com.sjy.util.MD5Util;
+@Service
+public class UserServiceImpl implements UserService{
+	@Autowired
+	private UserDao userDao;
+	@Override
+	public String addUser(User user) {
+		int code = 1;
+		String msg = "";
+		if(user.getUserName().equals("") || user.getUserName() == null) {
+			msg = "用户名不能为空";
+		}else {
+			if(user.getUserPassword().equals("") || user.getUserPassword() == null) {
+					msg = "密码不能为空";
+			}else {
+				int checkCount = userDao.selectUserCount(user.getUserName());
+				if(checkCount > 0) {
+					msg = "用户已存在,请换一个";
+				}else {
+					user.setUserPassword(MD5Util.MD5Encode(user.getUserPassword(), "utf-8"));
+					user.setCreateTime(new Date());
+					Integer adminId = userDao.addUser(user);
+					if(adminId == null) {
+						msg = "添加失败";
+					}else {
+						msg = "添加成功";
+						code = 0;
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String delUser(Integer userId) {
+		int code = 1;
+		String msg = "删除失败";
+		if(userId == null) {
+			msg = "该用户不存在";
+		}else {
+			try {
+				userDao.delUser(userId);
+				code = 0;
+				msg = "删除成功";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String selectUserList(User user, Integer page, Integer limit) {
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		int count = userDao.selectUserCount(user.getUserName());
+		List<User> lists = userDao.selectUserList(user, (page-1) * limit, limit);
+		return JsonUtil.buildJsonByTotalCount(lists, count);
+	}
+
+	@Override
+	public String updateUser(User user) {
+		int code = 1;
+		String msg = "编辑失败";
+		if(user.getUserId() == null) {
+			msg = "非法操作";
+		}else {
+			if(user.getUserName().equals("") || user.getUserName() == null) {
+					msg = "用户名不能为空";
+			}else {
+				try {
+					userDao.updateUser(user);
+					code = 0;
+					msg = "编辑成功";
+						
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String getUserById(Integer userId) {
+		User user= userDao.getUserInfoById(userId);
+		int code = 1;
+		String msg = "返回数据失败";
+		if(userId != null) {
+			code = 0;
+			msg = "返回数据成功";
+		}
+		return JsonUtil.buildFalseJson(code, msg, user);
+	}
+
+	@Override
+	public String auditUser(User user) {
+		int code = 1;
+		String msg = "";
+		if(user.getUserId() == null) {
+			msg = "非法操作";
+		}else {
+			try {
+				userDao.auditUser(user);
+				code = 0;
+				msg = "审核成功";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+	
+}

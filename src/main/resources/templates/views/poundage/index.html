@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>手续费显示</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/static/admin/layui-2.5.4/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/static/admin/css/public.css" media="all"/>
+    <link rel="stylesheet" href="/static/admin/css/jquery.datetimepicker.css" media="all" />
+	<style type="text/css">
+	.layui-input-inline .datetimepicker{
+		z-index:100000 !important
+	}
+	.month .layui-btn{
+		width:60px;
+		height:30px;
+		line-height:30px;
+		text-align:center;
+		padding:0
+	}
+	</style>
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+    <blockquote class="layui-elem-quote quoteBox">
+        <form class="layui-form">
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input userName" placeholder="请输入会员名"/>
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input orderCode" placeholder="请输入交易编号"/>
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input agent" placeholder="请输入代理商名"/>
+                </div>
+               <!--  <div class="layui-input-inline">
+                    <input type="text" class="layui-input start_end_time" id="start_end_time"
+                           placeholder=" 请选择起始-结束时间 ">
+                </div> -->
+                <div class="layui-input-inline">
+					<input type="text" class="layui-input datetimepicker" autocomplete="off" id="startTime" placeholder=" 请选择起始时间 ">
+				</div>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input datetimepicker" autocomplete="off" id="endTime" placeholder=" 请选择结束时间 ">
+				</div>
+                <a class="layui-btn search_btn" data-type="reload">搜索</a>
+            </div>
+            <div class="layui-input-block month" style="margin-left:0;margin-top:10px">
+				<label class="layui-form-label" style="width:100px">按月快速搜索</label>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(1)">1月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(2)">2月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(3)">3月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(4)">4月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(5)">5月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(6)">6月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(7)">7月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(8)">8月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(9)">9月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(10)">10月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(11)">11月份</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="getdates(12)">12月份</button>
+			</div>
+        </form>
+    </blockquote>
+    <table id="adminList" lay-filter="adminList"></table>
+
+</form>
+<script type="text/javascript" src="/static/admin/layui-2.5.4/layui.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery-1.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.datetimepicker.full.js"></script>
+<script type="text/javascript" src="/static/admin/datajs/poundage/poundageList.js"></script>
+
+<script type="text/javascript">
+$(function() {
+    $(".datetimepicker").each(function() {
+      var option = {
+        lang : "zh",
+        step : "10",
+        timepicker : false,
+        closeOnDateSelect : true,
+        format : "Y-m-d"
+      };
+      $(this).datetimepicker(option);
+    });
+  });
+function getdates(ii){
+	var date = new Date();
+	var getyear=date.getFullYear();
+	var endDate = new Date(getyear, ii, 0).getDate();
+	if(ii < 10){
+		ii = "0"+ii;
+	}
+	$("#startTime").val(getyear+"-"+ii.toString()+"-01");
+	$("#endTime").val(getyear+"-"+ii.toString()+"-"+endDate);
+}
+</script>
+</body>
+</html>

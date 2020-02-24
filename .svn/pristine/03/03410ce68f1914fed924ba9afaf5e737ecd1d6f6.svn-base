@@ -1,0 +1,652 @@
+package com.sjy.service.impl;
+
+import com.sjy.dao.*;
+import com.sjy.entity.*;
+import com.sjy.service.UserService;
+import com.sjy.util.JsonUtil;
+import com.sjy.util.MD5Util;
+import com.sjy.util.Redis.RedisUtil1;
+import com.sjy.util.Redis.RedisUtil2;
+import net.sf.json.JSONObject;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class UserServiceImpl implements UserService{
+	@Resource
+	private UserDao userDao;
+	@Resource
+	private SystemConfigDao systemConfigDao;
+	@Resource
+	private CapitalDetailsDao capitalDetailsDao;
+	@Resource
+	private MenberRiskControlDao menberRiskControlDao;
+	@Resource
+	private UserOrderDao userOrderDao;
+	@Resource
+	private FundingDao fundingDao;
+	@Resource
+	private StockOperateDao stockOperateDao;
+	
+	@Override
+	public String addUser(User user) {
+		int code = 1;
+		String msg = "";
+		if(user.getUserName().equals("") || user.getUserName() == null) {
+			msg = "用户名不能为空";
+		}else {
+			if(user.getUserPassword().equals("") || user.getUserPassword() == null) {
+					msg = "密码不能为空";
+			}else {
+				int checkCount = userDao.selectUserCount(user,null,null);
+				if(checkCount > 0) {
+					msg = "用户已存在,请换一个";
+				}else {
+					user.setUserPassword(MD5Util.MD5Encode(user.getUserPassword(), "utf-8"));
+					user.setCreateTime(new Date());
+					Integer adminId = userDao.addUser(user);
+					if(adminId == null) {
+						msg = "添加失败";
+					}else {
+						msg = "添加成功";
+						code = 0;
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String delUser(Integer userId) {
+		int code = 1;
+		String msg = "删除失败";
+		if(userId == null) {
+			msg = "该用户不存在";
+		}else {
+			try {
+				userDao.delUser(userId);
+				code = 0;
+				msg = "删除成功";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String selectUserList(User user,String sTime,String eTime, Integer page, Integer limit)throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		String startTime = null;
+		String endTime = null;
+		if (sTime != null && !sTime.equals("")) {
+			startTime = startSdf.format(sdf.parse(sTime));
+		}
+		if (eTime != null && !eTime.equals("")) {
+			endTime = endSdf.format(sdf.parse(eTime));
+		}
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		int count = userDao.selectUserCount(user,startTime,endTime);
+		List<User> lists = userDao.selectUserList(user,startTime,endTime, (page-1) * limit, limit);
+		return JsonUtil.buildJsonByTotalCount(lists, count);
+	}
+
+	@Override
+	public String getUserList(User user,String sTime,String eTime,Integer page, Integer limit, Integer adminId, Integer parentId) {
+		//判断
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		int count = userDao.getUserCount1(user,sTime,eTime,adminId,parentId);
+
+		//查询
+		List<User> lists = userDao.getUserList(user,sTime,eTime, (page-1) * limit, limit, adminId, parentId);
+
+		return JsonUtil.buildJsonByTotalCount(lists, count);
+	}
+
+
+	@Override
+	public String updateUser(User user) {
+		int code = 1;
+		String msg = "编辑失败";
+		if(user.getUserId() == null) {
+			msg = "非法操作";
+		}else {
+			if(user.getUserName().equals("") || user.getUserName() == null) {
+					msg = "用户名不能为空";
+			}else {
+				try {
+					userDao.updateUser(user);
+					code = 0;
+					msg = "编辑成功";
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	@Override
+	public String getUserById(Integer userId) {
+		List<User> lists = new ArrayList<User>();
+		User user= userDao.getUserInfoById(userId);
+		List<UserOrder> userOrder=userOrderDao.selectMarketValue(userId);
+		Double openMarketValue=0.0;
+		String str =null;
+		for(UserOrder u:userOrder) {
+			String key = u.getStockCode()+":"+u.getMarket();
+			int args = Integer.valueOf(u.getStockCode());
+			String newStr = null;
+			if(args % 2 == 0) { //Redis2
+				if(RedisUtil2.exists(key)) {
+					if(RedisUtil2.llen(key)>0) {
+						newStr = RedisUtil2.lindex(key, -1);
+					}
+				}
+			}else { //Redis1
+				if(RedisUtil1.exists(key)) {
+					if(RedisUtil1.llen(key)>0) {
+						newStr = RedisUtil1.lindex(key, -1);
+					}
+				}
+			}
+			if(newStr!=null) {
+				JSONObject object = JSONObject.fromObject(newStr);
+				double newPrice = object.getDouble("cp"); //最新价
+				openMarketValue +=newPrice*u.getOrderNumber();
+				System.out.println(newPrice);
+				str = new DecimalFormat("0.00").format(openMarketValue);
+			}
+		}
+		if(user != null) {
+			try {
+				SystemConfig systemConfig = systemConfigDao.getSystemConfig();
+				CapitalDetailsVO capitalDetailsVO = capitalDetailsDao.selectUserWithInformation(userId);
+				StockOperate stockOperate = stockOperateDao.getStockOperateUserId(userId);
+				String yjx="0.00";
+				String pcx ="0.00";
+				if(capitalDetailsVO!=null) {
+					yjx = new DecimalFormat("0.00").format(stockOperate.getBzjMoney() * capitalDetailsVO.getQuota() + stockOperate.getBzjMoney() * systemConfig.getYjxWind());
+					pcx = new DecimalFormat("0.00").format(stockOperate.getBzjMoney() * capitalDetailsVO.getQuota() + stockOperate.getBzjMoney() * systemConfig.getPcxWind());
+				}
+				if(str == null){
+					user.setUserOpenMarketValue(0.0);
+				}else{
+					user.setUserOpenMarketValue(Double.valueOf(str));
+				}
+				user.setYjMoney(yjx);
+				user.setPcMoney(pcx);
+				lists.add(user);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return JsonUtil.buildJsonByTotalCount(lists, 1);
+	}
+
+	@Override
+	public String getUserById1(Integer userId) {
+		List<User> lists = new ArrayList<User>();
+		User user= userDao.getUserInfoById(userId);
+		if(user != null) {
+			try {
+				if(user.getIsTraders() == 0) { //操盘中
+					List<UserOrder> userOrder=userOrderDao.selectMarketValue(userId);
+					String str =null;
+					if(userOrder.size() > 0) {
+						Double openMarketValue=0.0;
+						for(UserOrder u:userOrder) {
+							String key = u.getStockCode()+":"+u.getMarket();
+							int args = Integer.valueOf(u.getStockCode());
+							String newStr = null;
+							if(args % 2 == 0) { //Redis2
+								if(RedisUtil2.exists(key)) {
+									if(RedisUtil2.llen(key)>0) {
+										newStr = RedisUtil2.lindex(key, -1);
+									}
+								}
+							}else { //Redis1
+								if(RedisUtil1.exists(key)) {
+									if(RedisUtil1.llen(key)>0) {
+										newStr = RedisUtil1.lindex(key, -1);
+									}
+								}
+							}
+							if(newStr!=null) {
+								JSONObject object = JSONObject.fromObject(newStr);
+								double newPrice = object.getDouble("cp"); //最新价
+								openMarketValue +=newPrice*u.getOrderNumber();
+								str = new DecimalFormat("0.00").format(openMarketValue);
+							}
+						}	
+					}
+					if(str == null){
+						user.setUserOpenMarketValue(0.0);
+					}else{
+						user.setUserOpenMarketValue(Double.valueOf(str));
+					}
+					SystemConfig systemConfig = systemConfigDao.getSystemConfig();
+					CapitalDetailsVO capitalDetailsVO = capitalDetailsDao.selectUserWithInformation(userId);
+					StockOperate stockOperate = stockOperateDao.getStockOperateUserId(userId);
+					String yjx="0.00";
+					String pcx ="0.00";
+					if(capitalDetailsVO!=null) {
+						yjx = new DecimalFormat("0.00").format(stockOperate.getBzjMoney() * capitalDetailsVO.getQuota() + stockOperate.getBzjMoney() * systemConfig.getYjxWind());
+						pcx = new DecimalFormat("0.00").format(stockOperate.getBzjMoney() * capitalDetailsVO.getQuota() + stockOperate.getBzjMoney() * systemConfig.getPcxWind());
+					}
+					
+					user.setYjMoney(yjx);
+					user.setPcMoney(pcx);
+				}else {//停止操盘
+					user.setUserOpenMarketValue(0.0);
+					user.setYjMoney("0.00");
+					user.setPcMoney("0.00");
+				}
+			
+				lists.add(user);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return JsonUtil.buildJsonByTotalCount1(lists, 1);
+	}
+
+	@Override
+	public User getUserByUserId(Integer userId) {
+		User user= userDao.getUserInfoById(userId);
+		return user;
+	}
+
+	@Override
+	public Integer updateUserPrice(Integer id, Double totalPrice) {
+		User user = new User();
+		user.setUserId(id);
+		user.setUserMoney(totalPrice);
+		Integer num = userDao.updateUserPrice(user);
+		return num;
+	}
+
+	public Double getSZ(Integer userId){
+		List<UserOrder> userOrder=userOrderDao.selectMarketValue(userId);
+		Double openMarketValue=0.0;
+		for(UserOrder u:userOrder) {
+			String key = u.getStockCode()+":"+u.getMarket();
+			int args = Integer.valueOf(u.getStockCode());
+			String newStr = null;
+			if(args % 2 == 0) { //Redis2
+				if(RedisUtil2.exists(key)) {
+					if(RedisUtil2.llen(key)>0) {
+						newStr = RedisUtil2.lindex(key, -1);
+					}
+				}
+			}else { //Redis1
+				if(RedisUtil1.exists(key)) {
+					if(RedisUtil1.llen(key)>0) {
+						newStr = RedisUtil1.lindex(key, -1);
+					}
+				}
+			}
+			if(newStr!=null) {
+				JSONObject object = JSONObject.fromObject(newStr);
+				double newPrice = object.getDouble("cp"); //最新价
+				openMarketValue +=newPrice*u.getOrderNumber();
+			}
+		}
+		return openMarketValue;
+	}
+
+	//会员风控管理列表
+	@Override
+	public String getMemberRiskList(String userName,Integer page, Integer limit) {
+		List<RiskManagement> riskMemberList = new ArrayList<>();
+		RiskManagementType type = RiskManagementType.MEMBERRISKMANAGEMENT;
+		getManagementList(userName,page,limit,type,riskMemberList);
+		int count =riskMemberList.size();
+		return JsonUtil.buildJsonByTotalCount(riskMemberList, count);
+	}
+
+	//会员代理风控管理列表
+	@Override
+	public String getMemberRiskListDL(String userName,Integer page, Integer limit, Integer adminId) {
+		List<RiskManagement> riskMemberList = new ArrayList<>();
+		RiskManagementType type = RiskManagementType.MEMBERRISKMANAGEMENT;
+		getManagementListDL(userName,page,limit,adminId,type,riskMemberList);
+		int count =riskMemberList.size();
+		return JsonUtil.buildJsonByTotalCount(riskMemberList, count);
+	}
+
+	//预警线风控管理列表
+	@Override
+	public String getWarninglList(String userName,Integer page, Integer limit) {
+		List<RiskManagement> riskWarningList = new ArrayList();
+		RiskManagementType type = RiskManagementType.OPENLINERISKMANAGEMENT;
+		getManagementList(userName,page,limit,type,riskWarningList);
+		int count =riskWarningList.size();
+		return JsonUtil.buildJsonByTotalCount(riskWarningList, count);
+	}
+
+	//代理预警线风控管理列表
+	@Override
+	public String getWarninglListDL(String userName,Integer page, Integer limit,Integer adminId) {
+		List<RiskManagement> riskWarningList = new ArrayList();
+		RiskManagementType type = RiskManagementType.OPENLINERISKMANAGEMENT;
+		getManagementListDL(userName,page,limit,adminId,type,riskWarningList);
+		int count =riskWarningList.size();
+		return JsonUtil.buildJsonByTotalCount(riskWarningList, count);
+	}
+
+	//平仓线风控管理列表
+	@Override
+	public String getUnwindlist(String userName,Integer page, Integer limit) {
+		List<RiskManagement> riskUnwindList = new ArrayList();
+		RiskManagementType type = RiskManagementType.EARLYWARNING;
+		getManagementList(userName,page,limit,type,riskUnwindList);
+		int count =riskUnwindList.size();
+		return JsonUtil.buildJsonByTotalCount(riskUnwindList, count);
+	}
+
+	//代理平仓线风控管理列表
+	@Override
+	public String getUnwindlistDL(String userName,Integer page, Integer limit,Integer adminId) {
+		List<RiskManagement> riskUnwindList = new ArrayList();
+		RiskManagementType type = RiskManagementType.EARLYWARNING;
+		getManagementListDL(userName,page,limit,adminId,type,riskUnwindList);
+		int count =riskUnwindList.size();
+		return JsonUtil.buildJsonByTotalCount(riskUnwindList, count);
+	}
+
+	@Override
+	public User getUserPhone(String userPhone) {
+		return userDao.getUserPhone(userPhone);
+	}
+
+	/**
+	 * 获取风控管理
+	 * @param page
+	 * @param limit
+	 */
+	private  List<RiskManagement> getManagementList(String userName,Integer page, Integer limit,RiskManagementType type,List<RiskManagement> riskList) {
+
+		//判断分页参数
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+		
+		//获取所有用户
+		List<User> lists = userDao.getUnwindlList(userName,(page-1) * limit, limit);
+
+		//存储风险管理对象到集合中
+		SystemConfig systemConfig = systemConfigDao.getSystemConfig();
+
+		for(User user:lists){
+			RiskManagement riskManagement = new RiskManagement();
+			riskManagement.setUserId(user.getUserId());
+			riskManagement.setUserName(user.getUserName());
+
+			riskManagement.setTotalAssets1(user.getUserNetAsset());
+			riskManagement.setStockValue1(getSZ(user.getUserId()));
+			riskManagement.setExpendableFund(user.getUserExpendableFund());
+			riskManagement.setPositionRatio(riskManagement.getStockValue1()/user.getUserNetAsset());
+			/*if(user.getUserFloatingProfit()>0){
+				riskManagement.setProfitLossRatio(MathUtils.object2Str(((user.getUserNetAsset()+user.getUserFloatingProfit())/user.getUserNetAsset()-1)*100));
+			}else{
+				riskManagement.setProfitLossRatio(MathUtils.object2Str((1-(user.getUserNetAsset()+user.getUserFloatingProfit())*user.getUserNetAsset())*100));
+			}*/
+            CapitalDetailsVO cdv = capitalDetailsDao.selectUserWithInformation(user.getUserId());
+//			Double czsum = capitalDetailsDao.selectUserCZSUM(user.getUserId()); //获取充值总金额
+			CapitalDetailsVO detailsVO = capitalDetailsDao.selectSuccessOne(user.getUserId()); //获取用户最新一条充值记录
+			if(cdv != null) {
+//				System.out.println(getSZ(user.getUserId()) + user.getUserName());
+				riskManagement.setCashDeposit(cdv.getTradeMoney());
+				StockOperate stockOperate = stockOperateDao.getStockOperateUserId(user.getUserId());
+				riskManagement.setRedLine1(stockOperate.getBzjMoney() * cdv.getQuota() + stockOperate.getBzjMoney() * systemConfig.getYjxWind()); //预警线
+				riskManagement.setLossLine1(stockOperate.getBzjMoney()* cdv.getQuota() + stockOperate.getBzjMoney() * systemConfig.getPcxWind()); //平仓线
+				riskManagement.setTotalVariableProfitLoss(user.getUserNetAsset() - (cdv.getTradeMoney() * cdv.getQuota() + cdv.getTradeMoney())); //总浮动盈亏
+				riskManagement.setProfitLossRatio(riskManagement.getTotalVariableProfitLoss()/(cdv.getTradeMoney() * cdv.getQuota() + cdv.getTradeMoney())); //盈亏比例
+				Double redLineRatio=(user.getUserNetAsset()/(riskManagement.getRedLine1()/systemConfig.getYjxWind()));
+				String strs=new DecimalFormat("0.00").format(redLineRatio);
+				Double lossLineRatio=(user.getUserNetAsset()/(riskManagement.getLossLine1()/systemConfig.getPcxWind()));
+				String str=new DecimalFormat("0.00").format(lossLineRatio);
+				riskManagement.setRedLineRatio(Double.valueOf(strs)); //亏损警戒百分比
+				riskManagement.setLossLineRatio(Double.valueOf(str)); //亏损平仓百分比
+				
+			//	System.out.println(riskManagement.getLossLineRatio()+0.05);
+				//会员风险控制管理
+				if(type == RiskManagementType.MEMBERRISKMANAGEMENT){
+					riskList.add(riskManagement);
+				}else if(type == RiskManagementType.EARLYWARNING  ){  //预警线风险控制管理
+					if(riskManagement.getLossLine1()<user.getUserNetAsset() && user.getUserNetAsset()<riskManagement.getRedLine1()){
+						//亏损平仓线< 总资产 <  亏损警戒线
+						riskList.add(riskManagement);
+					}
+				}else if(type == RiskManagementType.OPENLINERISKMANAGEMENT){  //平仓线风险控制管理
+					if(riskManagement.getLossLineRatio() <= (systemConfig.getPcxWind() + 0.05)){
+						//平仓%比 <  35%
+						riskList.add(riskManagement);
+					}
+				}
+			}
+		}
+		return riskList;
+	}
+
+	/**
+	 * 获取代理风控管理
+	 * @param page
+	 * @param limit
+	 */
+	private  List<RiskManagement> getManagementListDL(String userName,Integer page, Integer limit,Integer adminId, RiskManagementType type,List<RiskManagement> riskList) {
+
+		//判断分页参数
+		if(page == null) {
+			page = 1;
+		}
+		if(limit == null) {
+			limit = 10;
+		}
+
+		//获取代理商下用户
+		List<User> lists = userDao.getUnwindlListDL(userName,(page-1) * limit, limit,adminId);
+
+		//存储风险管理对象到集合中
+		for(User user:lists){
+			RiskManagement riskManagement = new RiskManagement();
+			riskManagement.setUserId(user.getUserId());
+			riskManagement.setUserName(user.getUserName());
+			riskManagement.setCashDeposit(user.getUserMoney());
+			riskManagement.setTotalAssets1(user.getUserNetAsset());
+			riskManagement.setStockValue1(user.getUserOpenMarketValue());
+			riskManagement.setExpendableFund(user.getUserExpendableFund());
+			riskManagement.setPositionRatio(user.getUserOpenMarketValue()/user.getUserNetAsset()*100);
+//			if(user.getUserFloatingProfit()>0){
+//				riskManagement.setProfitLossRatio(MathUtils.object2Str(((user.getUserNetAsset()+user.getUserFloatingProfit())/user.getUserNetAsset()-1)*100));
+//			}else{
+//				riskManagement.setProfitLossRatio(MathUtils.object2Str((1-(user.getUserNetAsset()+user.getUserFloatingProfit())*user.getUserNetAsset())*100));
+//			}
+			SystemConfig systemConfig = systemConfigDao.getSystemConfig();
+			CapitalDetailsVO cdv = capitalDetailsDao.selectUserWithInformation(user.getUserId());
+			Double czsum = capitalDetailsDao.selectUserCZSUM(user.getUserId()); //获取充值总金额
+			CapitalDetailsVO detailsVO = capitalDetailsDao.selectSuccessOne(user.getUserId()); //获取用户最新一条充值记录
+
+			if(cdv != null) {
+				StockOperate stockOperate = stockOperateDao.getStockOperateUserId(user.getUserId());
+				riskManagement.setRedLine1(stockOperate.getBzjMoney() * cdv.getQuota() + stockOperate.getBzjMoney() * systemConfig.getYjxWind()); //预警线
+				riskManagement.setLossLine1(stockOperate.getBzjMoney()* cdv.getQuota() + stockOperate.getBzjMoney() * systemConfig.getPcxWind()); //平仓线
+				riskManagement.setTotalVariableProfitLoss(user.getUserNetAsset() - (cdv.getTradeMoney() * cdv.getQuota() + cdv.getTradeMoney())); //总浮动盈亏
+				riskManagement.setProfitLossRatio(riskManagement.getTotalVariableProfitLoss()/(cdv.getTradeMoney() * cdv.getQuota() + cdv.getTradeMoney())); //盈亏比例
+				riskManagement.setRedLineRatio((user.getUserNetAsset()/(riskManagement.getRedLine1()/systemConfig.getYjxWind()))); //亏损警戒百分比
+				riskManagement.setLossLineRatio((user.getUserNetAsset()/(riskManagement.getLossLine1()/systemConfig.getPcxWind()))); //亏损平仓百分比
+//				riskManagement.setPrincipalSum(czsum); //累计已配本金金额
+//				riskManagement.setMarginSum(czsum + (cdv.getTradeMoney() * cdv.getQuota())); //累计已配保证金金额
+//				riskManagement.setPrincipalXin(detailsVO.getTradeMoney()); // 最新一次本金金额
+//				riskManagement.setMarginXin(detailsVO.getTradeMoney() * detailsVO.getQuota()); //最新一次保证金金额
+				//会员风险控制管理
+				if(type == RiskManagementType.MEMBERRISKMANAGEMENT){
+					riskList.add(riskManagement);
+				}else if(type == RiskManagementType.EARLYWARNING  ){  //预警线风险控制管理
+					if(riskManagement.getLossLine1()<user.getUserNetAsset() && user.getUserNetAsset()<riskManagement.getRedLine1()){
+						//亏损平仓线< 总资产 <  亏损警戒线
+						riskList.add(riskManagement);
+					}
+				}else if(type == RiskManagementType.OPENLINERISKMANAGEMENT){  //平仓线风险控制管理
+					if(riskManagement.getLossLineRatio() <= (systemConfig.getPcxWind() + 0.05)){
+						//平仓%比 <  35%
+						riskList.add(riskManagement);
+					}
+				}
+			}
+		}
+		return riskList;
+	}
+
+	@Override
+	public String auditUser(User user) {
+		int code = 1;
+		String msg = "";
+		if(user.getUserId() == null) {
+			msg = "非法操作";
+		}else {
+			try {
+				userDao.auditUser(user);
+				code = 0;
+				msg = "审核成功";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+	/**
+	 * 用户登录
+	 */
+	@Override
+	public String userLogin(String phone, String password) {
+		int code = 1;
+		String msg = "登录失败";
+		Integer userId = null;
+		if(phone.equals("") || phone == null) {
+			msg = "手机号码不能为空";
+		}else {
+			if(password.equals("") || password == null) {
+				msg = "密码不能为空";
+			}else {
+				String newPassword = MD5Util.MD5Encode(password, "utf-8");
+				User user = userDao.userLogin(phone, newPassword);
+				if(user == null) {
+					msg = "账号或密码错误";
+				}else {
+					if(!user.getMemberState().equals(1)) {
+						msg = "该账号已被禁用,请联系管理员";
+					}else {
+						code = 0;
+						msg = "登录成功";
+						userId = user.getUserId();
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, userId);
+	}
+
+	@Override
+	public String findPwd(String phone,String password) {
+		int code = 1;
+		String msg = "找回密码失败";
+		Integer userId = null;
+		if(password.equals("") || password == null) {
+			msg = "新密码不能为空";
+		}else {
+			if(phone.equals("") || phone == null) {
+				msg = "手机号码不能为空";
+			}else {
+				User user = userDao.getInfoByPhone(phone);
+				if(user == null) {
+					msg = "用户不存在";
+				}else {
+					String newpassword = MD5Util.MD5Encode(password, "utf-8");
+					user.setUserPassword(newpassword);
+					Integer updateId = userDao.updateUser(user);
+					if(updateId != null) {
+						code = 0;
+						msg = "找回密码成功";
+						userId = user.getUserId();
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, userId);
+	}
+	/**
+	 * 更新密码
+	 */
+	@Override
+	public String updatePwd(Integer userId, String oldpwd, String newpwd) {
+		int code = 1;
+		String msg = "更新密码失败";
+		if(userId == null) {
+			msg = "参数非法";
+		}else {
+			if(oldpwd.equals("") || oldpwd == null) {
+				msg = "原始密码不能为空";
+			}else {
+				if(newpwd.equals("") || newpwd == null) {
+					msg = "新密码不能为空";
+				}else {
+					User user = userDao.checkIsOldPwd(userId, MD5Util.MD5Encode(oldpwd, "utf-8"));
+					if(user == null) {
+						msg = "原始密码不正确";
+					}else {
+						user.setUserPassword(MD5Util.MD5Encode(newpwd, "utf-8"));
+						Integer updateId = userDao.updateUser(user);
+						if(updateId != null) {
+							code = 0;
+							msg ="修改密码成功";
+						}
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+	/**
+	 *计算用户总数
+	 */
+	@Override
+	public int getUserCount() {
+		return userDao.getUserCount();
+	}
+
+	@Override
+	public double getUserMoneyAll() {
+		return userDao.getUserMoneyAll();
+	}
+
+
+}

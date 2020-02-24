@@ -1,0 +1,39 @@
+package com.sjy.dao;
+
+import com.sjy.entity.SimulationTransaction;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2019/5/17.
+ */
+@Mapper
+public interface SimulationTransactionDao {
+	//新增
+	Integer addSimulationTransaction(SimulationTransaction st);
+	//删除
+	Integer delSimulationTransaction(@Param("simulationTransactionId")Integer simulationTransactionId);
+	//修改
+	Integer updateSimulationTransaction(SimulationTransaction st);
+    //修改模拟卖出交易
+    Integer updateSimulationSellTransaction(SimulationTransaction st);
+	//获取详情
+	SimulationTransaction getSimulationTransactionInfo(@Param("simulationTransactionId")Integer simulationTransactionId);
+	//查询总数
+    int selectSimulationTransactionCount(@Param("simulationTransaction")SimulationTransaction simulationTransaction);
+    //查询列表
+    List<SimulationTransaction> selectSimulationTransactionList(@Param("simulationTransaction") SimulationTransaction simulationTransaction,@Param("page") Integer page,@Param("limit") Integer limit);
+    
+    //当天/历史 委托   type:1 当天 2 历史
+    int dayWTCount(@Param("st")SimulationTransaction st,@Param("type")Integer type);
+    List<SimulationTransaction> dayWTList(@Param("st") SimulationTransaction st,@Param("type")Integer type,@Param("page")Integer page,@Param("limit")Integer limit);
+  
+    //当天成交
+    int daySuccessTradeCount(@Param("st") SimulationTransaction st,@Param("type")Integer type);
+    List<SimulationTransaction> daySuccessTradeList(@Param("st") SimulationTransaction st,@Param("type")Integer type,@Param("page")Integer page,@Param("limit")Integer limit);
+
+
+}

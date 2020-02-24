@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.ServeDao">
+    <resultMap type="com.sjy.entity.Serve" id="BaseResultMap">
+        <id column="serve_id" property="serveId"/>
+        <result column="order_number" property="orderNumber"/>
+        <result column="user_id" property="userId"/>
+        <result column="actual_amount" property="actualAmount"/>
+        <result column="service_center" property="serviceCenter"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="charge_price" property="chargePrice"/>
+        <result column="user_money" property="userMoney"/>
+        <result column="serve_flag" property="serveFlag"/>
+        <result column="serve_time" property="serveTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		serve_id,order_number,user_id,actual_amount,service_center,
+		admin_id,charge_price,user_money,serve_flag,serve_time
+	</sql>
+
+    <resultMap type="com.sjy.entity.ServeVO" id="Join_Result_Column" extends="BaseResultMap">
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="adminName" jdbcType="VARCHAR" property="adminName"/>
+    </resultMap>
+    <!-- 获取服务费表数据 -->
+
+
+    <select id="selectServeAll" parameterType="com.sjy.entity.Serve" resultMap="Join_Result_Column">
+        select s.serve_id,s.order_number,s.user_id,s.actual_amount,s.service_center,
+        s.admin_id,s.charge_price,s.user_money,s.serve_flag,s.serve_time,
+        u.user_name as userName,a.admin_name as adminName
+        from serve s
+        left join user u on u.user_id = s.user_id
+        left join admin a on a.admin_id = s.admin_id
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+
+    <select id="selectAllServe" parameterType="com.sjy.entity.Serve" resultMap="Join_Result_Column">
+        select cd.id as orderNumber1,u.user_name as userName,u.user_money as userMoneys,cd.trade_money as tradeMoney,
+        a.admin_name as agent,a.admin_level as level,cd.create_time as createTime
+        from capital_details cd
+        left JOIN user u on u.user_id = cd.user_id
+        left JOIN admin a on u.inviter_id = a.admin_id
+        where cd.trade_type = 1 and cd.is_deal = 1
+        <if test="ServeVO != null">
+            <if test="ServeVO.userName != null and ServeVO.userName != ''">
+                and u.user_name like concat ('%',#{ServeVO.userName},'%')
+            </if>
+            <if test="ServeVO.adminName != null and ServeVO.adminName != ''">
+                and a.admin_name like concat ('%',#{ServeVO.adminName},'%')
+            </if>
+        </if>
+        <if test="page != null and limit != null">
+            limit #{page},#{limit}
+        </if>
+    </select>
+
+    <select id="selectServeCount" resultType="INT">
+		select count(1) from capital_details cd
+	  left JOIN user u on u.user_id = cd.user_id
+	  left JOIN admin a on u.inviter_id = a.admin_id
+	  where cd.trade_type = 1 and cd.is_deal = 1
+	   <if test="ServeVO != null">
+            <if test="ServeVO.userName != null and ServeVO.userName != ''">
+                and u.user_name like concat ('%',#{ServeVO.userName},'%')
+            </if>
+            <if test="ServeVO.adminName != null and ServeVO.adminName != ''">
+                and a.admin_name like concat ('%',#{ServeVO.adminName},'%')
+            </if>
+        </if>
+	</select>
+
+    <!--修改数据-->
+    <update id="updateServeAll" parameterType="com.sjy.entity.Poundage">
+        update poundage
+        <set>
+            <if test="serveId != null">
+                serve_id = #{serveId},
+            </if>
+            <if test="orderNumber != null">
+                order_number = #{orderNumber},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="actualAmount != null">
+                actual_amount = #{actualAmount},
+            </if>
+            <if test=" serviceCenter != null">
+                service_center = #{serviceCenter},
+            </if>
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+            <if test="userMoney != null">
+                user_money = #{userMoney},
+            </if>
+            <if test="chargePrice != null">
+                charge_price = #{chargePrice},
+            </if>
+            <if test="serveFlag != null">
+                serve_flag = #{serveFlag},
+            </if>
+            <if test="serveTime != null">
+                serve_time = #{serveTime},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

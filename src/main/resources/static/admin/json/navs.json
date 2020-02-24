@@ -1,0 +1,166 @@
+{
+	"accountManagement": [
+		{
+			"title": "会员管理",
+			"icon": "icon-text",
+			"href": "page/news/newsList.html",
+			"power":"userManage",
+			"spread": false,
+			"children": [
+				{
+					"title": "404页面",
+					"icon": "&#xe61c;",
+					"href": "page/404.html",
+					"spread": false
+				},
+				{
+					"title": "登录",
+					"icon": "&#xe609;",
+					"href": "page/login/login.html",
+					"spread": false,
+					"target": "_blank"
+				}
+			]
+		},
+		{
+			"title": "代理商管理",
+			"icon": "&#xe634;",
+			"href": "admin/index",
+			"power":"adminManage",
+			"spread": false
+		}
+	],
+	"windManagement": [
+		{
+			"title": "会员风控管理",
+			"icon": "&#xe612;",
+			"href": "page/user/userList.html",
+			"power":"userWindManage",
+			"spread": false
+		},
+		{
+			"title": "预警线风控管理",
+			"icon": "icon-vip",
+			"href": "page/user/userGrade.html",
+			"power":"warmWindManage",
+			"spread": false
+		},
+		{
+			"title": "平仓线风控管理",
+			"icon": "&#xe634;",
+			"href": "page/img/images.html",
+			"power":"closeWindManage",
+			"spread": false
+		}
+	],
+	"moneyManagement": [
+		{
+			"title": "手续费统计",
+			"icon": "&#xe631;",
+			"href": "page/systemSetting/basicParameter.html",
+			"power":"hangManage",
+			"spread": false
+		},{
+			"title": "服务费统计",
+			"icon": "icon-log",
+			"href": "page/systemSetting/logs.html",
+			"power":"serviceManage",
+			"spread": false
+		},{
+			"title": "资金明细",
+			"icon": "&#xe64c;",
+			"href": "page/systemSetting/linkList.html",
+			"power":"fundManage",
+			"spread": false
+		},{
+			"title": "充值管理",
+			"icon": "&#xe857;",
+			"href": "page/systemSetting/icons.html",
+			"power":"rechargeManage",
+			"spread": false
+		},{
+			"title": "提现管理",
+			"icon": "&#xe857;",
+			"href": "page/systemSetting/icons.html",
+			"power":"cashManage",
+			"spread": false
+		},{
+			"title": "资金统计",
+			"icon": "&#xe857;",
+			"href": "page/systemSetting/icons.html",
+			"power":"capitalManage",
+			"spread": false
+		}
+	],
+	"tradeManagement": [
+		{
+			"title": "成交管理",
+			"icon": "icon-mokuai",
+			"href": "page/doc/addressDoc.html",
+			"power":"transactionManage",
+			"spread": false
+		},{
+			"title": "委托管理",
+			"icon": "icon-mokuai",
+			"href": "page/doc/bodyTabDoc.html",
+			"power":"entrustManage",
+			"spread": false
+		},{
+			"title": "持仓管理",
+			"icon": "icon-mokuai",
+			"href": "page/doc/navDoc.html",
+			"power":"holdManage",
+			"spread": false
+		}
+	],
+	"systemManagement": [
+		{
+			"title": "广告管理",
+			"icon": "icon-mokuai",
+			"href": "page/doc/addressDoc.html",
+			"power":"bannerManage",
+			"spread": false
+		},{
+			"title": "公告管理",
+			"icon": "icon-mokuai",
+			"href": "page/doc/bodyTabDoc.html",
+			"power":"noticeManage",
+			"spread": false
+		},{
+			"title": "资讯管理",
+			"icon": "icon-mokuai",
+			"href": "page/doc/navDoc.html",
+			"power":"articleManage",
+			"spread": false
+		},{
+			"title": "角色管理",
+			"icon": "icon-mokuai",
+			"href": "role/index",
+			"power":"roleManage",
+			"spread": false
+		},{
+			"title": "系统设置",
+			"icon": "icon-mokuai",
+			"href": "page/doc/navDoc.html",
+			"power":"systemManage",
+			"spread": false
+		}
+	],
+	"logManagement": [
+		{
+			"title": "操作日志",
+			"icon": "icon-mokuai",
+			"href": "page/doc/addressDoc.html",
+			"power":"operateLog",
+			"spread": false
+		},{
+			"title": "登录日志",
+			"icon": "icon-mokuai",
+			"href": "page/doc/addressDoc.html",
+			"power":"loginlog",
+			"spread": false
+		}
+	]
+}
+
+

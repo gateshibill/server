@@ -1,0 +1,215 @@
+package com.sjy.entity;
+
+import java.util.Date;
+
+public class User {
+	private Integer userId;
+	private String userName;
+	private String userPassword;
+	private Integer inviterId;
+	private String userEmail;
+	private String userPhone;
+	private Integer isCertification;
+	private Integer memberState;
+	private String userTransationCode;
+	private String userCode;
+	private String codeImg;
+	private Integer userType;
+	private Date createTime;
+	private String userImg;
+	private String userInstitutions;
+	private Double userMoney;
+	private Integer userInformation;
+	private Double netAsset;
+	private Double expendableFund;
+	private Double openMarketValue;
+	private Double floatingProfit;
+	private Double userNetAsset;
+	private Double userExpendableFund;
+	private Double userOpenMarketValue;
+	private Double userFloatingProfit;
+	
+	//代理名称
+	private String adminName;
+	
+	public Integer getUserId() {
+		return userId;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public String getUserPassword() {
+		return userPassword;
+	}
+	public Integer getInviterId() {
+		return inviterId;
+	}
+	public String getUserEmail() {
+		return userEmail;
+	}
+	public String getUserPhone() {
+		return userPhone;
+	}
+	public Integer getIsCertification() {
+		return isCertification;
+	}
+	public Integer getMemberState() {
+		return memberState;
+	}
+	public String getUserTransationCode() {
+		return userTransationCode;
+	}
+	public String getUserCode() {
+		return userCode;
+	}
+	public String getCodeImg() {
+		return codeImg;
+	}
+	public Integer getUserType() {
+		return userType;
+	}
+	public Date getCreateTime() {
+		return createTime;
+	}
+	public String getUserImg() {
+		return userImg;
+	}
+	public String getUserInstitutions() {
+		return userInstitutions;
+	}
+	public Double getUserMoney() {
+		return userMoney;
+	}
+	public Integer getUserInformation() {
+		return userInformation;
+	}
+	public Double getNetAsset() {
+		return netAsset;
+	}
+	public Double getExpendableFund() {
+		return expendableFund;
+	}
+	public Double getOpenMarketValue() {
+		return openMarketValue;
+	}
+	public Double getFloatingProfit() {
+		return floatingProfit;
+	}
+	public Double getUserNetAsset() {
+		return userNetAsset;
+	}
+	public Double getUserExpendableFund() {
+		return userExpendableFund;
+	}
+	public Double getUserOpenMarketValue() {
+		return userOpenMarketValue;
+	}
+	public Double getUserFloatingProfit() {
+		return userFloatingProfit;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
+	}
+	public void setInviterId(Integer inviterId) {
+		this.inviterId = inviterId;
+	}
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
+	}
+	public void setUserPhone(String userPhone) {
+		this.userPhone = userPhone;
+	}
+	public void setIsCertification(Integer isCertification) {
+		this.isCertification = isCertification;
+	}
+	public void setMemberState(Integer memberState) {
+		this.memberState = memberState;
+	}
+	public void setUserTransationCode(String userTransationCode) {
+		this.userTransationCode = userTransationCode;
+	}
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+	public void setCodeImg(String codeImg) {
+		this.codeImg = codeImg;
+	}
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	public void setUserImg(String userImg) {
+		this.userImg = userImg;
+	}
+	public void setUserInstitutions(String userInstitutions) {
+		this.userInstitutions = userInstitutions;
+	}
+	public void setUserMoney(Double userMoney) {
+		this.userMoney = userMoney;
+	}
+	public void setUserInformation(Integer userInformation) {
+		this.userInformation = userInformation;
+	}
+	public void setNetAsset(Double netAsset) {
+		this.netAsset = netAsset;
+	}
+	public void setExpendableFund(Double expendableFund) {
+		this.expendableFund = expendableFund;
+	}
+	public void setOpenMarketValue(Double openMarketValue) {
+		this.openMarketValue = openMarketValue;
+	}
+	public void setFloatingProfit(Double floatingProfit) {
+		this.floatingProfit = floatingProfit;
+	}
+	public void setUserNetAsset(Double userNetAsset) {
+		this.userNetAsset = userNetAsset;
+	}
+	public void setUserExpendableFund(Double userExpendableFund) {
+		this.userExpendableFund = userExpendableFund;
+	}
+	public void setUserOpenMarketValue(Double userOpenMarketValue) {
+		this.userOpenMarketValue = userOpenMarketValue;
+	}
+	public void setUserFloatingProfit(Double userFloatingProfit) {
+		this.userFloatingProfit = userFloatingProfit;
+	}
+	public String getAdminName() {
+		return adminName;
+	}
+	public void setAdminName(String adminName) {
+		this.adminName = adminName;
+	}
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", userName=" + userName + ", userPassword=" + userPassword + ", inviterId="
+				+ inviterId + ", userEmail=" + userEmail + ", userPhone=" + userPhone + ", isCertification="
+				+ isCertification + ", memberState=" + memberState + ", userTransationCode=" + userTransationCode
+				+ ", userCode=" + userCode + ", codeImg=" + codeImg + ", userType=" + userType + ", createTime="
+				+ createTime + ", userImg=" + userImg + ", userInstitutions=" + userInstitutions + ", userMoney="
+				+ userMoney + ", userInformation=" + userInformation + ", netAsset=" + netAsset + ", expendableFund="
+				+ expendableFund + ", openMarketValue=" + openMarketValue + ", floatingProfit=" + floatingProfit
+				+ ", userNetAsset=" + userNetAsset + ", userExpendableFund=" + userExpendableFund
+				+ ", userOpenMarketValue=" + userOpenMarketValue + ", userFloatingProfit=" + userFloatingProfit
+				+ ", getUserId()=" + getUserId() + ", getUserName()=" + getUserName() + ", getUserPassword()="
+				+ getUserPassword() + ", getInviterId()=" + getInviterId() + ", getUserEmail()=" + getUserEmail()
+				+ ", getUserPhone()=" + getUserPhone() + ", getIsCertification()=" + getIsCertification()
+				+ ", getMemberState()=" + getMemberState() + ", getUserTransationCode()=" + getUserTransationCode()
+				+ ", getUserCode()=" + getUserCode() + ", getCodeImg()=" + getCodeImg() + ", getUserType()="
+				+ getUserType() + ", getCreateTime()=" + getCreateTime() + ", getUserImg()=" + getUserImg()
+				+ ", getUserInstitutions()=" + getUserInstitutions() + ", getUserMoney()=" + getUserMoney()
+				+ ", getUserInformation()=" + getUserInformation() + ", getNetAsset()=" + getNetAsset()
+				+ ", getExpendableFund()=" + getExpendableFund() + ", getOpenMarketValue()=" + getOpenMarketValue()
+				+ ", getFloatingProfit()=" + getFloatingProfit() + ", getUserNetAsset()=" + getUserNetAsset()
+				+ ", getUserExpendableFund()=" + getUserExpendableFund() + ", getUserOpenMarketValue()="
+				+ getUserOpenMarketValue() + ", getUserFloatingProfit()=" + getUserFloatingProfit() + "]";
+	}
+}

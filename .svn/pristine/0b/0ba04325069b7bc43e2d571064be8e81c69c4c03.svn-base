@@ -1,0 +1,229 @@
+package com.sjy.api;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.sjy.entity.StockCode;
+import com.sjy.service.StockCodeService;
+import com.sjy.util.DataUtil;
+import com.sjy.util.JsonUtil;
+import com.sjy.util.Redis.RedisUtil1;
+import com.sjy.util.Redis.RedisUtil2;
+import com.sjy.util.Redis.RedisUtil4;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import net.sf.json.JSONObject;
+import redis.clients.jedis.Jedis;
+
+@Api(tags="k线相关接口")
+@RestController
+@CrossOrigin //防止跨域
+@RequestMapping("/api/kmarket")
+public class KMarketController {
+	@Autowired
+	private StockCodeService stockCodeService;
+	/**
+	 * 时分k
+	 * @param symbol
+	 * @return
+	 */
+	@ApiImplicitParam(name="symbol",value="股票代码",required=true,dataType="String")
+	@RequestMapping(value="/minuteK",method=RequestMethod.GET)
+	public String minuteK(String symbol) {
+		//System.out.println("开始时间:"+System.currentTimeMillis()/1000);
+		DecimalFormat df  = new DecimalFormat("######0.00");   
+		String key = null;
+		if(symbol != null && !symbol.equals("")) {
+			StockCode code = stockCodeService.getStockByCode(symbol);
+			if(code != null) {
+				int args = Integer.valueOf(symbol);
+				key = symbol+":"+code.getMarket();//键值
+				List<String> valuelist = null;
+				if(args%2 == 0) { //连接redis2
+					 if(RedisUtil2.exists(key)) {
+						 if(RedisUtil2.llen(key) > 0) {
+							 valuelist = RedisUtil2.lrange(key, 0, -1);
+						 }
+					 }					 
+				}else { //连接redis1
+					//System.out.println("start time = "+ System.currentTimeMillis());
+					if(RedisUtil1.exists(key)) {
+						System.out.println("exists time = "+ System.currentTimeMillis());
+						 if(RedisUtil1.llen(key) > 0) {
+							System.out.println("llen time = "+ System.currentTimeMillis());
+							valuelist = RedisUtil1.lrange(key, 0, -1);
+							System.out.println("lrange time = "+ System.currentTimeMillis());
+						 }
+					 }			
+				}
+			//	System.out.println("redis获取数据时间:"+System.currentTimeMillis());
+				List<Map<String,String>> lists = new ArrayList<Map<String,String>>();
+				if(valuelist != null) {  
+					for(String string: valuelist) {
+						JSONObject jsonArray = JSONObject.fromObject(string);
+						Map<String,String> map = new HashMap<>();
+						String a = DataUtil.addtime(jsonArray.getString("tradingTime"), "-1");
+						map.put("time", a);//时间戳
+						map.put("cp", df.format(jsonArray.getDouble("cp")));//现价
+						map.put("tq", jsonArray.getString("tq"));//分钟成交量
+						lists.add(map);
+					}
+				}
+				//System.out.println("redis处理数据时间:"+System.currentTimeMillis());
+				List<Object> newlists = new ArrayList<Object>();
+				if(lists.size() > 0) {   //对时间进行过滤处理:后续优化
+					lists = DataUtil.dataFilter(lists);
+				//	System.out.println("去重处理时间:"+System.currentTimeMillis());
+					String zh = "";
+					for (int i = 0; i < lists.size(); i++) {
+						Map<String,String> map1 = lists.get(i);	
+						//System.out.println(map1.get("tq"));
+						zh += ","+map1.get("time").substring(11, 16).replace(":", "")+" "+map1.get("cp")+" "+new DecimalFormat("0").format(Double.valueOf(map1.get("tq"))/100);	
+					}
+					zh = zh.substring(1);
+					String[] arrStr = zh.split(",");
+					newlists.add(arrStr);
+				}		
+			//	System.out.println("结束时间:"+System.currentTimeMillis());
+				return JsonUtil.buildJsonByTotalCount(newlists, lists.size());
+			}else {
+				return JsonUtil.buildFalseJson(1, "该股票不存在", "");
+			}
+		}else {
+			return JsonUtil.buildFalseJson(1, "参数非法", "");
+		}
+	}
+	/**
+	 * 日k
+	 * @param symbol
+	 * @return
+	 */
+	@ApiImplicitParam(name="symbol",value="股票代码",required=true,dataType="String")
+	@RequestMapping(value="/dayK",method=RequestMethod.GET)
+	public String dayK(String symbol) {
+		try {
+			if(symbol != null && !symbol.equals("")) {
+				List<Object> newlists = new ArrayList<Object>();
+				String key = symbol+":day";
+				List<String> daydata = RedisUtil4.lrange(1, key, 0, -1);	
+				StockCode code = stockCodeService.getStockByCode(symbol);
+				Integer args = Integer.valueOf(symbol);
+				String newStr = null;
+				String firstStr = null;
+				String newkey = symbol+":"+code.getMarket();
+				if(args%2  == 0) {
+					firstStr = RedisUtil2.lindex(newkey, 0);
+					newStr = RedisUtil2.lindex(newkey, -1);
+				}else {
+					firstStr = RedisUtil1.lindex(newkey, 0);
+					newStr = RedisUtil1.lindex(newkey, -1);
+				}
+				if(daydata.size() > 0) {
+					for (String string : daydata) {
+						JSONObject object = JSONObject.fromObject(string);
+						String zh = object.getString("tradingTime").substring(0, 10)+","+object.getString("op")+","+object.getString("cp")+","+object.getString("hip")+","
+								+object.getString("lop")+","+new DecimalFormat("0").format(object.getDouble("cq")/100);
+						newlists.add(zh.split(","));
+					}
+				}	
+				if(newStr != null) {
+					JSONObject object = JSONObject.fromObject(newStr);
+					JSONObject object2 = JSONObject.fromObject(firstStr);
+					String zh = object.getString("tradingTime").substring(0, 10)+","+object2.getString("op")+","+object.getString("cp")+","+object.getString("clvHip")+","
+							+object.getString("clvLop")+","+new DecimalFormat("0").format(object.getDouble("tq")/100);
+					newlists.add(zh.split(","));
+				}
+				return JsonUtil.buildJsonByTotalCount(newlists, daydata.size());
+			}else {
+				return JsonUtil.buildFalseJson(1, "参数非法", "");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return JsonUtil.buildFalseJson(1, "连接超时", "");
+		}	
+	}
+	/**
+	 * 周k
+	 * @param symbol
+	 * @return
+	 */
+	@ApiImplicitParam(name="symbol",value="股票代码",required=true,dataType="String")
+	@RequestMapping(value="/weekK",method=RequestMethod.GET)
+	public String weekK(String symbol) {
+		try {
+			List<Object> newlists = new ArrayList<Object>();
+			if(symbol != null && !symbol.equals("")) {
+				String key = symbol+":week";
+				//List<String> valuelist = RedisUtil11.lrange(0, key, 0, -1);	
+				List<String> valuelist = RedisUtil4.lrange(0, key, 0, -1);	
+
+				if(valuelist.size() > 0) {
+					for (String string : valuelist) {
+						JSONObject object = JSONObject.fromObject(string);
+						String zh = object.getString("tradingTime").substring(0, 10)+","+object.getString("op")+","+object.getString("cp")+","+object.getString("hip")+","
+								+object.getString("lop")+","+new DecimalFormat("0").format(object.getDouble("cq")/100);
+						newlists.add(zh.split(","));
+					}
+				}
+			}
+			return JsonUtil.buildJsonByTotalCount(newlists, 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return JsonUtil.buildFalseJson(1, "连接超时", "");
+		}
+	}
+	/**
+	 * 月k
+	 * @param symbol
+	 * @return
+	 */
+	@ApiImplicitParam(name="symbol",value="股票代码",required=true,dataType="String")
+	@RequestMapping(value="/monthK",method=RequestMethod.GET)
+	public String monthK(String symbol) {
+		try {
+			List<Object> newlists = new ArrayList<Object>();
+			if(symbol != null && !symbol.equals("")) {
+				String key = symbol+":month";
+				//List<String> valuelist = RedisUtil11.lrange(2, key, 0, -1);
+				List<String> valuelist = RedisUtil4.lrange(2, key, 0, -1);	
+				if(valuelist.size() > 0) {
+					for (String string : valuelist) {
+						JSONObject object = JSONObject.fromObject(string);
+						String zh = object.getString("tradingTime").substring(0, 10)+","+object.getString("op")+","+object.getString("cp")+","+object.getString("hip")+","
+								+object.getString("lop")+","+new DecimalFormat("0").format(object.getDouble("cq")/100);
+						newlists.add(zh.split(","));
+					}
+				}
+			}
+			return JsonUtil.buildJsonByTotalCount(newlists, 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return JsonUtil.buildFalseJson(1, "连接超时", "");
+		}
+	}
+	
+	public static void main(String[] args) {
+		//System.out.println(System.currentTimeMillis());
+		//System.out.println(RedisUtil11.lrange(1,"0000022:day", 0, -1));
+		//System.out.println(System.currentTimeMillis());
+		System.out.println("start time:"+System.currentTimeMillis());
+		Jedis jedis = new Jedis("159.138.10.104", 6379) ;
+		jedis.auth("sjy168999");
+		System.out.println("auth time:"+System.currentTimeMillis());
+		System.out.println("lrange start time :" + System.currentTimeMillis());
+		List<String> a = jedis.lrange("000001:SZSE", 0, -1);
+		System.out.println("lrange end time:"+System.currentTimeMillis());
+		//System.out.println(a);
+
+	}
+}

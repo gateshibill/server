@@ -1,0 +1,9 @@
+package com.sjy.service;
+
+import java.util.List;
+
+import com.sjy.entity.TwoDayData;
+
+public interface TwoDayDataService {
+	public List<TwoDayData> getDayDataList(String symbol,String market);
+}

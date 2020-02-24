@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.LogsDao">
+	<resultMap type="com.sjy.entity.Logs" id="BaseResultMap">
+		<id column="logID" property="logID"/>
+		<result column="userCode" property="userCode"/>
+		<result column="userName" property="userName"/>
+		<result column="type" property="type"/>
+		<result column="operation" property="operation"/>
+		<result column="createDate" property="createDate"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+	<select id="selectLogsCount" resultType="INT">
+		select count(1) from logs where 1=1
+		<if test="logId != null and logId !=''">
+			and logID =#{logId}
+		</if>
+	</select>
+	<select id="selectLogsList" resultMap="BaseResultMap" >
+	  select logID,userCode,userName,type,operation,createDate,remark from logs where 1=1
+		<if test="logs.userCode != null and logs.userCode !=''">
+			and userCode like concat('%',#{logs.userCode},'%')
+		</if>
+		<if test="logs.userName != null and logs.userName !=''">
+			and userName like concat('%',#{logs.userName},'%')
+		</if>
+		<if test="logs.type != null and logs.type !=''">
+			and type like concat('%',#{logs.type},'%')
+		</if>
+		<if test="logs.operation != null and logs.operation !=''">
+			and operation like concat('%',#{logs.operation},'%')
+		</if>
+		<if test="logs.createDate != null and logs.createDate !=''">
+			and createDate like concat('%',#{logs.createDate},'%')
+		</if>
+		<if test="logs.remark != null and logs.remark !=''">
+			and remark like concat('%',#{logs.remark},'%')
+		</if>
+		<if test="page != null and limit != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+	<delete id="delLogs" parameterType="com.sjy.entity.Logs">
+		delete from logs where logID in 
+		<foreach collection="array" item="logsId" open="(" separator="," close=")">
+				#{logsId}
+		</foreach>
+	</delete>
+</mapper>

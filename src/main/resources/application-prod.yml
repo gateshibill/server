@@ -1,0 +1,43 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    min-spare-threads: 30
+  port: 5168
+spring:
+  profiles:
+    #环境属性，可选dev(开发环境)/test(测试环境)/prod(生产环境)
+   active: prod
+   include: db,log
+  datasource:
+    # 数据库地址
+    url: jdbc:mysql://10.1.1.7:3306/yinglibao?useSSL=false
+    # 账号
+    username: yinglibao
+    # 密码
+    password: kmBlfe51jjTKGdco
+           
+  thymeleaf:
+    prefix: classpath:/templates/views/
+    cache: false
+    suffix: .html
+  #mvc:
+    #static-path-pattern: classpath:/static/**
+    #cache: false
+  resources:
+    static-locations: classpath:/static/
+   
+    
+#开发的时候打开    
+logging:
+  level:
+    root: info
+
+#register:
+#  ip1: 119.147.211.219
+#  ip2: 119.147.211.220
+#  port1: 8866
+#  port2: 8888
+#  username: szzths
+#  password: vfq2gxMa
+#  nettype: NetType=0

@@ -1,0 +1,94 @@
+package com.sjy.controller;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sjy.entity.ShufflingFigure;
+import com.sjy.service.ShufflingFigureService;
+import com.sjy.util.BaseUtil;
+
+@Controller
+@RequestMapping("/shuffling")
+public class ShufflingFigureController extends BaseUtil {
+	@Autowired
+	private ShufflingFigureService shufflingFigureService;
+	/**
+	 * 轮播图列表
+	 * @return
+	 */
+	@RequestMapping(value="/index",method=RequestMethod.GET)
+	public String index() {
+		return "shuffling/index";
+	}
+	/**
+	 * 添加轮播图
+	 * @return
+	 */
+	@RequestMapping(value="/addfigure",method=RequestMethod.GET)
+	public String addFigure() {
+		return "shuffling/addfigure";
+	}
+	/**
+	 * 编辑轮播图
+	 * @return
+	 */
+	@RequestMapping(value="/updatefigure",method=RequestMethod.GET)
+	public String updateFigure() {
+		return "shuffling/updatefigure";
+	}
+	/**
+	 * 获取轮播图列表
+	 * @param response
+	 * @param shufflingFigure
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/getfigurefist",method=RequestMethod.POST)
+	public String getFigureList(HttpServletResponse response,ShufflingFigure shufflingFigure,Integer page,Integer limit) {
+		String result=shufflingFigureService.selectFigureList(shufflingFigure, page, limit);
+		return result;
+	}
+	/**
+	 * 新增轮播图
+	 * @param response
+	 * @param shufflingFigure
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/addfigure",method=RequestMethod.POST)
+	public String addFigure(HttpServletResponse response,ShufflingFigure shufflingFigure) {
+		String result=shufflingFigureService.addFigure(shufflingFigure);
+		return result;
+	}
+	/**
+	 * 编辑轮播图
+	 * @param response
+	 * @param shufflingFigure
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/updatefigure",method=RequestMethod.POST)
+	public String updateFigure(HttpServletResponse response,ShufflingFigure shufflingFigure) {
+		String result=shufflingFigureService.updateFigure(shufflingFigure);
+		return result;
+	}
+	/**
+	 * 删除轮播图
+	 * @param response
+	 * @param figureId
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/delfigure",method=RequestMethod.POST)
+	public String delFigure(HttpServletResponse response,Integer figureId) {
+		String result=shufflingFigureService.delFigure(figureId);
+		return result;
+	}
+}

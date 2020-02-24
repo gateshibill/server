@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.BulletinDao">
+    <resultMap type="com.ylb.entity.Bulletin" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="group_jid" property="groupJid"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <insert id="addBulletin" parameterType="com.ylb.entity.Bulletin" useGeneratedKeys="true" keyProperty="id">
+		insert into exBulletin(`group_jid`,`content`,`create_time`,`status`)
+		values (#{groupJid},#{content},#{createTime},#{status})
+	</insert>
+
+    <select id="getBulletinListByGroupId" resultMap="BaseResultMap">
+        select * from exBulletin where group_jid=#{groupJid} order by create_time desc
+            limit #{page},#{limit}
+    </select>
+</mapper>

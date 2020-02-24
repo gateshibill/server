@@ -1,0 +1,63 @@
+package com.sjy.entity;
+
+import java.util.Date;
+
+public class StockCode {
+	private Integer stockCodeId;
+	private String thscode;
+	private String securityName;
+	private Date date;
+	private Integer isHot;
+	private Integer isIndex;
+	private Double bonedWarehouse;
+	public Integer getStockCodeId() {
+		return stockCodeId;
+	}
+	public String getThscode() {
+		return thscode;
+	}
+	public String getSecurityName() {
+		return securityName;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public Integer getIsHot() {
+		return isHot;
+	}
+	public Integer getIsIndex() {
+		return isIndex;
+	}
+	public Double getBonedWarehouse() {
+		return bonedWarehouse;
+	}
+	public void setStockCodeId(Integer stockCodeId) {
+		this.stockCodeId = stockCodeId;
+	}
+	public void setThscode(String thscode) {
+		this.thscode = thscode;
+	}
+	public void setSecurityName(String securityName) {
+		this.securityName = securityName;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	public void setIsHot(Integer isHot) {
+		this.isHot = isHot;
+	}
+	public void setIsIndex(Integer isIndex) {
+		this.isIndex = isIndex;
+	}
+	public void setBonedWarehouse(Double bonedWarehouse) {
+		this.bonedWarehouse = bonedWarehouse;
+	}
+	@Override
+	public String toString() {
+		return "StockCode [stockCodeId=" + stockCodeId + ", thscode=" + thscode + ", securityName=" + securityName
+				+ ", date=" + date + ", isHot=" + isHot + ", isIndex=" + isIndex + ", bonedWarehouse=" + bonedWarehouse
+				+ ", getStockCodeId()=" + getStockCodeId() + ", getThscode()=" + getThscode() + ", getSecurityName()="
+				+ getSecurityName() + ", getDate()=" + getDate() + ", getIsHot()=" + getIsHot() + ", getIsIndex()="
+				+ getIsIndex() + ", getBonedWarehouse()=" + getBonedWarehouse() + "]";
+	}
+}

@@ -1,0 +1,380 @@
+package com.sjy.entity;
+
+public class TwoDayData {
+	public Integer id; /// < id
+	public String symbol; /// < 证券代码
+	public String shortName; /// < 证券简称
+	public String market; /// < 交易所
+	public String tradingDate; /// < 交易日期
+	public String tradingTime; /// < 交易时间
+	public double obpd; /// < 开盘基准价
+	public double op; /// < 分时内开盘价
+	public double cp; /// < 分时内收盘价
+	public double hip; /// < 分时内最高价
+	public double lop; /// < 分时内最低价
+	public double cq; /// < 分时内成交量
+	public double cm; /// < 分时内成交金额
+	public double tq; /// < 成交总量
+	public double vwap; /// < 成交量加权平均价
+	public double changeMoney; /// < 涨跌
+	public double changeRatio; /// < 涨跌幅
+	public double clvLop; /// < 开盘至今最低价
+	public double clvHip; /// < 开盘至今最高价
+	public double sellPrice01;
+	public double sellPrice02;
+	public double sellPrice03;
+	public double sellPrice04;
+	public double sellPrice05;
+	public double sellVolume01;
+	public double sellVolume02;
+	public double sellVolume03;
+	public double sellVolume04;
+	public double sellVolume05;
+	public double buyPrice01;
+	public double buyPrice02;
+	public double buyPrice03;
+	public double buyPrice04;
+	public double buyPrice05;
+	public double buyVolume01;
+	public double buyVolume02;
+	public double buyVolume03;
+	public double buyVolume04;
+	public double buyVolume05;
+	public Long createTime; /// < UTC时间戳
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
+	public String getMarket() {
+		return market;
+	}
+
+	public void setMarket(String market) {
+		this.market = market;
+	}
+
+	public String getTradingDate() {
+		return tradingDate;
+	}
+
+	public void setTradingDate(String tradingDate) {
+		this.tradingDate = tradingDate;
+	}
+
+	public String getTradingTime() {
+		return tradingTime;
+	}
+
+	public void setTradingTime(String tradingTime) {
+		this.tradingTime = tradingTime;
+	}
+
+	public double getObpd() {
+		return obpd;
+	}
+
+	public void setObpd(double obpd) {
+		this.obpd = obpd;
+	}
+
+	public double getOp() {
+		return op;
+	}
+
+	public void setOp(double op) {
+		this.op = op;
+	}
+
+	public double getCp() {
+		return cp;
+	}
+
+	public void setCp(double cp) {
+		this.cp = cp;
+	}
+
+	public double getHip() {
+		return hip;
+	}
+
+	public void setHip(double hip) {
+		this.hip = hip;
+	}
+
+	public double getLop() {
+		return lop;
+	}
+
+	public void setLop(double lop) {
+		this.lop = lop;
+	}
+
+	public double getCq() {
+		return cq;
+	}
+
+	public void setCq(double cq) {
+		this.cq = cq;
+	}
+
+	public double getCm() {
+		return cm;
+	}
+
+	public void setCm(double cm) {
+		this.cm = cm;
+	}
+
+	public double getTq() {
+		return tq;
+	}
+
+	public void setTq(double tq) {
+		this.tq = tq;
+	}
+
+	public double getVwap() {
+		return vwap;
+	}
+
+	public void setVwap(double vwap) {
+		this.vwap = vwap;
+	}
+
+	public double getChangeMoney() {
+		return changeMoney;
+	}
+
+	public void setChangeMoney(double changeMoney) {
+		this.changeMoney = changeMoney;
+	}
+
+	public double getChangeRatio() {
+		return changeRatio;
+	}
+
+	public void setChangeRatio(double changeRatio) {
+		this.changeRatio = changeRatio;
+	}
+
+	public double getClvLop() {
+		return clvLop;
+	}
+
+	public void setClvLop(double clvLop) {
+		this.clvLop = clvLop;
+	}
+
+	public double getClvHip() {
+		return clvHip;
+	}
+
+	public void setClvHip(double clvHip) {
+		this.clvHip = clvHip;
+	}
+
+	public double getSellPrice01() {
+		return sellPrice01;
+	}
+
+	public void setSellPrice01(double sellPrice01) {
+		this.sellPrice01 = sellPrice01;
+	}
+
+	public double getSellPrice02() {
+		return sellPrice02;
+	}
+
+	public void setSellPrice02(double sellPrice02) {
+		this.sellPrice02 = sellPrice02;
+	}
+
+	public double getSellPrice03() {
+		return sellPrice03;
+	}
+
+	public void setSellPrice03(double sellPrice03) {
+		this.sellPrice03 = sellPrice03;
+	}
+
+	public double getSellPrice04() {
+		return sellPrice04;
+	}
+
+	public void setSellPrice04(double sellPrice04) {
+		this.sellPrice04 = sellPrice04;
+	}
+
+	public double getSellPrice05() {
+		return sellPrice05;
+	}
+
+	public void setSellPrice05(double sellPrice05) {
+		this.sellPrice05 = sellPrice05;
+	}
+
+	public double getSellVolume01() {
+		return sellVolume01;
+	}
+
+	public void setSellVolume01(double sellVolume01) {
+		this.sellVolume01 = sellVolume01;
+	}
+
+	public double getSellVolume02() {
+		return sellVolume02;
+	}
+
+	public void setSellVolume02(double sellVolume02) {
+		this.sellVolume02 = sellVolume02;
+	}
+
+	public double getSellVolume03() {
+		return sellVolume03;
+	}
+
+	public void setSellVolume03(double sellVolume03) {
+		this.sellVolume03 = sellVolume03;
+	}
+
+	public double getSellVolume04() {
+		return sellVolume04;
+	}
+
+	public void setSellVolume04(double sellVolume04) {
+		this.sellVolume04 = sellVolume04;
+	}
+
+	public double getSellVolume05() {
+		return sellVolume05;
+	}
+
+	public void setSellVolume05(double sellVolume05) {
+		this.sellVolume05 = sellVolume05;
+	}
+
+	public double getBuyPrice01() {
+		return buyPrice01;
+	}
+
+	public void setBuyPrice01(double buyPrice01) {
+		this.buyPrice01 = buyPrice01;
+	}
+
+	public double getBuyPrice02() {
+		return buyPrice02;
+	}
+
+	public void setBuyPrice02(double buyPrice02) {
+		this.buyPrice02 = buyPrice02;
+	}
+
+	public double getBuyPrice03() {
+		return buyPrice03;
+	}
+
+	public void setBuyPrice03(double buyPrice03) {
+		this.buyPrice03 = buyPrice03;
+	}
+
+	public double getBuyPrice04() {
+		return buyPrice04;
+	}
+
+	public void setBuyPrice04(double buyPrice04) {
+		this.buyPrice04 = buyPrice04;
+	}
+
+	public double getBuyPrice05() {
+		return buyPrice05;
+	}
+
+	public void setBuyPrice05(double buyPrice05) {
+		this.buyPrice05 = buyPrice05;
+	}
+
+	public double getBuyVolume01() {
+		return buyVolume01;
+	}
+
+	public void setBuyVolume01(double buyVolume01) {
+		this.buyVolume01 = buyVolume01;
+	}
+
+	public double getBuyVolume02() {
+		return buyVolume02;
+	}
+
+	public void setBuyVolume02(double buyVolume02) {
+		this.buyVolume02 = buyVolume02;
+	}
+
+	public double getBuyVolume03() {
+		return buyVolume03;
+	}
+
+	public void setBuyVolume03(double buyVolume03) {
+		this.buyVolume03 = buyVolume03;
+	}
+
+	public double getBuyVolume04() {
+		return buyVolume04;
+	}
+
+	public void setBuyVolume04(double buyVolume04) {
+		this.buyVolume04 = buyVolume04;
+	}
+
+	public double getBuyVolume05() {
+		return buyVolume05;
+	}
+
+	public void setBuyVolume05(double buyVolume05) {
+		this.buyVolume05 = buyVolume05;
+	}
+
+	public Long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Long createTime) {
+		this.createTime = createTime;
+	}
+
+	@Override
+	public String toString() {
+		return "StockDetails{" + "id=" + id + ", symbol='" + symbol + '\'' + ", shortName='" + shortName + '\''
+				+ ", market='" + market + '\'' + ", tradingDate='" + tradingDate + '\'' + ", tradingTime='"
+				+ tradingTime + '\'' + ", obpd=" + obpd + ", op=" + op + ", cp=" + cp + ", hip=" + hip + ", lop=" + lop
+				+ ", cq=" + cq + ", cm=" + cm + ", tq=" + tq + ", vwap=" + vwap + ", changeMoney=" + changeMoney
+				+ ", changeRatio=" + changeRatio + ", clvLop=" + clvLop + ", clvHip=" + clvHip + ", sellPrice01="
+				+ sellPrice01 + ", sellPrice02=" + sellPrice02 + ", sellPrice03=" + sellPrice03 + ", sellPrice04="
+				+ sellPrice04 + ", sellPrice05=" + sellPrice05 + ", sellVolume01=" + sellVolume01 + ", sellVolume02="
+				+ sellVolume02 + ", sellVolume03=" + sellVolume03 + ", sellVolume04=" + sellVolume04 + ", sellVolume05="
+				+ sellVolume05 + ", buyPrice01=" + buyPrice01 + ", buyPrice02=" + buyPrice02 + ", buyPrice03="
+				+ buyPrice03 + ", buyPrice04=" + buyPrice04 + ", buyPrice05=" + buyPrice05 + ", buyVolume01="
+				+ buyVolume01 + ", buyVolume02=" + buyVolume02 + ", buyVolume03=" + buyVolume03 + ", buyVolume04="
+				+ buyVolume04 + ", buyVolume05=" + buyVolume05 + ", createTime=" + createTime + '}';
+	}
+}

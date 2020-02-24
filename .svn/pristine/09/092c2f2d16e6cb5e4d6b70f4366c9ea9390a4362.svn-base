@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sjy.dao.UserOrderDao">
+    <resultMap type="com.sjy.entity.UserOrder" id="BaseResultMap">
+        <id column="order_id" property="orderId"/>
+        <result column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="order_price" property="orderPrice"/>
+        <result column="stock_code" property="stockCode"/>
+        <result column="stock_name" property="stockName"/>
+        <result column="order_type" property="orderType"/>
+        <result column="create_time" property="createTime"/>
+        <result column="order_buyer" property="orderBuyer"/>
+        <result column="order_number" property="orderNumber"/>
+        <result column="order_market_value" property="orderMarketValue"/>
+        <result column="order_yield" property="orderYield"/>
+        <result column="order_profit" property="orderProfit"/>
+        <result column="order_cash_deposit" property="orderCashDeposit"/>
+        <result column="order_stop_loss" property="orderStopLoss"/>
+        <result column="order_stop_profit" property="orderStopProfit"/>
+        <result column="order_demurrage" property="orderDemurrage"/>
+        <result column="order_participation" property="orderParticipation"/>
+        <result column="order_participation_type" property="orderParticipationType"/>
+        <result column="order_exit_price" property="orderExitPrice"/>
+        <result column="order_open_position" property="orderOpenPosition"/>
+        <result column="order_self_motion" property="orderSelfMotion"/>
+        <result column="trade_time" property="tradeTime"/>
+        <result column="order_supplement" property="orderSupplement"/>
+        <result column="entrust_time" property="entrustTime"/>
+        <result column="market" property="market"/>
+        <result column="user_name" property="userName"/>
+    </resultMap>
+    <sql id="userOrderField">
+		order_id,id,user_id,order_price,stock_code,stock_name,order_type,create_time,order_buyer,order_number,
+		order_market_value,order_yield,order_profit,order_cash_deposit,order_stop_loss,order_stop_profit,order_demurrage,
+		order_participation,order_participation_type,order_exit_price,order_open_position,order_self_motion,trade_time
+		,order_supplement,entrust_time,market
+	</sql>
+    <select id="selectUserOrderCount" resultType="INT">
+        select count(1) from user_order where 1=1
+        <if test="userOrder != null">
+            <if test="userOrder.userId != null">
+                and user_id = #{userOrder.userId}
+            </if>
+            <if test="userOrder.stockName != null and userOrder.stockName != ''">
+                and stock_name like concat ('%',#{userOrder.stockName},'%')
+            </if>
+            <if test="userOrder.stockCode != null and userOrder.stockCode != ''">
+                and stock_code like concat ('%',#{userOrder.stockCode},'%')
+            </if>
+            <if test="userOrder.orderNumber != null">
+                and order_number = #{userOrder.orderNumber}
+            </if>
+            <if test="userOrder.orderPrice != null">
+                and order_price = #{userOrder.orderPrice}
+            </if>
+            <if test="userOrder.orderType != null ">
+                and order_type = #{userOrder.orderType}
+            </if>
+            <if test="userOrder.orderParticipationType != null">
+                and order_participation_type = #{userOrder.orderParticipationType}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and trade_time >= #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and trade_time &lt;= #{endTime}
+            </if>
+        </if>
+    </select>
+    <select id="getUserOrderCount" resultType="INT">
+        select count(1) from user_order as uo 
+        LEFT JOIN `user` as u on uo.user_id = u.user_id 
+        left JOIN admin a on a.admin_id = u.inviter_id
+        WHERE 1=1 and admin_id = #{adminId} or parent_id = #{parentId}
+        <if test="userOrder != null">
+            <if test="userOrder.userId != null">
+                and user_id = #{userOrder.userId}
+            </if>
+            <if test="userOrder.stockName != null and userOrder.stockName != ''">
+                and stock_name like concat ('%',#{userOrder.stockName},'%')
+            </if>
+            <if test="userOrder.stockCode != null and userOrder.stockCode != ''">
+                and stock_code like concat ('%',#{userOrder.stockCode},'%')
+            </if>
+            <if test="userOrder.orderNumber != null">
+                and order_number = #{userOrder.orderNumber}
+            </if>
+            <if test="userOrder.orderPrice != null">
+                and order_price = #{userOrder.orderPrice}
+            </if>
+            <if test="userOrder.orderType != null ">
+                and order_type = #{userOrder.orderType}
+            </if>
+            <if test="userOrder.orderParticipationType != null">
+                and order_participation_type = #{userOrder.orderParticipationType}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and trade_time >= #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and trade_time &lt;= #{endTime}
+            </if>
+        </if>
+    </select>
+    <select id="selectUserOrderList" resultMap="BaseResultMap">
+        SELECT u.user_name,
+        uo.order_id,uo.user_id,uo.order_price,uo.stock_code,uo.stock_name,uo.order_type,uo.create_time,uo.order_buyer,uo.order_number,
+        uo.order_market_value,uo.order_yield,uo.order_profit,uo.order_cash_deposit,uo.order_stop_loss,uo.order_stop_profit,uo.order_demurrage,
+        uo.order_participation,uo.order_participation_type,uo.order_exit_price,uo.order_open_position,uo.order_self_motion,uo.trade_time
+        ,uo.order_supplement,uo.entrust_time
+        from user_order as uo
+        LEFT JOIN `user` as u ON u.user_id = uo.user_id WHERE 1=1
+        <if test="userOrder != null">
+            <if test="userOrder.userName != null and userOrder.userName != ''">
+                and u.user_name like concat ('%',#{userOrder.userName},'%')
+            </if>
+            <if test="userOrder.stockName != null and userOrder.stockName != ''">
+                and uo.stock_name like concat ('%',#{userOrder.stockName},'%')
+            </if>
+            <if test="userOrder.stockCode != null and userOrder.stockCode != ''">
+                and uo.stock_code like concat ('%',#{userOrder.stockCode},'%')
+            </if>
+            <if test="userOrder.orderNumber != null">
+                and uo.order_number = #{userOrder.orderNumber}
+            </if>
+            <if test="userOrder.orderPrice != null">
+                and uo.order_price = #{userOrder.orderPrice}
+            </if>
+            <if test="userOrder.orderType != null ">
+                and uo.order_type = #{userOrder.orderType}
+            </if>
+            <if test="userOrder.orderParticipationType != null">
+                and uo.order_participation_type = #{userOrder.orderParticipationType}
+            </if>
+         </if>
+            <if test="startTime != null and startTime != ''">
+                and trade_time >= #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and trade_time &lt;= #{endTime}
+            </if>
+            order by uo.create_time
+            <if test="page != null and limit != null">
+                limit #{page},#{limit}
+            </if>
+    </select>
+     <select id="getUserOrderList" resultMap="BaseResultMap">
+        SELECT u.user_name,
+        uo.order_id,uo.user_id,uo.order_price,uo.stock_code,uo.stock_name,uo.order_type,uo.create_time,uo.order_buyer,uo.order_number,
+        uo.order_market_value,uo.order_yield,uo.order_profit,uo.order_cash_deposit,uo.order_stop_loss,uo.order_stop_profit,uo.order_demurrage,
+        uo.order_participation,uo.order_participation_type,uo.order_exit_price,uo.order_open_position,uo.order_self_motion,uo.trade_time
+        ,uo.order_supplement,uo.entrust_time
+        from user_order as uo
+        LEFT JOIN `user` as u ON u.user_id = uo.user_id
+        left JOIN admin a on a.admin_id = u.inviter_id
+		where admin_id = #{adminId} or parent_id = #{parentId}
+        <if test="userOrder != null">
+            <if test="userOrder.userName != null and userOrder.userName != ''">
+                and u.user_name like concat ('%',#{userOrder.userName},'%')
+            </if>
+            <if test="userOrder.stockName != null and userOrder.stockName != ''">
+                and uo.stock_name like concat ('%',#{userOrder.stockName},'%')
+            </if>
+            <if test="userOrder.stockCode != null and userOrder.stockCode != ''">
+                and uo.stock_code like concat ('%',#{userOrder.stockCode},'%')
+            </if>
+            <if test="userOrder.orderNumber != null">
+                and uo.order_number = #{userOrder.orderNumber}
+            </if>
+            <if test="userOrder.orderPrice != null">
+                and uo.order_price = #{userOrder.orderPrice}
+            </if>
+            <if test="userOrder.orderType != null ">
+                and uo.order_type = #{userOrder.orderType}
+            </if>
+            <if test="userOrder.orderParticipationType != null">
+                and uo.order_participation_type = #{userOrder.orderParticipationType}
+            </if>
+         </if>
+            <if test="startTime != null and startTime != ''">
+                and trade_time >= #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and trade_time &lt;= #{endTime}
+            </if>
+            order by uo.create_time
+            <if test="page != null and limit != null">
+                limit #{page},#{limit}
+            </if>
+    </select>
+    
+    <insert id="insertUserOrder" parameterType="com.sjy.entity.UserOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into user_order(id,user_id,order_price,stock_code,stock_name,order_type,create_time,order_buyer,
+                    order_number,order_market_value,order_yield,order_profit,order_cash_deposit,order_stop_loss,
+                    order_stop_profit,order_demurrage,order_participation,order_participation_type,order_exit_price,
+                    order_open_position,order_self_motion,trade_time,order_supplement,entrust_time,market) VALUES (#{id},
+                    #{userId},#{orderPrice},#{stockCode},#{stockName},#{orderType},#{createTime},#{orderBuyer},
+                    #{orderNumber},#{orderMarketValue},#{orderYield},#{orderProfit},#{orderCashDeposit},#{orderStopLoss},#{orderStopProfit},
+                    #{orderDemurrage},#{orderParticipation},#{orderParticipationType},#{orderExitPrice},#{orderOpenPosition},#{orderSelfMotion},
+                    #{tradeTime}, #{orderSupplement},#{entrustTime},#{market})
+    </insert>
+    <select id="selectOrderNumber" resultType="INT">
+        select order_number from user_order where order_id = #{orderId}
+    </select>
+
+    <!-- 委托 -->
+    <select id="dayWTCount" resultType="INT">
+        select count(1) from user_order where order_participation_type in (2,3)
+        and user_id = #{order.userId}
+        <if test="type == 1">
+            and to_days(entrust_time) = to_days(now())
+        </if>
+    </select>
+    <select id="dayWTList" resultMap="BaseResultMap">
+        select <include refid="userOrderField"></include> from user_order where order_participation_type in (2,3)
+        and user_id = #{order.userId}
+        <if test="type == 1">
+            and to_days(entrust_time) = to_days(now())
+        </if>
+        order by entrust_time desc
+        <if test="page != null and limit != null">
+        	limit #{page},#{limit}
+        </if>
+    </select>
+    <!-- 成交 -->
+    <select id="daySuccessTradeCount" resultType="INT">
+        select count(1) from user_order where order_participation_type in (1,4)
+        and user_id = #{order.userId}
+        <if test="type == 1">
+            and to_days(trade_time) = to_days(now())
+        </if>
+    </select>
+    <select id="daySuccessTradeList" resultMap="BaseResultMap">
+        select <include refid="userOrderField"></include> from user_order where order_participation_type in (1,4)
+        and user_id = #{order.userId}
+        <if test="type == 1">
+            and to_days(trade_time) = to_days(now())
+        </if>
+        order by trade_time desc
+        <if test="page != null and limit != null">
+        	limit #{page},#{limit}
+        </if>
+    </select>
+
+    <select id="getOrderById" resultMap="BaseResultMap">
+        select <include refid="userOrderField"></include> from user_order
+        where order_id = #{orderId}
+    </select>
+
+    <delete id="delUserOrder" parameterType="com.sjy.entity.UserOrder">
+    	delete from user_order from order_id = #{orderId}
+    </delete>
+    <update id="updateUserOrder" parameterType="com.sjy.entity.UserOrder">
+        update user_order set order_id = #{orderId}
+        <if test="orderMarketValue != null">
+            ,order_market_value = #{orderMarketValue}
+        </if>
+        <if test="orderYield != null">
+            ,order_yield = #{orderYield}
+        </if>
+        <if test="orderProfit != null">
+            ,order_profit = #{orderProfit}
+        </if>
+        <if test="orderCashDeposit != null">
+            ,order_cash_deposit = #{orderCashDeposit}
+        </if>
+        <if test="orderStopLoss != null">
+            ,order_stop_loss = #{orderStopLoss}
+        </if>
+        <if test="orderStopProfit != null">
+            ,order_stop_profit = #{orderStopProfit}
+        </if>
+        <if test="orderSupplement != null">
+            ,order_supplement = #{orderSupplement}
+        </if>
+        <if test="orderDemurrage != null">
+            ,order_demurrage = #{orderDemurrage}
+        </if>
+        <if test="orderParticipation != null">
+            ,order_participation = #{orderParticipation}
+        </if>
+        <if test="orderParticipationType != null">
+            ,order_participation_type = #{orderParticipationType}
+        </if>
+        <if test="orderExitPrice != null">
+            ,order_exit_price = order_price
+        </if>
+        <if test="orderOpenPosition != null">
+            ,order_open_position = #{orderOpenPosition}
+        </if>
+        <if test="tradeTime != null">
+            ,trade_time = #{tradeTime}
+        </if>
+        <if test="entrustTime != null">
+            ,entrust_time = #{entrustTime}
+        </if>
+        where order_id = #{orderId}
+    </update>
+    <select id="getSellStockSearch" resultMap="BaseResultMap">
+        select stock_name,stock_code from user_order where 1=1
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
+        <if test="keyWord != null and keyWord != ''">
+            and stock_code like concat('%',#{keyWord},'%')
+        </if>
+    </select>
+    <select id="getSellStockSearchCount" resultType="INT">
+        select count(1) from user_order where 1=1
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
+        <if test="keyWord != null and keyWord != ''">
+            and stock_code like concat('%',#{keyWord},'%')
+        </if>
+    </select>
+
+    <select id="getUserShareHolding"  resultType="com.sjy.entity.UserOrder">
+        SELECT
+            *
+        FROM
+            user_order
+        WHERE
+            1 = 1
+            AND user_id = #{userId}
+            AND stock_code = #{stockCode}
+        ORDER BY
+            create_time DESC
+            LIMIT 1
+
+    </select>
+    <select id="updateOrderBystockCode" parameterType="com.sjy.entity.UserOrder">
+    	update user_order 
+        <set>
+	        <if test="orderMarketValue != null">
+	            order_market_value = #{orderMarketValue},
+	        </if>
+	        <if test="orderYield != null">
+	            order_yield = #{orderYield},
+	        </if>
+	        <if test="orderProfit != null">
+	            order_profit = #{orderProfit},
+	        </if>
+	        <if test="orderCashDeposit != null">
+	            order_cash_deposit = #{orderCashDeposit},
+	        </if>
+	        <if test="orderStopLoss != null">
+	            order_stop_loss = #{orderStopLoss},
+	        </if>
+	        <if test="orderStopProfit != null">
+	            order_stop_profit = #{orderStopProfit},
+	        </if>
+	        <if test="orderSupplement != null">
+	            order_supplement = #{orderSupplement},
+	        </if>
+	        <if test="orderDemurrage != null">
+	            order_demurrage = #{orderDemurrage},
+	        </if>
+	        <if test="orderParticipation != null">
+	            order_participation = #{orderParticipation},
+	        </if>
+	        <if test="orderParticipationType != null">
+	            order_participation_type = #{orderParticipationType},
+	        </if>
+	        <if test="orderExitPrice != null">
+	            order_exit_price = #{orderExitPrice},
+	        </if>
+	        <if test="orderOpenPosition != null">
+	            order_open_position = #{orderOpenPosition},
+	        </if>
+	        <if test="tradeTime != null">
+	            trade_time = #{tradeTime},
+	        </if>
+	        <if test="entrustTime != null">
+	            entrust_time = #{entrustTime},
+	        </if>
+        </set>
+        where stock_code = #{stockCode} and user_id = #{userId}
+    </select>
+    
+    <select id="selectNewUserOrderList" resultMap="BaseResultMap">
+        SELECT u.user_name,
+        uo.order_id,uo.user_id,uo.order_price,uo.stock_code,uo.stock_name,uo.order_type,uo.create_time,uo.order_buyer,uo.order_number,
+        uo.order_market_value,uo.order_yield,uo.order_profit,uo.order_cash_deposit,uo.order_stop_loss,uo.order_stop_profit,uo.order_demurrage,
+        uo.order_participation,uo.order_participation_type,uo.order_exit_price,uo.order_open_position,uo.order_self_motion,uo.trade_time
+        ,uo.order_supplement,uo.entrust_time
+        from user_order as uo
+        LEFT JOIN `user` as u ON u.user_id = uo.user_id WHERE 1=1
+        <if test="userOrder != null">
+            <if test="userOrder.userName != null and userOrder.userName != ''">
+                and u.user_name like concat ('%',#{userOrder.userName},'%')
+            </if>
+            <if test="userOrder.stockName != null and userOrder.stockName != ''">
+                and uo.stock_name like concat ('%',#{userOrder.stockName},'%')
+            </if>
+            <if test="userOrder.stockCode != null and userOrder.stockCode != ''">
+                and uo.stock_code like concat ('%',#{userOrder.stockCode},'%')
+            </if>
+            <if test="userOrder.orderNumber != null">
+                and uo.order_number = #{userOrder.orderNumber}
+            </if>
+            <if test="userOrder.orderPrice != null">
+                and uo.order_price = #{userOrder.orderPrice}
+            </if>
+            <if test="userOrder.orderType != null ">
+                and uo.order_type = #{userOrder.orderType}
+            </if>
+            <if test="userOrder.orderParticipationType != null">
+                and uo.order_participation_type = #{userOrder.orderParticipationType}
+            </if>
+         </if>
+            <if test="startTime != null and startTime != ''">
+                and trade_time >= #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and trade_time &lt;= #{endTime}
+            </if>
+            and to_days(trade_time) = to_days(now())
+            order by uo.create_time
+            <if test="page != null and limit != null">
+                limit #{page},#{limit}
+            </if>
+    </select>
+</mapper>

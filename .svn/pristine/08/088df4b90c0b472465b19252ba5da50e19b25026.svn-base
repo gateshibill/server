@@ -1,0 +1,524 @@
+package com.sjy.service.impl;
+
+
+import com.sjy.dao.*;
+import com.sjy.entity.*;
+import com.sjy.service.StockOperateService;
+import com.sjy.util.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class StockOperateServiceImpl implements StockOperateService {
+
+    @Autowired
+    private StockOperateDao stockOperateDao;
+    @Autowired   //申请提现
+    private CapitalDetailsDao capitalDetailsDao;
+    @Autowired  //配置
+    private SystemConfigDao configDao;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private FundingDao fundingDao;
+
+    Calendar cal = Calendar.getInstance();
+
+    Date date = new Date();
+
+
+    @Override
+    public String selectStockOperateOne(StockOperateVO stockOperateVO,String sTime,String eTime, Integer page, Integer limit)throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+        String startTime = null;
+        String endTime = null;
+        if (sTime != null && !sTime.equals("")) {
+            startTime = startSdf.format(sdf.parse(sTime));
+        }
+        if (eTime != null && !eTime.equals("")) {
+            endTime = endSdf.format(sdf.parse(eTime));
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = stockOperateDao.selectStockOperateOneCount(stockOperateVO,startTime,endTime);
+        List<StockOperateVO> lists = stockOperateDao.selectStockOperateOne(stockOperateVO,startTime,endTime, (page - 1) * limit, limit);
+        for(StockOperateVO stockOperateVO1 : lists){
+            //比较当前时间和收息时间(收息时间 < 当前时间强制结束操盘)
+            if(stockOperateVO1.getMoneyRatesTime().getTime() < date.getTime()){
+                stockOperateVO1.setOperateStatus(2);
+            }
+            //获取操盘时长
+            stockOperateVO1.setRunningTime((stockOperateVO1.getEndTime().getTime()-stockOperateVO1.getStartTime().getTime())/(24*60*60*1000));
+            //获取操盘剩余时长
+            stockOperateVO1.setOverdueTime((stockOperateVO1.getEndTime().getTime()-date.getTime())/(24*60*60*1000));
+            //获取用户追加保证金
+            if(capitalDetailsDao.selectUserTXSUM(stockOperateVO1.getUserId()) == null || capitalDetailsDao.selectUserTXSUM(stockOperateVO1.getUserId()).equals("")){
+                stockOperateVO1.setZjBzjMoney(capitalDetailsDao.selectUserCZSUM(stockOperateVO1.getUserId()) - 0);
+            }else {
+                stockOperateVO1.setZjBzjMoney(capitalDetailsDao.selectUserCZSUM(stockOperateVO1.getUserId()) - capitalDetailsDao.selectUserTXSUM(stockOperateVO1.getUserId()));
+            }
+            //获取用户配资的充值金额
+            stockOperateVO1.setBzjMoney(stockOperateVO1.getPzje());
+            //获取用户配资比例
+            stockOperateVO1.setPzMultiple(stockOperateVO1.getQuota());
+            //获取日配收息时间
+            if(stockOperateVO1.getOperateType() == 1){
+                stockOperateVO1.setMoneyRatesTime(stockOperateVO1.getStartTime());
+                cal.setTime(stockOperateVO1.getStartTime());
+                cal.add(Calendar.DATE,1);
+                stockOperateVO1.setMoneyRatesTime(cal.getTime());
+                Double aDouble = selectDailyInterest1(stockOperateVO1);
+            }else if(stockOperateVO1.getOperateType() == 2){
+                //获取月配收息时间
+                stockOperateVO1.setMoneyRatesTime(stockOperateVO1.getEndTime());
+                Double aDouble = selectDailyInterest1(stockOperateVO1);
+            }
+            stockOperateDao.updateStockOperate(stockOperateVO1);
+        }
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+
+    @Override
+    public String getStockOperateOne(StockOperateVO stockOperateVO, String sTime, String eTime, Integer page, Integer limit, Integer adminId, Integer parentId) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+        String startTime = null;
+        String endTime = null;
+        if (sTime != null && !sTime.equals("")) {
+            startTime = startSdf.format(sdf.parse(sTime));
+        }
+        if (eTime != null && !eTime.equals("")) {
+            endTime = endSdf.format(sdf.parse(eTime));
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = stockOperateDao.getStockOperateOneCount(stockOperateVO,startTime,endTime,parentId,adminId);
+        List<StockOperateVO> lists = stockOperateDao.getStockOperateOne(stockOperateVO,startTime,endTime, (page - 1) * limit, limit,parentId,adminId);
+        for(StockOperateVO stockOperateVO1 : lists){
+            //比较当前时间和收息时间(收息时间 < 当前时间强制结束操盘)
+            if(stockOperateVO1.getMoneyRatesTime().getTime() < date.getTime()){
+                stockOperateVO1.setOperateStatus(2);
+            }
+            //获取操盘时长
+            stockOperateVO1.setRunningTime((stockOperateVO1.getEndTime().getTime()-stockOperateVO1.getStartTime().getTime())/(24*60*60*1000));
+            //获取操盘剩余时长
+            stockOperateVO1.setOverdueTime((stockOperateVO1.getEndTime().getTime()-date.getTime())/(24*60*60*1000));
+            //获取用户追加保证金
+            stockOperateVO1.setZjBzjMoney(capitalDetailsDao.selectUserCZSUM(stockOperateVO1.getUserId()) - capitalDetailsDao.selectUserTXSUM(stockOperateVO1.getUserId()));
+            //获取用户配资的充值金额
+            stockOperateVO1.setBzjMoney(stockOperateVO1.getPzje());
+            //获取用户配资比例
+            stockOperateVO1.setPzMultiple(stockOperateVO1.getQuota());
+            //获取日配收息时间
+            if(stockOperateVO1.getOperateType() == 1){
+                stockOperateVO1.setMoneyRatesTime(stockOperateVO1.getStartTime());
+                cal.setTime(stockOperateVO1.getStartTime());
+                cal.add(Calendar.DATE,1);
+                stockOperateVO1.setMoneyRatesTime(cal.getTime());
+            }else if(stockOperateVO1.getOperateType() == 2){
+                //获取月配收息时间
+                stockOperateVO1.setMoneyRatesTime(stockOperateVO1.getEndTime());
+            }
+
+        }
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+
+    @Override
+    public String selectStockOperateTwo(StockOperateVO stockOperateVO,String sTime,String eTime, Integer page, Integer limit)throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+        String startTime = null;
+        String endTime = null;
+        if (sTime != null && !sTime.equals("")) {
+            startTime = startSdf.format(sdf.parse(sTime));
+        }
+        if (eTime != null && !eTime.equals("")) {
+            endTime = endSdf.format(sdf.parse(eTime));
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = stockOperateDao.selectStockOperateTwoCount(stockOperateVO,startTime,endTime);
+        List<StockOperateVO> lists = stockOperateDao.selectStockOperateTwo(stockOperateVO,startTime,endTime, (page - 1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+
+    @Override
+    public String getStockOperateTwo(StockOperateVO stockOperateVO, String sTime, String eTime, Integer page, Integer limit, Integer adminId, Integer parentId) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+        String startTime = null;
+        String endTime = null;
+        if (sTime != null && !sTime.equals("")) {
+            startTime = startSdf.format(sdf.parse(sTime));
+        }
+        if (eTime != null && !eTime.equals("")) {
+            endTime = endSdf.format(sdf.parse(eTime));
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = stockOperateDao.getStockOperateTwoCount(stockOperateVO,startTime,endTime,adminId,parentId);
+        List<StockOperateVO> lists = stockOperateDao.getStockOperateTwo(stockOperateVO,startTime,endTime, (page - 1) * limit, limit,adminId,parentId);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+
+    @Override
+    public String selectStockOperateThree(StockOperateVO stockOperateVO,String sTime,String eTime, Integer page, Integer limit)throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+        String startTime = null;
+        String endTime = null;
+        if (sTime != null && !sTime.equals("")) {
+            startTime = startSdf.format(sdf.parse(sTime));
+        }
+        if (eTime != null && !eTime.equals("")) {
+            endTime = endSdf.format(sdf.parse(eTime));
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = stockOperateDao.selectStockOperateThreeCount(stockOperateVO,startTime,endTime);
+        List<StockOperateVO> lists = stockOperateDao.selectStockOperateThree(stockOperateVO,startTime,endTime, (page - 1) * limit, limit);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+
+    @Override
+    public String getStockOperateThree(StockOperateVO stockOperateVO, String sTime, String eTime, Integer page, Integer limit, Integer adminId, Integer parentId) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat startSdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        SimpleDateFormat endSdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+        String startTime = null;
+        String endTime = null;
+        if (sTime != null && !sTime.equals("")) {
+            startTime = startSdf.format(sdf.parse(sTime));
+        }
+        if (eTime != null && !eTime.equals("")) {
+            endTime = endSdf.format(sdf.parse(eTime));
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
+        int count = stockOperateDao.getStockOperateThreeCount(stockOperateVO,startTime,endTime,adminId,parentId);
+        List<StockOperateVO> lists = stockOperateDao.getStockOperateThree(stockOperateVO,startTime,endTime, (page - 1) * limit, limit,adminId,parentId);
+        return JsonUtil.buildJsonByTotalCount(lists, count);
+    }
+
+
+    @Override
+    public Integer updateStockOperate(StockOperate stockOperate) {
+        return stockOperateDao.updateStockOperate(stockOperate);
+    }
+
+    /****************************API 接口*******************************/
+    //列表
+	@Override
+	public String getStockOperateList(StockOperate operate, Integer page, Integer limit) {
+		if(operate.getUserId() == null) {
+			return JsonUtil.buildFalseJson(1, "请先登录", "");
+		}else {
+			if(page == null) {
+				page = 1;
+			}
+			if(limit == null) {
+				limit = 10;
+			}
+			SystemConfig config = configDao.getSystemConfig();
+			int totalCount = stockOperateDao.getStockOperateCount(operate);
+			List<StockOperate> lists = stockOperateDao.getStockOperateList(operate, (page-1)*limit, limit);
+			try {
+				for (StockOperate s : lists) {
+					s.setWindMoney(s.getBzjMoney()*s.getPzMultiple() + (s.getBzjMoney()+s.getZjBzjMoney())*config.getYjxWind());  //保证金*配资倍数 + (保证金 + 追加保证金) * 百分比
+					s.setPcMoney(s.getBzjMoney()*s.getPzMultiple() + (s.getBzjMoney()+s.getZjBzjMoney())*config.getPcxWind());
+				}
+			} catch (Exception e) {
+
+			}
+			return JsonUtil.buildJsonByTotalCount(lists, totalCount);
+		}
+
+	}
+	//详情
+	@Override
+	public String getStockOperateDetail(Integer id) {
+		List<StockOperate> lists = new ArrayList<StockOperate>();
+		StockOperate operate = stockOperateDao.getStockOperateDetail(id);
+		if(operate != null) {
+			SystemConfig config = configDao.getSystemConfig();
+			try {
+				operate.setWindMoney(operate.getBzjMoney()*operate.getPzMultiple() + (operate.getBzjMoney()+operate.getZjBzjMoney())*config.getYjxWind());  //保证金*配资倍数 + (保证金 + 追加保证金) * 百分比
+				operate.setPcMoney(operate.getBzjMoney()*operate.getPzMultiple() + (operate.getBzjMoney()+operate.getZjBzjMoney())*config.getPcxWind());
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			lists.add(operate);
+		}
+		return JsonUtil.buildJsonByTotalCount(lists, 1);
+	}
+	//提取利润: Double类型后续优化
+	@Transactional
+	@Override
+	public String getProfit(Integer userId, Integer id,Double money,String userCard) {
+		int code = 1;
+		String msg = "提取利润失败";
+		if(userId == null) {
+			msg = "请先登录";
+		}else {
+			if(id == null) {
+				msg = "非法参数";
+			}else {
+				StockOperate operate = stockOperateDao.getStockOperateDetail(id);
+				if(operate == null) {
+					msg = "数据不存在";
+				}else {
+					//判断总资产是否大于可操盘资金的110%
+					if(operate.getTotalMoney() > (operate.getTraderMoney()*1.1)) {
+						if(money <= (operate.getTotalMoney()-operate.getTraderMoney())) { //只能提取赚取得那一部分
+							try {
+								//操盘总资产减少
+								operate.setTotalMoney(operate.getTotalMoney()-money);
+								stockOperateDao.updateStockOperate(operate); //更新操盘总资产
+								//插入提现记录
+								CapitalDetails details = new CapitalDetails();
+								details.setTradeMoney(money);
+								details.setSource(1);
+								details.setUserId(userId);
+								details.setUserCard(userCard);
+								details.setTradeType(4);
+								details.setCreateTime(new Date());
+								details.setIsDeal(0);
+								details.setRemark("提取操盘利润,操盘记录值："+id);
+								capitalDetailsDao.addCapitalDetails(details);
+								code = 0;
+								msg = "提取利润成功";
+							} catch (Exception e) {
+								TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+							}
+						}else {
+							msg = "请输入合理的资金提取范围";
+						}
+					}else {
+						msg = "总资产未大于操盘资金的110%,不能提取";
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+	//追加保证金
+	@Transactional
+	@Override
+	public String addBond(Integer userId, Integer id, Integer bond) {
+		int code = 1;
+		String msg = "追加保证金失败";
+		if(userId == null) {
+			msg = "请先登录";
+		}else {
+			if(id == null) {
+				msg = "非法操盘记录";
+			}else {
+				if(bond == null || bond <= 0) {
+					msg = "请输入合法的金额";
+				}else {
+					try {
+						StockOperate operate  =stockOperateDao.getStockOperateDetail(id);
+						operate.setTraderMoney(operate.getTotalMoney() + bond); //可操盘资金累计
+						operate.setTotalMoney(operate.getTotalMoney() + bond); // 总资金累计
+						operate.setZjBzjMoney(operate.getZjBzjMoney() + bond); //追加的保证金
+						stockOperateDao.updateStockOperate(operate);
+						//插入充值记录
+						CapitalDetails details = new CapitalDetails();
+						details.setTradeMoney(Double.valueOf(bond));
+						details.setSource(1);
+						details.setUserId(userId);
+						details.setTradeType(3);
+						details.setCreateTime(new Date());
+						details.setIsDeal(0);
+						details.setRemark("追加保证金,操盘记录值："+id);
+						capitalDetailsDao.addCapitalDetails(details);
+						code = 0;
+						msg = "追加保证金成功";
+					} catch (Exception e) {
+						TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+					}
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+	//停止操盘
+	@Override
+	public String stopTrader(Integer userId, Integer id) {
+		int  code = 1;
+		String msg = "操作失败";
+		if(userId == null) {
+			msg = "请先登录";
+		}else {
+			if(id == null) {
+				msg = "非法数据";
+			}else {
+				StockOperate operate = stockOperateDao.getStockOperateDetail(id);
+				if(operate.getUserId().equals(userId)) {
+					operate.setOperateStatus(3);//终止操盘
+					Integer updateId = stockOperateDao.updateStockOperate(operate);
+					if(updateId != null) {
+						code = 0;
+						msg = "终止操盘成功";
+					}
+				}else {
+					msg = "无权限操作";
+				}
+			}
+		}
+		return JsonUtil.buildFalseJson(code, msg, "");
+	}
+
+    //正在操盘集合
+    @Override
+    public List<StockOperateVO> selectStockOperateAll() {
+        return stockOperateDao.selectStockOperateAll();
+    }
+
+    /**
+     * 定时任务,凌晨0点进行操盘利息收取
+     */
+    @Scheduled(cron="0 49 17 * * ? ")
+    public void LXSQ() {
+        List<StockOperateVO> stockOperateVOS = stockOperateDao.selectStockOperateAll();
+        for(StockOperateVO stockOperateVO : stockOperateVOS){
+            stockOperateVO.setOverdueTime((stockOperateVO.getEndTime().getTime()-date.getTime())/(24*60*60*1000));
+            stockOperateVO.setRunningTime((stockOperateVO.getEndTime().getTime()-stockOperateVO.getStartTime().getTime())/(24*60*60*1000));
+            Double aDouble = selectDailyInterest1(stockOperateVO);
+            User user = userDao.getUserInfoById(stockOperateVO.getUserId());
+            System.out.println(user.getUserMoney());
+            user.setUserMoney(user.getUserMoney()-aDouble);
+            userDao.updateUser(user);
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+            String dateString = formatter.format(new Date());
+            System.out.println(dateString);
+            System.out.println(user.getUserId()+"***"+user.getUserName()+"****"+user.getUserMoney());
+
+        }
+
+    }
+
+    public Double selectDailyInterest1(StockOperateVO stockOperateVO) {
+        //获取每日日配收息
+        Double aDouble = fundingDao.selectProfits(stockOperateVO.getPzMultiple(),String.valueOf(stockOperateVO.getOperateType()));
+        if (stockOperateVO.getOperateType() == 1) {
+            if (stockOperateVO.getQuota() == 3 ) {
+                double interest = 0.0;
+                if(stockOperateVO.getOverdueTime() > 0){
+                    for (long i = stockOperateVO.getRunningTime() - stockOperateVO.getOverdueTime(); i > 0; i--) {
+                        interest = stockOperateVO.getBzjMoney() * aDouble;
+                    }
+                }
+                stockOperateVO.setInterest(interest);
+            } else if (stockOperateVO.getQuota() == 5 ) {
+                double interest = 0.0;
+                if(stockOperateVO.getOverdueTime() > 0){
+                    for (long i = stockOperateVO.getRunningTime() - stockOperateVO.getOverdueTime(); i > 0; i--) {
+                        interest = stockOperateVO.getBzjMoney() * aDouble;
+                    }
+                }
+                stockOperateVO.setInterest(interest);
+            } else if (stockOperateVO.getQuota() == 8) {
+                double interest = 0.0;
+                if(stockOperateVO.getOverdueTime() > 0){
+                    for (long i = stockOperateVO.getRunningTime() - stockOperateVO.getOverdueTime(); i > 0; i--) {
+                        interest = stockOperateVO.getBzjMoney() * aDouble;
+                    }
+                }
+                stockOperateVO.setInterest(interest);
+            }  else if (stockOperateVO.getQuota() == 10) {
+                double interest = 0.0;
+                if(stockOperateVO.getOverdueTime() > 0){
+                    for (long i = stockOperateVO.getRunningTime() - stockOperateVO.getOverdueTime(); i > 0; i--) {
+                        interest = stockOperateVO.getBzjMoney() * aDouble;
+                    }
+                }
+                stockOperateVO.setInterest(interest);
+            }
+            //获取每日月配收息  overdueTime 剩余时间
+        } else if (stockOperateVO.getOperateType() == 2) {
+            if (stockOperateVO.getQuota() == 3) {
+                 double interest = 0.0;
+                 System.out.println(aDouble+"月配3");
+                if(stockOperateVO.getOverdueTime() > 0){
+                    for (long i = stockOperateVO.getRunningTime() - stockOperateVO.getOverdueTime(); i > 0; i--) {
+                        interest = stockOperateVO.getBzjMoney() * aDouble;
+                    }
+                    System.out.println(stockOperateVO.getBzjMoney());
+                    System.out.println(interest+"月配3");
+                }
+                stockOperateVO.setInterest(interest);
+            }  else if (stockOperateVO.getQuota() == 5) {
+                double interest = 0.0;
+                System.out.println(aDouble+"月配5");
+                if(stockOperateVO.getOverdueTime() > 0){
+                    for (long i = stockOperateVO.getRunningTime() - stockOperateVO.getOverdueTime(); i > 0; i--) {
+                        interest = stockOperateVO.getBzjMoney() * aDouble;
+                    }
+                    System.out.println(stockOperateVO.getBzjMoney());
+                    System.out.println(interest+"月配5");
+                }
+                stockOperateVO.setInterest(interest);
+            } else if (stockOperateVO.getQuota() == 8) {
+                double interest = 0.0;
+                if(stockOperateVO.getOverdueTime() > 0){
+                    for (long i = stockOperateVO.getRunningTime() - stockOperateVO.getOverdueTime(); i > 0; i--) {
+                        interest = stockOperateVO.getBzjMoney() * aDouble;
+                    }
+                }
+                stockOperateVO.setInterest(interest);
+            } else if (stockOperateVO.getQuota() == 10) {
+                double interest = 0.0;
+                if(stockOperateVO.getOverdueTime() > 0){
+                    for (long i = stockOperateVO.getRunningTime() - stockOperateVO.getOverdueTime(); i > 0; i--) {
+                        interest = stockOperateVO.getBzjMoney() * aDouble;
+                    }
+                }
+                stockOperateVO.setInterest(interest);
+            }
+        }
+        return stockOperateVO.getInterest();
+    }
+}
+

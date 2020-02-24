@@ -1,0 +1,5 @@
+package com.sjy.dao;
+
+public interface RoleDao {
+
+}

@@ -1,0 +1,12 @@
+package com.sjy.service;
+
+
+import com.sjy.entity.InformationTable;
+
+public interface InformationTableService {
+	public String addInfomation(InformationTable informationTable);	//新增资讯
+	public String delInfomation(Integer informationId);	//删除资讯
+	public String selectInformationList(InformationTable informationTable,Integer page,Integer limit);	//查询资讯列表
+	public String updateInformation(InformationTable informationTable);	//修改资讯
+	public String getInformationById(Integer informationId);	
+}

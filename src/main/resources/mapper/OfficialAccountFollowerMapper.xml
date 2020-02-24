@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.OfficialAccountFollowerDao">
+    <resultMap type="com.ylb.entity.OfficialAccountFollower" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="official_account_id" property="officialAccountId"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="status" property="status"/>        
+        <result column="create_time" property="createTime"/>
+
+    </resultMap>
+
+    <insert id="addOfficialAccountFollower" parameterType="com.ylb.entity.OfficialAccountFollower" useGeneratedKeys="true" keyProperty="id">
+		insert into exOfficialAccountFollower(`official_account_id`,`user_id`,`status`,`create_time`)
+		values (#{officialAccountId},#{userId},#{status},#{createTime})
+	</insert>
+	<update id="updateOfficialAccountFollower" parameterType="com.ylb.entity.OfficialAccountFollower">
+		update exOfficialAccountFollower
+		<set>
+			<if test="status != null">
+				status = #{status}
+			</if>
+		</set>
+		where official_account_id=#{officialAccountId} 
+	</update>
+   <select id="getOfficialAccountFollower" parameterType="com.ylb.entity.OfficialAccountFollower" resultMap="BaseResultMap">
+        select * from exOfficialAccountFollower
+	    where official_account_id=#{officialAccountId}  and user_id like concat('%',#{userId},'%');
+    </select>		
+</mapper>
