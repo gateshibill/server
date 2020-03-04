@@ -7,7 +7,7 @@ server:
 spring:
   profiles:
     #环境属性，可选dev(开发环境)/test(测试环境)/prod(生产环境)
-   active: dev
+   active: prod
    include: db,log
   #datasource:
     # 数据库地址

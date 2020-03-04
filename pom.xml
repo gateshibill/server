@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.ylb</groupId>
 	<artifactId>yinlibao_server</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<version>0.0.1</version>
 	<name>yinlibao_server</name>
 
@@ -98,7 +98,10 @@
 					<groupId>ch.qos.logback</groupId>
 					<artifactId>logback-classic</artifactId>
 				</exclusion>
+				<!-- <exclusion> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-tomcat</artifactId> 
+					</exclusion> -->
 			</exclusions>
+
 		</dependency>
 
 
@@ -244,10 +247,21 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/smack-plugin-muc-1.0.2.jar</systemPath>
 		</dependency>
-		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-tomcat</artifactId> 
-			<scope>provided</scope> </dependency> -->
-	</dependencies>
+		<!-- 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-servlet-api</artifactId>
+			<version>7.0.42</version>
+			<scope>provided</scope>
+		</dependency>
+		 -->
+	</dependencies>
 
 	<build>
 		<finalName>yinlibao_server</finalName>
@@ -276,9 +290,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<!-- <resources> <resource> <directory>${project.basedir}/lib</directory> 
-			<targetPath>WEB-INF/lib/</targetPath> <includes> <include>**/*.jar</include> 
-			</includes> </resource> <resource> <directory>src/main/resources</directory> 
-			<targetPath>WEB-INF/classes/</targetPath> </resource> </resources> -->
 	</build>
 </project>
