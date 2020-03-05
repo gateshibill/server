@@ -16,6 +16,7 @@ import com.ylb.dao.TopicDao;
 import com.ylb.dao.UserDao;
 import com.ylb.entity.OfficialAccount;
 import com.ylb.entity.OfficialAccountFollower;
+import com.ylb.entity.OfficialAccountLevel;
 import com.ylb.entity.User;
 import com.ylb.service.OfficialAccountService;
 
@@ -51,6 +52,8 @@ public class OfficialAccountServiceImpl implements OfficialAccountService {
 		List<OfficialAccount> list = new ArrayList<OfficialAccount>();
 		for (OfficialAccount oa : listTmp) {
 			OfficialAccount officialAccount = officialAccountDao.getOfficialAccountById(oa.getId());
+			OfficialAccountLevel officialAccountLevel= new OfficialAccountLevel();
+			officialAccount.setOfficialAccountLevel(officialAccountLevel);
 			list.add(officialAccount);
 		}
 		return list;

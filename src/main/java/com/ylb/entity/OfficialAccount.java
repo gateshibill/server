@@ -22,6 +22,7 @@ public class OfficialAccount {
 	Date createTime;//申请时间
 	Date updateTime;
 	
+    OfficialAccountLevel officialAccountLevel;
 
 	public String getUsername() {
 		return username;
@@ -132,6 +133,12 @@ public class OfficialAccount {
 	}
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
+	}
+	public OfficialAccountLevel getOfficialAccountLevel() {
+		return officialAccountLevel;
+	}
+	public void setOfficialAccountLevel(OfficialAccountLevel officialAccountLevel) {
+		this.officialAccountLevel = officialAccountLevel;
 	}
 
 	
