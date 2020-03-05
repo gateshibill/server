@@ -301,26 +301,28 @@ public class OfficialAccountController extends BaseUtil {
 	public void followOfficialAccount(HttpServletRequest request, HttpServletResponse response,
 			Integer officialAccountId, String username) {
 		logger.info("qqqfollowOfficialAccount():" + officialAccountId + "/" + username);
-		officialAccountService.followOfficialAccount(officialAccountId, username, 1);
+		
 		try {
-			OfficialAccount officialAccount = officialAccountService.getOfficialAccountById(officialAccountId);
-			if (null == officialAccount) {
-				output(response, JsonUtil.buildSuccessJson("2", "公众号不存在"));
-				return;
-			} else {
-				String subscribeServiceId = officialAccount.getSubscribeServiceId();
-				if (null == subscribeServiceId) {
-					output(response, JsonUtil.buildSuccessJson("3", "获取公众号服务ID失败"));
-					return;
-				} else {
-					int code = HttpUtils.subscribeOfficailAccoutServer(request, subscribeServiceId, username);
-					if (200 == code) {
-						output(response, JsonUtil.buildSuccessJson("0", "success"));
-					} else {
-						output(response, JsonUtil.buildSuccessJson("4", "取消关注公众号失败"));
-					}
-				}
-			}
+			officialAccountService.followOfficialAccount(officialAccountId, username, 1);
+			output(response, JsonUtil.buildSuccessJson("0", "success"));
+//			OfficialAccount officialAccount = officialAccountService.getOfficialAccountById(officialAccountId);
+//			if (null == officialAccount) {
+//				output(response, JsonUtil.buildSuccessJson("2", "公众号不存在"));
+//				return;
+//			} else {
+//				String subscribeServiceId = officialAccount.getSubscribeServiceId();
+//				if (null == subscribeServiceId) {
+//					output(response, JsonUtil.buildSuccessJson("3", "获取公众号服务ID失败"));
+//					return;
+//				} else {
+//					int code = HttpUtils.subscribeOfficailAccoutServer(request, subscribeServiceId, username);
+//					if (200 == code) {
+//						output(response, JsonUtil.buildSuccessJson("0", "success"));
+//					} else {
+//						output(response, JsonUtil.buildSuccessJson("4", "取消关注公众号失败"));
+//					}
+//				}
+//			}
 		} catch (Exception e) {
 			logger.info("fail to followOfficialAccount:" + e.toString());
 			output(response, JsonUtil.buildSuccessJson("1", "系统异常"));
@@ -339,24 +341,25 @@ public class OfficialAccountController extends BaseUtil {
 		logger.info("unfollowOfficialAccount");
 		officialAccountService.followOfficialAccount(officialAccountId, username, 0);
 		try {
-			OfficialAccount officialAccount = officialAccountService.getOfficialAccountById(officialAccountId);
-			if (null == officialAccount) {
-				output(response, JsonUtil.buildSuccessJson("2", "公众号不存在"));
-				return;
-			} else {
-				String subscribeServiceId = officialAccount.getSubscribeServiceId();
-				if (null == subscribeServiceId) {
-					output(response, JsonUtil.buildSuccessJson("3", "获取公众号服务ID失败"));
-					return;
-				} else {
-					int code = HttpUtils.unsubscribeOfficailAccoutServer(request, subscribeServiceId, username);
-					if (200 == code) {
-						output(response, JsonUtil.buildSuccessJson("0", "success"));
-					} else {
-						output(response, JsonUtil.buildSuccessJson("4", "取消关注公众号失败"));
-					}
-				}
-			}
+			officialAccountService.followOfficialAccount(officialAccountId, username, 0);
+//			OfficialAccount officialAccount = officialAccountService.getOfficialAccountById(officialAccountId);
+//			if (null == officialAccount) {
+//				output(response, JsonUtil.buildSuccessJson("2", "公众号不存在"));
+//				return;
+//			} else {
+//				String subscribeServiceId = officialAccount.getSubscribeServiceId();
+//				if (null == subscribeServiceId) {
+//					output(response, JsonUtil.buildSuccessJson("3", "获取公众号服务ID失败"));
+//					return;
+//				} else {
+//					int code = HttpUtils.unsubscribeOfficailAccoutServer(request, subscribeServiceId, username);
+//					if (200 == code) {
+//						output(response, JsonUtil.buildSuccessJson("0", "success"));
+//					} else {
+//						output(response, JsonUtil.buildSuccessJson("4", "取消关注公众号失败"));
+//					}
+//				}
+//			}
 		} catch (Exception e) {
 			logger.error("fail to unfollowOfficialAccount");
 			output(response, JsonUtil.buildSuccessJson("1", "系统异常"));

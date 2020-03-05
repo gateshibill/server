@@ -41,4 +41,11 @@
 		select * from ofMucRoom
 		where name = #{name}
 	</select>
+	
+	<select id="getGroupListByJid" resultMap="BaseResultMap">
+		select *
+		from ofmucroom as r left join ofmucmember as m on m.roomID =r.roomID
+		where jid = #{jid}
+	</select>
+				
 </mapper>

@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.ylb.entity.Bulletin;
 import com.ylb.entity.Group;
 import com.ylb.entity.Message;
+import com.ylb.entity.OfficialAccount;
 import com.ylb.entity.User;
 import com.ylb.service.BulletinService;
 import com.ylb.service.GroupService;
@@ -126,6 +127,37 @@ public class GroupController extends BaseUtil {
 		}
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/getGroupListByJid", method = RequestMethod.GET)
+	public void getGroupMembers(HttpServletRequest request, HttpServletResponse response, String jid,Integer page, Integer limit) {
+		logger.info("getGroupListByJid() " +jid);
+		if (null == jid) {
+			output(response, JsonUtil.buildObjectJson("2", "name不能为空"));
+			return;
+		}
+		try {
+			page = (null == page || page < 0) ? 0 : page;
+			limit = (null == limit || limit < 0) ? 10 : limit;
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put("jid", jid);
+			param.put("page", page);
+			param.put("limit", limit);
+
+			PageHelper.startPage(page, limit);
+			Page<Group> data = groupService.getGroupListByJid(param);
+			int pageSize = data.getPageSize();
+			long total = data.getTotal();
+			List<Group> list = data.getResult();
+			logger.info("getGroupListByJid():" + list.size());
+			output(response, JsonUtil.buildJsonForPage(list, total, pageSize));
+			//output(response, JsonUtil.buildObjectJson(0, "success", group));
+		} catch (Exception e) {
+			e.printStackTrace();
+			output(response, JsonUtil.buildObjectJson("1", "系统异常"));
+		}
+	}
+
+	
 	/**
 	 * 获取群管理员
 	 * 

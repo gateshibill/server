@@ -35,5 +35,9 @@ public interface UserDao {
 	public Page<User> searchOfficialAccountFollower(Map<String,Object> param);
 
 	public Page<User> searchManageUsers(Map<String, Object> param);
+	
+	public Page<User> getGroupAdminListByGroupId(Map<String, Object> param);
+
+	public Page<User> getGroupMemberListByGroupId(Map<String, Object> param);
 
 }

@@ -11,11 +11,11 @@ spring:
    include: db,log
   datasource:
     # 数据库地址
-    url: jdbc:mysql://150.109.68.31:3306/yinglibao?useSSL=false
+    url: jdbc:mysql://150.109.68.31:3306/openfire2?useSSL=false
     # 账号
     username: root
     # 密码
-    password: feikan168@!
+    password: feikan168!@
            
   thymeleaf:
     prefix: classpath:/templates/views/

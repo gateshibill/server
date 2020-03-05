@@ -28,8 +28,8 @@ public class UploadFile {
 	private static String MEDIA = "media";// 其他上传文件
 	private static String TOPIC = "topic";// 其他上传文件
 	// private static String SERVER_BASE_DIR ="D:\\project\\server\\";
-	private static String SERVER_BASE_DIR = "/usr/java/apache-tomcat-8.5.40/webapps/upload/";
-	private static String BASE_URL = "http://file.gycdn1.com:2086/upload/";
+	private static String SERVER_BASE_DIR = "/usr/java/upload/";
+	private static String BASE_URL = "47.115.87.150:5168/upload/";
 
 	/**
 	 * 上传公众号头像图片

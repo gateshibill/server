@@ -11,6 +11,7 @@ import com.github.pagehelper.Page;
 import com.google.gson.Gson;
 import com.ylb.dao.GroupDao;
 import com.ylb.dao.MessageDao;
+import com.ylb.dao.UserDao;
 import com.ylb.entity.Group;
 import com.ylb.entity.Message;
 import com.ylb.entity.User;
@@ -23,7 +24,8 @@ public class GroupServiceImpl implements GroupService {
 	private GroupDao groupDao;
 	@Resource
 	private MessageDao messageDao;
-
+	@Resource
+	private UserDao userDao;
 	/**
 	 * 获取群消息
 	 */
@@ -34,12 +36,12 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public Page<User> getGroupAdminListByGroupId(Map<String, Object> param) {
-		return groupDao.getGroupAdminListByGroupId(param);
+		return userDao.getGroupAdminListByGroupId(param);
 	}
 
 	@Override
 	public Page<User> getGroupMemberListByGroupId(Map<String, Object> param) {
-		return groupDao.getGroupMemberListByGroupId(param);
+		return userDao.getGroupMemberListByGroupId(param);
 	}
 
 	@Override
@@ -55,5 +57,9 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public Group getGroupByName(String name) {
 		return groupDao.getGroupByName(name);
+	}
+	
+	public Page<Group> getGroupListByJid(Map<String, Object> param){
+		return groupDao.getGroupListByJid(param);
 	}
 }

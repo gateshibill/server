@@ -158,4 +158,10 @@
 		</if>			
 		order by umor.create_time desc
 	</select>	
+	<select id="getGroupMemberListByGroupId" resultMap="BaseResultMap">
+		select (select substring_index(m.jid,'@',1)) as username,
+		       m.nickname
+		from ofmucroom as r left join ofmucmember as m on m.roomID =r.roomID
+		where name = #{groupId}
+	</select>
 </mapper>

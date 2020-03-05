@@ -33,10 +33,10 @@ import com.ylb.util.HttpUtils;
 
 public class SmackClient {
 	XMPPTCPConnection m_connection = null;
-	public static String host = "im.gycdn1.com";
+	public static String host = "47.115.87.150";
 	public static String domain = "myopenfire";
-	public static String account = "";
-	public static String password = "";
+	public static String account = "redstar";
+	public static String password = "star888";
 
 	public SmackClient() {
 	}
@@ -49,12 +49,12 @@ public class SmackClient {
 
 	public  XMPPTCPConnection connect() {
 		try {
-			InetAddress inetAddress = InetAddress.getByName("im.gycdn1.com");// 输入openfire 的ip
+			InetAddress inetAddress = InetAddress.getByName(host);// 输入openfire 的ip
 			SmackConfiguration.DEBUG = true;
 
 			XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
 			// configBuilder.setUsernameAndPassword("yinxiaobao", "123456");// 以存在的账户 登入
-			configBuilder.setXmppDomain("myopenfire");
+			configBuilder.setXmppDomain(domain);
 			configBuilder.setHostAddress(inetAddress);
 			configBuilder.setPort(5222);
 			configBuilder.setSecurityMode(SecurityMode.disabled);
@@ -67,7 +67,7 @@ public class SmackClient {
 			m_connection.setUseStreamManagement(true);
 			System.out.println("connect");
 
-			m_connection.login("yinlibao", "123456");
+			m_connection.login(account, password);
 			ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(m_connection);
 			// ReconnectionManager.setEnabledPerDefault(true);
 			// 重联间隔5秒

@@ -16,6 +16,7 @@ import com.ylb.util.openfire.SmackClient;
 public class ManageApplication {
 
 	public static void main(String[] args) {
+		//new Thread1().start();
 		SpringApplication.run(ManageApplication.class, args);
 	}
 

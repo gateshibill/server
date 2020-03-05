@@ -9,13 +9,13 @@ spring:
     #环境属性，可选dev(开发环境)/test(测试环境)/prod(生产环境)
    active: prod
    include: db,log
-  #datasource:
+  datasource:
     # 数据库地址
-    #url: jdbc:mysql://192.168.10.192:3306/openfire2?useSSL=false
+    url: jdbc:mysql://150.109.68.31:3306/yinglibao?useSSL=false
     # 账号
-    #username: openfire2
+    username: root
     # 密码
-    #password: openfire2     
+    password: feikan168@!    
   thymeleaf:
     prefix: classpath:/templates/views/
     cache: false

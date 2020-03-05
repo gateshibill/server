@@ -3,18 +3,21 @@ package com.ylb.entity;
 import java.util.Date;
 
 public class Group {
+	  String jid; //群jid
 	  String name;// 群id
 	  String subject = ""; //群名称
 	  String naturalName = ""; //群头像
+	  String userNickname; //用户在群昵称
 	  int roomID;
-	//  String creator;
+	  String creator;
 	  int membersOnly; //是否需要审核,0为不需要，1为需要
 	  int manageCount;
 	  int memberCount;
 	  Date createTime;
 	  Bulletin bulletin;//群公告
-	  
-	  int officialAccountId;//推送消息用
+	  String status;
+	  String level;
+	  int officialAccountId;
 
 	public String getName() {
 		return name;

@@ -24,4 +24,7 @@ public interface GroupService {
 	public Page<Group> searchPublicGroup(Map<String, Object> param);
 
 	public Group getGroupByName(@Param("name") String name);
+	
+	//获取用户加入的群
+	public Page<Group> getGroupListByJid(Map<String, Object> param);
 }
