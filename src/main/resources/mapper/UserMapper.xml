@@ -158,10 +158,31 @@
 		</if>			
 		order by umor.create_time desc
 	</select>	
+	<select id="getGroupAdminListByGroupId" resultMap="BaseResultMap">
+		select (select substring_index(m.jid,'@',1)) as username,
+		       (select avatar from ofuser where username = (select substring_index(m.jid,'@',1))) as avatar,
+		       m.jid as jid,
+		       m.nickname
+		from ofmucroom as r left join ofmucaffiliation as m on m.roomID =r.roomID
+		where name = #{groupId} and affiliation = 20
+	</select>	
+	
 	<select id="getGroupMemberListByGroupId" resultMap="BaseResultMap">
 		select (select substring_index(m.jid,'@',1)) as username,
+		       (select avatar from ofuser where username = (select substring_index(m.jid,'@',1))) as avatar,
+		       m.jid as jid,
 		       m.nickname
 		from ofmucroom as r left join ofmucmember as m on m.roomID =r.roomID
 		where name = #{groupId}
+	</select>
+	
+	<select id="getGroupOwnerListByGroupId" resultMap="BaseResultMap">
+		select (select substring_index(m.jid,'@',1)) as username,
+		       (select avatar from ofuser where username = (select substring_index(m.jid,'@',1))) as avatar,
+		       m.jid as jid,
+		       m.nickname
+		from ofmucroom as r 
+		left join ofmucaffiliation as m on m.roomID =r.roomID
+		where r.name = #{groupId} and m.affiliation = 10
 	</select>
 </mapper>

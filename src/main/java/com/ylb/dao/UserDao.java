@@ -40,4 +40,5 @@ public interface UserDao {
 
 	public Page<User> getGroupMemberListByGroupId(Map<String, Object> param);
 
+	public Page<User> getGroupOwnerListByGroupId(Map<String, Object> param);
 }

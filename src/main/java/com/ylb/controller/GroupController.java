@@ -128,6 +128,23 @@ public class GroupController extends BaseUtil {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = "/getGroupDetailByName", method = RequestMethod.GET)
+	public void getGroupDetailByName(HttpServletRequest request, HttpServletResponse response, String name) {
+		logger.info("getGroupByName() " +name);
+		if (null == name) {
+			output(response, JsonUtil.buildObjectJson("2", "name不能为空"));
+			return;
+		}
+		try {
+			Group group=groupService.getGroupDetailByName(name);
+			output(response, JsonUtil.buildObjectJson(0, "success", group));
+		} catch (Exception e) {
+			e.printStackTrace();
+			output(response, JsonUtil.buildObjectJson("1", "系统异常"));
+		}
+	}
+
+	@ResponseBody
 	@RequestMapping(value = "/getGroupListByJid", method = RequestMethod.GET)
 	public void getGroupMembers(HttpServletRequest request, HttpServletResponse response, String jid,Integer page, Integer limit) {
 		logger.info("getGroupListByJid() " +jid);
@@ -183,6 +200,41 @@ public class GroupController extends BaseUtil {
 			param.put("edate", edate);
 			PageHelper.startPage(page, limit);
 			Page<User> data = groupService.getGroupAdminListByGroupId(param);
+			int pageSize = data.getPageSize();
+			long total = data.getTotal();
+			List<User> list = data.getResult();
+			output(response, JsonUtil.buildJsonForPage(list, total, pageSize));
+		} catch (Exception e) {
+			e.printStackTrace();
+			output(response, JsonUtil.buildObjectJson("1", "系统异常"));
+		}
+	}
+	
+	/**
+	 * 获取群所有者，群主
+	 * 
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @param page
+	 * @param limit
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getGroupOwnerListByGroupId", method = RequestMethod.GET)
+	public void getGroupOwnerListByGroupId(HttpServletRequest request, HttpServletResponse response, String groupId,
+			String startTime, String endTime, Integer page, Integer limit) {
+		logger.info("getGroupAdminListByGroupId() groupId="+groupId);
+		try {
+			page = (null == page || page < 0) ? 0 : page;
+			limit = (null == limit || limit < 0) ? 10 : limit;
+			Long sdate=(null==startTime||startTime.isEmpty())?null:DateUtil.getStartTime(startTime);
+			Long edate =(null==endTime||endTime.isEmpty())?null:DateUtil.getEndTime(endTime);
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put("groupId", groupId);
+			param.put("sdate", sdate);
+			param.put("edate", edate);
+			PageHelper.startPage(page, limit);
+			Page<User> data = groupService.getGroupOwnerListByGroupId(param);
 			int pageSize = data.getPageSize();
 			long total = data.getTotal();
 			List<User> list = data.getResult();

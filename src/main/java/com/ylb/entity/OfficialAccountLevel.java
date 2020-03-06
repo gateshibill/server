@@ -1,14 +1,16 @@
 package com.ylb.entity;
 
+import com.ylb.util.Contants;
+
 public class OfficialAccountLevel {
 
 	private int id = 1;
 	private String name = "silver";
 	private String ensureMoney = "100";
-	private int groupNums = 20;
-	private int oneGroupNums = 100;
-	private int adminNums = 10;
-	private int messageNums = 100000;
+	private int groupNums = Contants.DEFALT_GROUP_MEMBER_NUM;
+	private int oneGroupNums = Contants.USER_DEFALT_CREATE_GROUP_NUM;
+	private int adminNums = Contants.GROUP_ADMIN_NUM;
+	private int messageNums = Contants.GROUP_MESSAGE_NUM;
 	private String icon = "";
 	private int isOpen = 1;
 

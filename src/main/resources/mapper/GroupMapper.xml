@@ -24,7 +24,7 @@
 		from ofMucRoom as r left join 
 		ofMucAffiliation as m on
 		m.roomID =r.roomID
-		where m.jid=#{userId}
+		where m.jid=#{jid}
 		<if test="name != null and name != ''">
 			and r.subject like concat('%',#{name},'%')
 		</if>

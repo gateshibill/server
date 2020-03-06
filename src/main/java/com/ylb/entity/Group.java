@@ -1,6 +1,8 @@
 package com.ylb.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Group {
 	  String jid; //群jid
@@ -18,6 +20,22 @@ public class Group {
 	  String status;
 	  String level;
 	  int officialAccountId;
+	  int maxUsers;
+	  
+	  public int getMaxUsers() {
+		return maxUsers;
+	}
+
+	public void setMaxUsers(int maxUsers) {
+		this.maxUsers = maxUsers;
+	}
+
+	List<User> admins = new ArrayList<User>(); //管理员列表
+	  List<User> applicants = new ArrayList<User>();
+	  List<User> owners = new ArrayList<User>(); //群主
+
+	  List<User> members = new ArrayList<User>(); //成员
+	  List<User> strangers = new ArrayList<User>(); //保存本地已经退出群聊人员
 
 	public String getName() {
 		return name;
@@ -98,7 +116,87 @@ public class Group {
 	public void setOfficialAccountId(int officialAccountId) {
 		this.officialAccountId = officialAccountId;
 	}
-	  
+
+	public String getJid() {
+		return jid;
+	}
+
+	public void setJid(String jid) {
+		this.jid = jid;
+	}
+
+	public String getUserNickname() {
+		return userNickname;
+	}
+
+	public void setUserNickname(String userNickname) {
+		this.userNickname = userNickname;
+	}
+
+	public String getCreator() {
+		return creator;
+	}
+
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getLevel() {
+		return level;
+	}
+
+	public void setLevel(String level) {
+		this.level = level;
+	}
+
+	public List<User> getAdmins() {
+		return admins;
+	}
+
+	public void setAdmins(List<User> admins) {
+		this.admins = admins;
+	}
+
+	public List<User> getApplicants() {
+		return applicants;
+	}
+
+	public void setApplicants(List<User> applicants) {
+		this.applicants = applicants;
+	}
+
+	public List<User> getOwners() {
+		return owners;
+	}
+
+	public void setOwners(List<User> owners) {
+		this.owners = owners;
+	}
+
+	public List<User> getMembers() {
+		return members;
+	}
+
+	public void setMembers(List<User> members) {
+		this.members = members;
+	}
+
+	public List<User> getStrangers() {
+		return strangers;
+	}
+
+	public void setStrangers(List<User> strangers) {
+		this.strangers = strangers;
+	}
+
 
 	  
 }
