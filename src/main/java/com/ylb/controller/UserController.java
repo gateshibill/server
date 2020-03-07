@@ -42,6 +42,7 @@ import com.ylb.service.UserService;
 import com.ylb.util.BaseUtil;
 import com.ylb.util.JsonUtil;
 import com.ylb.util.SmsSender;
+import com.ylb.util.SmsUtil;
 import com.ylb.util.TokenUtils;
 import com.ylb.util.openfire.client.auth.AuthFactory;
 
@@ -365,14 +366,21 @@ public class UserController extends BaseUtil {
 			String verifyCode = String.valueOf(new Random().nextInt(899999) + 100000);
 			logger.info("verifyCode:" + verifyCode);
 			// 发送短信
-			String result = SmsSender.send(phone, verifyCode, 2);
-			JSONObject resultJson = JSONObject.parseObject(result);
-			logger.info("resultJson:" + resultJson);
-			if (!resultJson.getString("status").equals("3000001"))// 发送短信失败
-			{
-				output(response, JsonUtil.buildSuccessJson("2", "发送短信失败"));
-				return;
+//			String result = SmsSender.send(phone, verifyCode, 2);
+//			JSONObject resultJson = JSONObject.parseObject(result);
+//			logger.info("resultJson:" + resultJson);
+//			if (!resultJson.getString("status").equals("3000001"))// 发送短信失败
+//			{
+//				output(response, JsonUtil.buildSuccessJson("2", "发送短信失败"));
+//				return;
+//			}
+			String result=SmsUtil.sendSms(phone, verifyCode);
+			if(!"0".equals(result)) {
+				logger.error("send sms for reason:" + result);
+				output(response, JsonUtil.buildSuccessJson(result, "发送短信失败"));
+				return;	
 			}
+			
 			JSONObject json = new JSONObject();
 			json.put("verifyCode", verifyCode);
 			json.put("createTime", System.currentTimeMillis());
