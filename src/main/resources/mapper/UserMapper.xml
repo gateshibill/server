@@ -5,6 +5,7 @@
 		<result column="username" property="username" />
 		<result column="name" property="name" />
 		<result column="nickname" property="nickname" />
+		<result column="groupNickname" property="groupNickname" />		
 		<result column="avatar" property="avatar" />
 		<result column="phone" property="phone" />
 		<result column="email" property="email" />
@@ -160,6 +161,8 @@
 	</select>	
 	<select id="getGroupAdminListByGroupId" resultMap="BaseResultMap">
 		select (select substring_index(m.jid,'@',1)) as username,
+		       m.nickname as groupNickname,
+		       (select nickname from ofuser where username = (select substring_index(m.jid,'@',1))) as nickname, 
 		       (select avatar from ofuser where username = (select substring_index(m.jid,'@',1))) as avatar,
 		       m.jid as jid,
 		       m.nickname
@@ -169,6 +172,8 @@
 	
 	<select id="getGroupMemberListByGroupId" resultMap="BaseResultMap">
 		select (select substring_index(m.jid,'@',1)) as username,
+		        m.nickname as groupNickname,
+		        (select nickname from ofuser where username = (select substring_index(m.jid,'@',1))) as nickname, 
 		       (select avatar from ofuser where username = (select substring_index(m.jid,'@',1))) as avatar,
 		       m.jid as jid,
 		       m.nickname
@@ -178,6 +183,8 @@
 	
 	<select id="getGroupOwnerListByGroupId" resultMap="BaseResultMap">
 		select (select substring_index(m.jid,'@',1)) as username,
+		        m.nickname as groupNickname,
+		       (select nickname from ofuser where username = (select substring_index(m.jid,'@',1))) as nickname, 
 		       (select avatar from ofuser where username = (select substring_index(m.jid,'@',1))) as avatar,
 		       m.jid as jid,
 		       m.nickname

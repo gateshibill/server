@@ -11,6 +11,7 @@ public class User {
 	String jid = "";// account@domain
 	String name = "";
 	String nickname;
+	String groupNickname; //群昵称
 	String avatar = "";
 	String phone = "";
 	String email = "";
@@ -196,6 +197,14 @@ public class User {
 	}
 
 
+
+	public String getGroupNickname() {
+		return groupNickname;
+	}
+
+	public void setGroupNickname(String groupNickname) {
+		this.groupNickname = groupNickname;
+	}
 
 	public Date getCreateTime() {
 		return createTime;
