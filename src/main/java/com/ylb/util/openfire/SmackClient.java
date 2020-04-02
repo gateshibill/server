@@ -33,13 +33,16 @@ import com.ylb.util.HttpUtils;
 
 public class SmackClient {
 	XMPPTCPConnection m_connection = null;
-	public static String host = "47.115.87.150";
-	public static String domain = "myopenfire";
-	public static String account = "redstar";
-	public static String password = "star888";
+	public static String host = "feikantec.com";
+	public static String domain = "feikantec.com";
+	public static String account = "feifei";
+	public static String password = "12345678";
 
+	
 	public SmackClient() {
+		
 	}
+	
 	public SmackClient(String host, String domain, String account, String password) {
 		this.host = host;
 		this.domain = domain;
@@ -76,6 +79,8 @@ public class SmackClient {
 			reconnectionManager.enableAutomaticReconnection();
 			// LocalPreferences localPref = SettingsManager.getLocalPreferences();
 
+			
+			
 			if (m_connection.isAuthenticated()) {// 登录成功
 				PingManager.setDefaultPingInterval(10);// Ping every 10 seconds
 				PingManager myPingManager = PingManager.getInstanceFor(m_connection);

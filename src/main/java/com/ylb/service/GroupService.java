@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.github.pagehelper.Page;
 import com.ylb.entity.Group;
 import com.ylb.entity.Message;
+import com.ylb.entity.Ofmucaffiliation;
 import com.ylb.entity.User;
 
 public interface GroupService {
@@ -27,6 +28,9 @@ public interface GroupService {
 	public Page<Group> searchPublicGroup(Map<String, Object> param);
 
 	public Group getGroupByName(@Param("name") String name);
+	
+	public Ofmucaffiliation modifyAdminGroupNickname(@Param("jid") String jid,@Param("groupName") String groupName,@Param("userGroupNickname") String userGroupNickname);
+	
 	//获取群详细信息
 	public Group getGroupDetailByName(@Param("name") String name);
 	

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylb.dao.OfmucaffiliationDao">
+	<resultMap type="com.ylb.entity.Ofmucaffiliation" id="BaseResultMap">
+	    <result column="name" property="name" />
+		<result column="roomID" property="roomID" />
+		<result column="jid" property="jid" />
+		<result column="affiliation" property="affiliation" />
+		<result column="nickname" property="nickname" />
+	</resultMap>
+	
+    <update id="modifyAdminGroupNickname"
+		parameterType="com.ylb.entity.Ofmucaffiliation">
+		update Ofmucaffiliation
+		<set>
+	       <if test="nickname != null and nickname != ''">
+			nickname = #{nickname}
+		</if>
+		</set>
+		where jid =#{jid} and roomID= (select roomID from ofmucroom where name = #{name})
+	</update>
+</mapper>

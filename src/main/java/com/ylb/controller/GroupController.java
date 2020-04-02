@@ -25,6 +25,7 @@ import com.ylb.entity.Bulletin;
 import com.ylb.entity.Group;
 import com.ylb.entity.Message;
 import com.ylb.entity.OfficialAccount;
+import com.ylb.entity.Ofmucaffiliation;
 import com.ylb.entity.User;
 import com.ylb.service.BulletinService;
 import com.ylb.service.GroupService;
@@ -109,18 +110,38 @@ public class GroupController extends BaseUtil {
 			output(response, JsonUtil.buildObjectJson("1", "系统异常"));
 		}
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/getGroupByName", method = RequestMethod.GET)
 	public void getGroupByName(HttpServletRequest request, HttpServletResponse response, String name) {
-		logger.info("getGroupByName() " +name);
+		logger.info("getGroupByName() " + name);
 		if (null == name) {
 			output(response, JsonUtil.buildObjectJson("2", "name不能为空"));
 			return;
 		}
 		try {
-			Group group=groupService.getGroupByName(name);
+			Group group = groupService.getGroupByName(name);
 			output(response, JsonUtil.buildObjectJson(0, "success", group));
+		} catch (Exception e) {
+			e.printStackTrace();
+			output(response, JsonUtil.buildObjectJson("1", "系统异常"));
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/modifyAdminGroupNickname", method = RequestMethod.GET)
+	public void modifyAdminGroupNickname(HttpServletRequest request, HttpServletResponse response, String jid,
+			String groupName, String userGroupNickname) {
+		logger.info("modifyAdminGroupNickname() " + jid + "/" + groupName + "/" + userGroupNickname);
+		if (null == jid || null == groupName || null == userGroupNickname) {
+			output(response, JsonUtil.buildObjectJson("2", "jid|groupName|userGroupNickname不能为空"));
+			return;
+		}
+		try {
+			groupName= groupName.split("@")[0];
+			Ofmucaffiliation ofmucaffiliation = groupService.modifyAdminGroupNickname(jid, groupName,
+					userGroupNickname);
+			output(response, JsonUtil.buildObjectJson(0, "success", ofmucaffiliation));
 		} catch (Exception e) {
 			e.printStackTrace();
 			output(response, JsonUtil.buildObjectJson("1", "系统异常"));
@@ -130,13 +151,13 @@ public class GroupController extends BaseUtil {
 	@ResponseBody
 	@RequestMapping(value = "/getGroupDetailByName", method = RequestMethod.GET)
 	public void getGroupDetailByName(HttpServletRequest request, HttpServletResponse response, String name) {
-		logger.info("getGroupByName() " +name);
+		logger.info("getGroupByName() " + name);
 		if (null == name) {
 			output(response, JsonUtil.buildObjectJson("2", "name不能为空"));
 			return;
 		}
 		try {
-			Group group=groupService.getGroupDetailByName(name);
+			Group group = groupService.getGroupDetailByName(name);
 			output(response, JsonUtil.buildObjectJson(0, "success", group));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -146,8 +167,9 @@ public class GroupController extends BaseUtil {
 
 	@ResponseBody
 	@RequestMapping(value = "/getGroupListByJid", method = RequestMethod.GET)
-	public void getGroupMembers(HttpServletRequest request, HttpServletResponse response, String jid,Integer page, Integer limit) {
-		logger.info("getGroupListByJid() " +jid);
+	public void getGroupMembers(HttpServletRequest request, HttpServletResponse response, String jid, Integer page,
+			Integer limit) {
+		logger.info("getGroupListByJid() " + jid);
 		if (null == jid) {
 			output(response, JsonUtil.buildObjectJson("2", "name不能为空"));
 			return;
@@ -167,14 +189,13 @@ public class GroupController extends BaseUtil {
 			List<Group> list = data.getResult();
 			logger.info("getGroupListByJid():" + list.size());
 			output(response, JsonUtil.buildJsonForPage(list, total, pageSize));
-			//output(response, JsonUtil.buildObjectJson(0, "success", group));
+			// output(response, JsonUtil.buildObjectJson(0, "success", group));
 		} catch (Exception e) {
 			e.printStackTrace();
 			output(response, JsonUtil.buildObjectJson("1", "系统异常"));
 		}
 	}
 
-	
 	/**
 	 * 获取群管理员
 	 * 
@@ -192,8 +213,8 @@ public class GroupController extends BaseUtil {
 		try {
 			page = (null == page || page < 0) ? 0 : page;
 			limit = (null == limit || limit < 0) ? 10 : limit;
-			Long sdate=(null==startTime||startTime.isEmpty())?null:DateUtil.getStartTime(startTime);
-			Long edate =(null==endTime||endTime.isEmpty())?null:DateUtil.getEndTime(endTime);
+			Long sdate = (null == startTime || startTime.isEmpty()) ? null : DateUtil.getStartTime(startTime);
+			Long edate = (null == endTime || endTime.isEmpty()) ? null : DateUtil.getEndTime(endTime);
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("groupId", groupId);
 			param.put("sdate", sdate);
@@ -209,7 +230,7 @@ public class GroupController extends BaseUtil {
 			output(response, JsonUtil.buildObjectJson("1", "系统异常"));
 		}
 	}
-	
+
 	/**
 	 * 获取群所有者，群主
 	 * 
@@ -223,12 +244,12 @@ public class GroupController extends BaseUtil {
 	@RequestMapping(value = "/getGroupOwnerListByGroupId", method = RequestMethod.GET)
 	public void getGroupOwnerListByGroupId(HttpServletRequest request, HttpServletResponse response, String groupId,
 			String startTime, String endTime, Integer page, Integer limit) {
-		logger.info("getGroupAdminListByGroupId() groupId="+groupId);
+		logger.info("getGroupAdminListByGroupId() groupId=" + groupId);
 		try {
 			page = (null == page || page < 0) ? 0 : page;
 			limit = (null == limit || limit < 0) ? 10 : limit;
-			Long sdate=(null==startTime||startTime.isEmpty())?null:DateUtil.getStartTime(startTime);
-			Long edate =(null==endTime||endTime.isEmpty())?null:DateUtil.getEndTime(endTime);
+			Long sdate = (null == startTime || startTime.isEmpty()) ? null : DateUtil.getStartTime(startTime);
+			Long edate = (null == endTime || endTime.isEmpty()) ? null : DateUtil.getEndTime(endTime);
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("groupId", groupId);
 			param.put("sdate", sdate);
@@ -262,8 +283,8 @@ public class GroupController extends BaseUtil {
 		try {
 			page = (null == page || page < 0) ? 0 : page;
 			limit = (null == limit || limit < 0) ? 10 : limit;
-			Long sdate=(null==startTime||startTime.isEmpty())?null:DateUtil.getStartTime(startTime);
-			Long edate =(null==endTime||endTime.isEmpty())?null:DateUtil.getEndTime(endTime);
+			Long sdate = (null == startTime || startTime.isEmpty()) ? null : DateUtil.getStartTime(startTime);
+			Long edate = (null == endTime || endTime.isEmpty()) ? null : DateUtil.getEndTime(endTime);
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("groupId", groupId);
 			param.put("sdate", sdate);
@@ -331,8 +352,8 @@ public class GroupController extends BaseUtil {
 		try {
 			page = (null == page || page < 0) ? 0 : page;
 			limit = (null == limit || limit < 0) ? 10 : limit;
-			Long sdate=(null==startTime||startTime.isEmpty())?null:DateUtil.getStartTime(startTime);
-			Long edate =(null==endTime||endTime.isEmpty())?null:DateUtil.getEndTime(endTime);
+			Long sdate = (null == startTime || startTime.isEmpty()) ? null : DateUtil.getStartTime(startTime);
+			Long edate = (null == endTime || endTime.isEmpty()) ? null : DateUtil.getEndTime(endTime);
 			if (null == groupId) {
 				output(response, JsonUtil.buildObjectJson("2", "groupId 不能为空"));
 				return;
@@ -378,20 +399,20 @@ public class GroupController extends BaseUtil {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/searchUserGroup", method = RequestMethod.GET)
-	public void searchUserGroup(HttpServletRequest request, HttpServletResponse response, String username, String roomID,
-			String name, String startTime, String endTime, Integer page, Integer limit) {
+	public void searchUserGroup(HttpServletRequest request, HttpServletResponse response, String username,
+			String roomID, String name, String startTime, String endTime, Integer page, Integer limit) {
 		logger.info(" info searchUserGroup()");
 		try {
 			page = (null == page || page < 0) ? 0 : page;
 			limit = (null == limit || limit < 0) ? 10 : limit;
-			
-			Long sdate=(null==startTime||startTime.isEmpty())?null:DateUtil.getStartTime(startTime);
-			Long edate =(null==endTime||endTime.isEmpty())?null:DateUtil.getEndTime(endTime);
-			
+
+			Long sdate = (null == startTime || startTime.isEmpty()) ? null : DateUtil.getStartTime(startTime);
+			Long edate = (null == endTime || endTime.isEmpty()) ? null : DateUtil.getEndTime(endTime);
+
 			Map<String, Object> param = new HashMap<String, Object>();
 
-			if(null==username) {
-				output(response, JsonUtil.buildObjectJson("2", "username不能为空"));	
+			if (null == username) {
+				output(response, JsonUtil.buildObjectJson("2", "username不能为空"));
 			}
 			if (!username.contains("@")) {
 				String domain = ofPropertyService.getOfProperty("xmpp.domain").getPropValue();
@@ -419,7 +440,7 @@ public class GroupController extends BaseUtil {
 	@RequestMapping(value = "/searchPublicGroup", method = RequestMethod.GET)
 	public void searchPublicGroup(HttpServletRequest request, HttpServletResponse response, String subject,
 			Integer page, Integer limit) {
-		logger.info("searchPublicGroup() "+subject);
+		logger.info("searchPublicGroup() " + subject);
 		if (null == subject) {
 			output(response, JsonUtil.buildObjectJson("2", "subject不能为空"));
 			return;

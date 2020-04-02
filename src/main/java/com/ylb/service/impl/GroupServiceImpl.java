@@ -14,9 +14,11 @@ import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
 import com.ylb.dao.GroupDao;
 import com.ylb.dao.MessageDao;
+import com.ylb.dao.OfmucaffiliationDao;
 import com.ylb.dao.UserDao;
 import com.ylb.entity.Group;
 import com.ylb.entity.Message;
+import com.ylb.entity.Ofmucaffiliation;
 import com.ylb.entity.User;
 import com.ylb.service.GroupService;
 import com.ylb.util.Contants;
@@ -30,6 +32,9 @@ public class GroupServiceImpl implements GroupService {
 	private MessageDao messageDao;
 	@Resource
 	private UserDao userDao;
+	@Resource
+	OfmucaffiliationDao ofmucaffiliationDao;
+
 	/**
 	 * 获取群消息
 	 */
@@ -42,8 +47,8 @@ public class GroupServiceImpl implements GroupService {
 	public Page<User> getGroupAdminListByGroupId(Map<String, Object> param) {
 		return userDao.getGroupAdminListByGroupId(param);
 	}
-	
-	public Page<User> getGroupOwnerListByGroupId(Map<String,Object> param){
+
+	public Page<User> getGroupOwnerListByGroupId(Map<String, Object> param) {
 		return userDao.getGroupOwnerListByGroupId(param);
 	}
 
@@ -61,54 +66,54 @@ public class GroupServiceImpl implements GroupService {
 	public Page<Group> searchPublicGroup(Map<String, Object> param) {
 		return groupDao.searchPublicGroup(param);
 	}
-	
+
 	@Override
 	public Group getGroupByName(String name) {
-		Group group= groupDao.getGroupByName(name);
-		if(null!=group) {
+		Group group = groupDao.getGroupByName(name);
+		if (null != group) {
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("groupId", name);
 			PageHelper.startPage(0, 100);
 			Page<User> data = userDao.getGroupAdminListByGroupId(param);
 			List<User> admins = data.getResult();
-		
+
 			Map<String, Object> param1 = new HashMap<String, Object>();
 			param1.put("groupId", name);
 			PageHelper.startPage(0, 1000);
 			Page<User> data1 = userDao.getGroupMemberListByGroupId(param1);
 			List<User> members = data1.getResult();
 
-			//临时
+			// 临时
 			group.setAdmins(admins);
 			group.setMembers(members);
 			group.setMaxUsers(Contants.DEFALT_GROUP_MEMBER_NUM);
 		}
 		return group;
 	}
-	
+
 	@Override
 	public Group getGroupDetailByName(String name) {
-		Group group= groupDao.getGroupByName(name);
-		if(null!=group) {
+		Group group = groupDao.getGroupByName(name);
+		if (null != group) {
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("groupId", name);
 			PageHelper.startPage(0, 100);
 			Page<User> data = userDao.getGroupAdminListByGroupId(param);
 			List<User> admins = data.getResult();
-		
+
 			Map<String, Object> param1 = new HashMap<String, Object>();
 			param1.put("groupId", name);
 			PageHelper.startPage(0, 1000);
 			Page<User> data1 = userDao.getGroupMemberListByGroupId(param1);
 			List<User> members = data1.getResult();
-			
+
 			Map<String, Object> param2 = new HashMap<String, Object>();
 			param2.put("groupId", name);
 			PageHelper.startPage(0, 1000);
 			Page<User> data2 = userDao.getGroupOwnerListByGroupId(param1);
 			List<User> owners = data2.getResult();
 
-			//临时
+			// 临时
 			group.setAdmins(admins);
 			group.setMembers(members);
 			group.setOwners(owners);
@@ -116,19 +121,37 @@ public class GroupServiceImpl implements GroupService {
 		}
 		return group;
 	}
-	
-	public Page<Group> getGroupListByJid(Map<String, Object> param){
-		//Group group= groupDao.getGroupListByJid(param);
-		Page<Group> list= new Page();
+
+	public Page<Group> getGroupListByJid(Map<String, Object> param) {
+		// Group group= groupDao.getGroupListByJid(param);
+		Page<Group> list = new Page();
 		Page<Group> data1 = groupDao.getGroupListByJid(param);
-		//List<Group> members = data1.getResult();	
-		System.out.println("data1=" +data1.size() );
+		// List<Group> members = data1.getResult();
+		System.out.println("data1=" + data1.size());
 		Page<Group> data2 = groupDao.searchUserGroup(param);
-		//List<Group> admins = data2.getResult();
-		System.out.println("data2=" +data2.size() );
+		// List<Group> admins = data2.getResult();
+		System.out.println("data2=" + data2.size());
 		list.addAll(data1);
 		list.addAll(data2);
 		list.setTotal(list.size());
 		return list;
+	}
+
+	@Override
+	public Ofmucaffiliation modifyAdminGroupNickname(String jid, String groupName, String userGroupNickname) {
+		// TODO Auto-generated method stub
+		Ofmucaffiliation ofmucaffiliation = new Ofmucaffiliation();
+		ofmucaffiliation.setJid(jid);
+		ofmucaffiliation.setName(groupName);
+		ofmucaffiliation.setNickname(userGroupNickname);
+
+//		Group group = groupDao.getGroupByName(groupName);
+//		if (null != group) {
+//			int roomID = group.getRoomID();
+//			ofmucaffiliation.setRoomID(roomID);
+//		}
+
+		ofmucaffiliationDao.modifyAdminGroupNickname(ofmucaffiliation);
+		return ofmucaffiliation;
 	}
 }

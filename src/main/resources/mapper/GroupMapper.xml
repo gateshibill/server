@@ -3,6 +3,7 @@
 <mapper namespace="com.ylb.dao.GroupDao">
 	<resultMap type="com.ylb.entity.Group" id="BaseResultMap">
 		<result column="name" property="name" />
+		<result column="userNickname" property="userNickname" />		
 		<result column="roomID" property="roomID" />
 		<result column="subject" property="subject" />
 		<result column="naturalName" property="naturalName" />
@@ -15,12 +16,13 @@
 
 	<select id="searchUserGroup" resultMap="BaseResultMap">
 		select
-		r.name ,
-		r.roomID,
-		r.subject,
-		r.naturalName,
-		r.membersOnly,
-		r.creationDate
+		r.name as name,
+		r.roomID as roomID,
+		r.subject as subject,
+		r.naturalName as naturalName,
+		r.membersOnly as membersOnly,
+		r.creationDate as creationDate,
+		m.nickname as userNickname
 		from ofMucRoom as r left join 
 		ofMucAffiliation as m on
 		m.roomID =r.roomID
@@ -43,7 +45,14 @@
 	</select>
 	
 	<select id="getGroupListByJid" resultMap="BaseResultMap">
-		select *
+		select
+		r.name as name,
+		r.roomID as roomID,
+		r.subject as subject,
+		r.naturalName as naturalName,
+		r.membersOnly as membersOnly,
+		r.creationDate as creationDate,
+		m.nickname as userNickname
 		from ofmucroom as r left join ofmucmember as m on m.roomID =r.roomID
 		where jid = #{jid}
 	</select>

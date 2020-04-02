@@ -15,7 +15,7 @@ spring:
     # 账号
     username: root
     # 密码
-    password: feikan168@!    
+    password: feikan168!@  
   thymeleaf:
     prefix: classpath:/templates/views/
     cache: false
