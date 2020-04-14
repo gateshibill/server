@@ -33,7 +33,7 @@ import com.ylb.util.HttpUtils;
 
 public class SmackClient {
 	XMPPTCPConnection m_connection = null;
-	public static String host = "119.28.180.177";
+	public static String host = "feikantec.com";
 	public static String domain = "chat";
 	public static String account = "feifei1";
 	public static String password = "888888";

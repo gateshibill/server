@@ -11,7 +11,7 @@ spring:
    include: db,log
   datasource:
     # 数据库地址
-    url: jdbc:mysql://150.109.68.31:3306/chat?useSSL=false
+    url: jdbc:mysql://150.109.68.31:3306/openfire?useSSL=false
     # 账号
     username: root
     # 密码
