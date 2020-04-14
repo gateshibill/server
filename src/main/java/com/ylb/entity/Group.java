@@ -5,37 +5,37 @@ import java.util.Date;
 import java.util.List;
 
 public class Group {
-	  String jid; //群jid
-	  String name;// 群id
-	  String subject = ""; //群名称
-	  String naturalName = ""; //群头像
-	  String userNickname; //用户在群昵称
-	  int roomID;
-	  String creator;
-	  int membersOnly; //是否需要审核,0为不需要，1为需要
-	  int manageCount;
-	  int memberCount;
-	  Date createTime;
-	  Bulletin bulletin;//群公告
-	  String status;
-	  String level;
-	  int officialAccountId;
-	  int maxUsers;
-	  
-	  public int getMaxUsers() {
+	String jid; // 群jid
+	String name;// 群id
+	String subject = ""; // 群名称
+	String naturalName = ""; // 群头像
+	String userNickname; // 用户在群昵称
+	int roomID;
+	String creator;
+	int membersOnly; // 是否需要审核,0为不需要，1为需要
+	int manageCount;
+	int memberCount;
+	Date createTime;
+	Bulletin bulletin;// 群公告
+	String status;
+	String level;
+	int officialAccountId;
+	int maxUsers;
+
+	List<User> admins = new ArrayList<User>(); // 管理员列表
+	List<User> applicants = new ArrayList<User>();
+	List<User> owners = new ArrayList<User>(); // 群主
+
+	List<User> members = new ArrayList<User>(); // 成员
+	List<User> strangers = new ArrayList<User>(); // 保存本地已经退出群聊人员
+
+	public int getMaxUsers() {
 		return maxUsers;
 	}
 
 	public void setMaxUsers(int maxUsers) {
 		this.maxUsers = maxUsers;
 	}
-
-	List<User> admins = new ArrayList<User>(); //管理员列表
-	  List<User> applicants = new ArrayList<User>();
-	  List<User> owners = new ArrayList<User>(); //群主
-
-	  List<User> members = new ArrayList<User>(); //成员
-	  List<User> strangers = new ArrayList<User>(); //保存本地已经退出群聊人员
 
 	public String getName() {
 		return name;
@@ -197,6 +197,4 @@ public class Group {
 		this.strangers = strangers;
 	}
 
-
-	  
 }

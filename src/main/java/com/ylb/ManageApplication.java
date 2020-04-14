@@ -37,7 +37,7 @@ public class ManageApplication {
 //
 //	@Override
 //	public void onStartup(ServletContext servletContext) throws ServletException {
-//		//new Thread1().start();
+//		new Thread1().start();
 //	}
 //}
 
