@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -19,7 +20,9 @@ public class Stock {
 	private final static Logger logger = LoggerFactory.getLogger(Stock.class);
 	
 	public static void main(String[] args) {
+		System.out.println(new Date());
 		String response = HttpUtils.sendGet("https://hq.sinajs.cn/", "list=sh600809");
+		System.out.println(new Date());
 		System.out.println("response:"+response);
 		 Pattern p=Pattern.compile("(?<=\").*?(?=\")"); 
 		 Matcher matcher=p.matcher(response); 
