@@ -1,48 +1,8 @@
-2020-03-08 10:28:34.435 [XMPPTCPConnection[redstar@myopenfire/server] (1) callConnectionClosedOnErrorListener()] WARN  org.jivesoftware.smack.AbstractXMPPConnection -
-				Connection XMPPTCPConnection[redstar@myopenfire/server] (1) closed with error
+2020-04-12 11:55:24.956 [XMPPTCPConnection[feifei@chat/server] (0) callConnectionClosedOnErrorListener()] WARN  org.jivesoftware.smack.AbstractXMPPConnection -
+				Connection XMPPTCPConnection[feifei@chat/server] (0) closed with error
 org.jivesoftware.smack.XMPPException$StreamErrorException: conflict You can read more about the meaning of this stream error at http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions
 <stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>
 	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.parsePackets(XMPPTCPConnection.java:1164)
 	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.access$1000(XMPPTCPConnection.java:1092)
 	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader$1.run(XMPPTCPConnection.java:1112)
-	at java.lang.Thread.run(Thread.java:745)
-2020-03-08 10:43:42.817 [XMPPTCPConnection[redstar@myopenfire/server] (0) callConnectionClosedOnErrorListener()] WARN  org.jivesoftware.smack.AbstractXMPPConnection -
-				Connection XMPPTCPConnection[redstar@myopenfire/server] (0) closed with error
-org.jivesoftware.smack.XMPPException$StreamErrorException: conflict You can read more about the meaning of this stream error at http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions
-<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.parsePackets(XMPPTCPConnection.java:1164)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.access$1000(XMPPTCPConnection.java:1092)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader$1.run(XMPPTCPConnection.java:1112)
-	at java.lang.Thread.run(Thread.java:745)
-2020-03-08 10:56:14.331 [XMPPTCPConnection[redstar@myopenfire/server] (2) callConnectionClosedOnErrorListener()] WARN  org.jivesoftware.smack.AbstractXMPPConnection -
-				Connection XMPPTCPConnection[redstar@myopenfire/server] (2) closed with error
-org.jivesoftware.smack.XMPPException$StreamErrorException: conflict You can read more about the meaning of this stream error at http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions
-<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.parsePackets(XMPPTCPConnection.java:1164)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.access$1000(XMPPTCPConnection.java:1092)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader$1.run(XMPPTCPConnection.java:1112)
-	at java.lang.Thread.run(Thread.java:745)
-2020-03-08 10:57:49.453 [XMPPTCPConnection[redstar@myopenfire/server] (3) callConnectionClosedOnErrorListener()] WARN  org.jivesoftware.smack.AbstractXMPPConnection -
-				Connection XMPPTCPConnection[redstar@myopenfire/server] (3) closed with error
-org.jivesoftware.smack.XMPPException$StreamErrorException: conflict You can read more about the meaning of this stream error at http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions
-<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.parsePackets(XMPPTCPConnection.java:1164)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.access$1000(XMPPTCPConnection.java:1092)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader$1.run(XMPPTCPConnection.java:1112)
-	at java.lang.Thread.run(Thread.java:745)
-2020-03-08 11:00:40.723 [XMPPTCPConnection[redstar@myopenfire/server] (4) callConnectionClosedOnErrorListener()] WARN  org.jivesoftware.smack.AbstractXMPPConnection -
-				Connection XMPPTCPConnection[redstar@myopenfire/server] (4) closed with error
-org.jivesoftware.smack.XMPPException$StreamErrorException: conflict You can read more about the meaning of this stream error at http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions
-<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.parsePackets(XMPPTCPConnection.java:1164)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.access$1000(XMPPTCPConnection.java:1092)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader$1.run(XMPPTCPConnection.java:1112)
-	at java.lang.Thread.run(Thread.java:745)
-2020-03-08 11:04:34.699 [XMPPTCPConnection[redstar@myopenfire/server] (5) callConnectionClosedOnErrorListener()] WARN  org.jivesoftware.smack.AbstractXMPPConnection -
-				Connection XMPPTCPConnection[redstar@myopenfire/server] (5) closed with error
-org.jivesoftware.smack.XMPPException$StreamErrorException: conflict You can read more about the meaning of this stream error at http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions
-<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.parsePackets(XMPPTCPConnection.java:1164)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader.access$1000(XMPPTCPConnection.java:1092)
-	at org.jivesoftware.smack.tcp.XMPPTCPConnection$PacketReader$1.run(XMPPTCPConnection.java:1112)
-	at java.lang.Thread.run(Thread.java:745)
+	at java.lang.Thread.run(Thread.java:748)

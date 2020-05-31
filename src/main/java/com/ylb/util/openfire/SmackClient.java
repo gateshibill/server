@@ -34,9 +34,9 @@ import com.ylb.util.HttpUtils;
 public class SmackClient {
 	XMPPTCPConnection m_connection = null;
 	public static String host = "feikantec.com";
-	public static String domain = "feikantec.com";
-	public static String account = "feifei";
-	public static String password = "12345678";
+	public static String domain = "chat";
+	public static String account = "feifei1";
+	public static String password = "888888";
 
 	
 	public SmackClient() {
