@@ -29,7 +29,7 @@ import com.ylb.util.BaseUtil;
 import com.ylb.util.JsonUtil;
 
 @Controller
-@RequestMapping("/role")
+@RequestMapping("/stock")
 public class RoleController extends BaseUtil {
 	private final static Logger logger = LoggerFactory.getLogger(RoleController.class);
 	@Autowired
