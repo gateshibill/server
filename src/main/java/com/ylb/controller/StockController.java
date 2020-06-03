@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ylb.entity.Role;
@@ -57,7 +58,7 @@ public class StockController extends BaseUtil {
 				String group = matcher.group();
 				String[] stocks = group.split(",");
 				nowPrice = Double.parseDouble(stocks[3]);
-				output(response, JsonUtil.buildObjectJson(0, "success", nowPrice.toString()));
+				output(response, JsonUtil.buildDataJson(0, "success", nowPrice.toString()));
 			} else {
 				output(response, JsonUtil.buildObjectJson("2", "解析错误"));
 			}
@@ -77,13 +78,13 @@ public class StockController extends BaseUtil {
 		}
 		try {
 			String res = HttpUtils.sendGet("https://hq.sinajs.cn/", "list=" + code);
-			output(response, JsonUtil.buildObjectJson(0, "success", res));
+			output(response, JsonUtil.buildDataJson(0, "success", res));
 		} catch (Exception e) {
 			e.printStackTrace();
 			output(response, JsonUtil.buildObjectJson("1", "系統错误"));
 		}
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/getMinKLineData", method = RequestMethod.GET)
 	public void getMinKLineData(HttpServletRequest request, HttpServletResponse response, String code, String token) {
@@ -93,13 +94,23 @@ public class StockController extends BaseUtil {
 			return;
 		}
 		try {
-			String res = HttpUtils.sendGet("http://web.ifzq.gtimg.cn/appstock/app/minute/query?","_var=min_data_" + code + "&code=" + code + "&r=0.040982807166606294");
-			output(response, JsonUtil.buildObjectJson(0, "success", res));
+			String res = HttpUtils.sendGet("http://web.ifzq.gtimg.cn/appstock/app/minute/query?",
+					"&code=" + code + "&r=0.040982807166606294");
+			JSONObject object = JSONObject.parseObject(res);
+			int errorCode = object.getIntValue("code");
+			String msg = object.getString("msg");
+			String obj = object.getString("data");
+			if (0 == errorCode) {
+				output(response, JsonUtil.buildDataJson(0, "success", obj));
+			} else {
+				output(response, JsonUtil.buildDataJson(0, msg, obj));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			output(response, JsonUtil.buildObjectJson("1", "系統错误"));
 		}
 	}
+
 	@ResponseBody
 	@RequestMapping(value = "/getDayKLineData", method = RequestMethod.GET)
 	public void getDayKLineData(HttpServletRequest request, HttpServletResponse response, String code, String token) {
@@ -109,14 +120,23 @@ public class StockController extends BaseUtil {
 			return;
 		}
 		try {
-			String res = HttpUtils.sendGet("http://web.ifzq.gtimg.cn/appstock/app/kline/kline?","_var=kline_day&param=" + code + ",day,,,60,&r=0.6762027715074195");
-			output(response, JsonUtil.buildObjectJson(0, "success", res));
+			String res = HttpUtils.sendGet("http://web.ifzq.gtimg.cn/appstock/app/kline/kline?",
+					"_var=kline_day&param=" + code + ",day,,,60,&r=0.6762027715074195");
+			JSONObject object = JSONObject.parseObject(res);
+			int errorCode = object.getIntValue("code");
+			String msg = object.getString("msg");
+			String obj = object.getString("data");
+			if (0 == errorCode) {
+				output(response, JsonUtil.buildDataJson(0, "success", obj));
+			} else {
+				output(response, JsonUtil.buildDataJson(0, msg, obj));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			output(response, JsonUtil.buildObjectJson("1", "系統错误"));
 		}
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/getWeekKLineData", method = RequestMethod.GET)
 	public void getWeekKLineData(HttpServletRequest request, HttpServletResponse response, String code, String token) {
@@ -126,13 +146,23 @@ public class StockController extends BaseUtil {
 			return;
 		}
 		try {
-			String res = HttpUtils.sendGet("http://web.ifzq.gtimg.cn/appstock/app/kline/kline?","_var=kline_week&param=" + code + ",week,,,60,&r=0.28570913281575394");
-			output(response, JsonUtil.buildObjectJson(0, "success", res));
+			String res = HttpUtils.sendGet("http://web.ifzq.gtimg.cn/appstock/app/kline/kline?",
+					"_var=kline_week&param=" + code + ",week,,,60,&r=0.28570913281575394");
+			JSONObject object = JSONObject.parseObject(res);
+			int errorCode = object.getIntValue("code");
+			String msg = object.getString("msg");
+			String obj = object.getString("data");
+			if (0 == errorCode) {
+				output(response, JsonUtil.buildDataJson(0, "success", obj));
+			} else {
+				output(response, JsonUtil.buildDataJson(0, msg, obj));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			output(response, JsonUtil.buildObjectJson("1", "系統错误"));
 		}
 	}
+
 	@ResponseBody
 	@RequestMapping(value = "/getMonthKLineData", method = RequestMethod.GET)
 	public void getMonthKLineData(HttpServletRequest request, HttpServletResponse response, String code, String token) {
@@ -142,8 +172,17 @@ public class StockController extends BaseUtil {
 			return;
 		}
 		try {
-			String res = HttpUtils.sendGet("http://web.ifzq.gtimg.cn/appstock/app/kline/kline?","_var=kline_month&param=" + code + ",month,,,60,&r=0.6762027715074195");
-			output(response, JsonUtil.buildObjectJson(0, "success", res));
+			String res = HttpUtils.sendGet("http://web.ifzq.gtimg.cn/appstock/app/kline/kline?",
+					"_var=kline_month&param=" + code + ",month,,,60,&r=0.6762027715074195");
+			JSONObject object = JSONObject.parseObject(res);
+			int errorCode = object.getIntValue("code");
+			String msg = object.getString("msg");
+			String obj = object.getString("data");
+			if (0 == errorCode) {
+				output(response, JsonUtil.buildDataJson(0, "success", obj));
+			} else {
+				output(response, JsonUtil.buildDataJson(0, msg, obj));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			output(response, JsonUtil.buildObjectJson("1", "系統错误"));

@@ -92,6 +92,19 @@ public class JsonUtil {
 		String str = JsonUtil.gson.toJson(object);
 		return String.format("{\"code\": \"%d\", \"msg\": \"%s\", \"objects\": %s}", code, msg, str);
 	}
+	
+	/**
+	 * 返回json字符串
+	 * 
+	 * @param code
+	 * @param msg
+	 * @param object
+	 * @return
+	 */
+	public static String buildDataJson(int code, String msg, Object object) {
+		String str = JsonUtil.gson.toJson(object);
+		return String.format("{\"code\": \"%d\", \"msg\": \"%s\", \"data\": %s}", code, msg, str);
+	}
 
 	public static String buildSuccessJson(String code, String message) {
 		return String.format("{\"code\": \"%s\", \"msg\": \"%s\"}", code, message);
